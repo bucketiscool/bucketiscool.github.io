@@ -1,6 +1,6 @@
 const canvas = document.getElementById('snakeGame');
 const ctx = canvas.getContext('2d');
-const UnSize = 20; // Slightly smaller for the 400px canvas
+const UnSize = 25; // Slightly smaller for the 400px canvas
 const ScW = 400;
 const ScH = 400;
 
