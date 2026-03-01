@@ -12,6 +12,7 @@
         .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.1); }
         .bento-card { background: white; border-radius: 32px; border: 1px solid #e5e7eb; transition: all 0.4s ease; overflow: hidden; }
         .bento-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        canvas { border-radius: 16px; background-color: #000; }
     </style>
 </head>
 <body class="antialiased">
@@ -23,50 +24,62 @@
                 <a href="/" class="hover:text-blue-600 transition">Home</a>
                 <a href="/portfolio/" class="hover:text-blue-600 transition">Portfolio</a>
                 <a href="/gallery/" class="hover:text-blue-600 transition">Gallery</a>
-                <a href="/games/" class="hover:text-blue-600 transition">Games</a>
+                <a href="/games/" class="text-blue-600 transition">Games</a>
             </div>
         </div>
     </nav>
 
     <section class="min-h-screen pt-32 pb-24 max-w-6xl mx-auto px-6">
         <div class="mb-16 text-center" data-aos="fade-up">
-            <h1 class="text-5xl font-bold mb-4">HTML Games</h1>
+            <h1 class="text-5xl font-bold mb-4">Interactive AI & Games</h1>
             <p class="text-gray-500 text-xl">Projects I've built in my free time. Play them right here.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bento-card p-10 flex flex-col" data-aos="fade-up">
-                <div class="bg-gray-100 rounded-2xl h-64 mb-6 flex items-center justify-center text-gray-400 font-bold">
-                    [Game Embed/Image Goes Here]
+                <div class="bg-black rounded-2xl mb-6 flex items-center justify-center overflow-hidden">
+                    <canvas id="snakeGame" width="400" height="400" class="w-full h-full"></canvas>
                 </div>
-                <h3 class="text-2xl font-bold mb-2">Game Title 1</h3>
-                <p class="text-gray-500 mb-6">A brief description of the game, what language you used, and the goal.</p>
-                <a href="#" class="mt-auto bg-blue-600 text-white px-6 py-3 rounded-full font-semibold text-center hover:bg-blue-700 transition">Play Now</a>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold">Snake AI</h3>
+                    <span class="text-xs font-bold px-3 py-1 bg-green-100 text-green-700 rounded-full uppercase">87,735 Generations</span>
+                </div>
+                <p class="text-gray-500 mb-6">A Q-Learning agent trained in Java. It perceives food, danger, and space via a 9-digit state string. After reaching 200 points, it engages a Hamiltonian Cycle.</p>
+                
+                <div class="grid grid-cols-2 gap-4 mt-auto">
+                    <div class="bg-gray-50 p-4 rounded-2xl text-center border border-gray-100">
+                        <span class="block text-xs text-gray-400 uppercase font-bold">High Score</span>
+                        <span class="text-xl font-bold text-blue-600">101</span>
+                    </div>
+                    <button onclick="resetGame()" class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition">Restart AI</button>
+                </div>
             </div>
 
-        <div class="bento-card p-10 flex flex-col" data-aos="fade-up">
-            <div class="bg-gray-100 rounded-2xl h-64 mb-6 overflow-hidden">
-                <img src="vr-project.jpg" class="w-full h-full object-cover">
+            <div class="bento-card p-10 flex flex-col" data-aos="fade-up" data-aos-delay="100">
+                <div class="bg-gray-100 rounded-2xl h-64 mb-6 overflow-hidden">
+                    <img src="vr-project.jpg" class="w-full h-full object-cover">
                 </div>
                 <h3 class="text-2xl font-bold mb-2">VR Sandbox 2</h3>
-                <p class="text-gray-500 mb-6">150,000+ downloads on the Meta Quest Store.</p>
+                <p class="text-gray-500 mb-6">Built for Meta Quest. Features complex physics interactions and environmental puzzles. 150,000+ downloads.</p>
                 <a href="https://www.meta.com/experiences/vr-sandbox-2/6229056097107643/" target="_blank" class="mt-auto bg-black text-white px-6 py-3 rounded-full font-semibold text-center hover:bg-gray-800 transition">Download / Play</a>
             </div>
-        <div class="bento-card p-10 flex flex-col" data-aos="fade-up">
-            <div class="bg-gray-100 rounded-2xl h-64 mb-6 overflow-hidden">
-                <img src="roblox-game.jpeg" class="w-full h-full object-cover">
+
+            <div class="bento-card p-10 flex flex-col" data-aos="fade-up">
+                <div class="bg-gray-100 rounded-2xl h-64 mb-6 overflow-hidden">
+                    <img src="roblox-game.jpeg" class="w-full h-full object-cover">
                 </div>
                 <h3 class="text-2xl font-bold mb-2">Pirate Ship Battles</h3>
-                <p class="text-gray-500 mb-6">60,000+ plays on Roblox.</p>
-                <a href="https://www.roblox.com/games/9808892180/Pirate-Ship-Battles" target="_blank" class="mt-auto bg-black text-white px-6 py-3 rounded-full font-semibold text-center hover:bg-gray-800 transition">Play</a>
+                <p class="text-gray-500 mb-6">Strategic naval combat with destructive environments. 60,000+ plays on Roblox.</p>
+                <a href="https://www.roblox.com/games/9808892180/Pirate-Ship-Battles" target="_blank" class="mt-auto bg-black text-white px-6 py-3 rounded-full font-semibold text-center hover:bg-gray-800 transition">Play Now</a>
             </div>
         </div>
     </section>
 
-    <footer class="py-12 text-center border-t border-gray-100 bg-gray-50">
-        <a href="mailto:beckettgraham@icloud.com" class="text-2xl font-bold hover:text-blue-600 transition">Contact Me.</a>
+    <footer class="py-20 text-center border-t border-gray-100 bg-white">
+        <a href="mailto:beckettgraham@icloud.com" class="text-4xl font-bold hover:text-blue-600 transition">Contact Me.</a>
     </footer>
 
+    <script src="snake.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>AOS.init({ duration: 800, once: false });</script>
 </body>
