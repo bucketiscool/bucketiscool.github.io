@@ -37,23 +37,26 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bento-card p-10 flex flex-col" data-aos="fade-up">
-                <div class="bg-black rounded-2xl mb-6 flex items-center justify-center overflow-hidden">
-                    <canvas id="snakeGame" width="400" height="400" class="w-full h-full"></canvas>
-                </div>
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-2xl font-bold">Snake AI</h3>
-                    <span class="text-xs font-bold px-3 py-1 bg-green-100 text-green-700 rounded-full uppercase">87,735 Generations</span>
-                </div>
-                <p class="text-gray-500 mb-6">A Q-Learning agent trained in Java. It perceives food, danger, and space via a 9-digit state string. After reaching 200 points, it engages a Hamiltonian Cycle.</p>
-                
-                <div class="grid grid-cols-2 gap-4 mt-auto">
-                    <div class="bg-gray-50 p-4 rounded-2xl text-center border border-gray-100">
-                        <span class="block text-xs text-gray-400 uppercase font-bold">High Score</span>
-                        <span class="text-xl font-bold text-blue-600">101</span>
-                    </div>
-                    <button onclick="resetGame()" class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition">Restart AI</button>
-                </div>
-            </div>
+    <div class="bg-black rounded-2xl mb-6 flex items-center justify-center overflow-hidden h-64 relative">
+        <canvas id="snakeGame" width="400" height="400" class="absolute inset-0 w-full h-full z-10"></canvas>
+        
+        <img src="snake-thumbnail.gif" class="absolute inset-0 w-full h-full object-cover opacity-50">
+    </div>
+
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-2xl font-bold">Snake AI</h3>
+        <span class="text-xs font-bold px-3 py-1 bg-green-100 text-green-700 rounded-full">87,735 GENS</span>
+    </div>
+    <p class="text-gray-500 mb-6">Neural network agent trained for over 80,000 generations using Q-Learning logic.</p>
+    
+    <div class="grid grid-cols-2 gap-4 mt-auto">
+        <div class="bg-gray-50 p-4 rounded-2xl text-center border border-gray-100">
+            <span class="block text-xs text-gray-400 uppercase font-bold">High Score</span>
+            <span class="text-xl font-bold text-blue-600">101</span>
+        </div>
+        <button onclick="resetGame()" class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition">Restart AI</button>
+    </div>
+</div>
 
             <div class="bento-card p-10 flex flex-col" data-aos="fade-up" data-aos-delay="100">
                 <div class="bg-gray-100 rounded-2xl h-64 mb-6 overflow-hidden">
