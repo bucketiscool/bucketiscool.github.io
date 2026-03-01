@@ -13,6 +13,13 @@
         .bento-card { background: white; border-radius: 32px; border: 1px solid #e5e7eb; transition: all 0.4s ease; overflow: hidden; }
         .bento-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
         canvas { border-radius: 16px; background-color: #000; }
+        /* Add this to your style block */
+        canvas {
+            max-width: 100%;
+            height: auto !important; /* Forces the canvas to shrink to fit the phone screen */
+            aspect-ratio: 1 / 1;
+            border-radius: 20px;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -30,53 +37,51 @@
     </nav>
 
     <section class="min-h-screen pt-32 pb-24 max-w-6xl mx-auto px-6">
-        <div class="mb-16 text-center" data-aos="fade-up">
-            <h1 class="text-5xl font-bold mb-4">Interactive AI & Games</h1>
-            <p class="text-gray-500 text-xl">Projects I've built in my free time. Play them right here.</p>
-        </div>
+    <div class="mb-16 text-center" data-aos="fade-up">
+        <h1 class="text-5xl font-bold mb-4">Interactive AI & Games</h1>
+        <p class="text-gray-500 text-xl">Projects I've built in my free time. Play them right here.</p>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bento-card p-10 flex flex-col" data-aos="fade-up">
-    <div class="bg-black rounded-2xl mb-6 flex items-center justify-center overflow-hidden h-64 relative">
-        <canvas id="snakeGame" width="400" height="400" class="absolute inset-0 w-full h-full z-10"></canvas>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         
-        <img src="snake-thumbnail.gif" class="absolute inset-0 w-full h-full object-cover opacity-50">
-    </div>
-
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="text-2xl font-bold">Snake AI</h3>
-        <span class="text-xs font-bold px-3 py-1 bg-green-100 text-green-700 rounded-full">87,735 GENS</span>
-    </div>
-    <p class="text-gray-500 mb-6">Neural network agent trained for over 80,000 generations using Q-Learning logic.</p>
-    
-    <div class="grid grid-cols-2 gap-4 mt-auto">
-        <div class="bg-gray-50 p-4 rounded-2xl text-center border border-gray-100">
-            <span class="block text-xs text-gray-400 uppercase font-bold">High Score</span>
-            <span class="text-xl font-bold text-blue-600">101</span>
-        </div>
-        <button onclick="resetGame()" class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition">Restart AI</button>
-    </div>
-</div>
-
-            <div class="bento-card p-10 flex flex-col" data-aos="fade-up" data-aos-delay="100">
-                <div class="bg-gray-100 rounded-2xl h-64 mb-6 overflow-hidden">
-                    <img src="vr-project.jpg" class="w-full h-full object-cover">
-                </div>
-                <h3 class="text-2xl font-bold mb-2">VR Sandbox 2</h3>
-                <p class="text-gray-500 mb-6">Built for Meta Quest. Features complex physics interactions and environmental puzzles. 150,000+ downloads.</p>
-                <a href="https://www.meta.com/experiences/vr-sandbox-2/6229056097107643/" target="_blank" class="mt-auto bg-black text-white px-6 py-3 rounded-full font-semibold text-center hover:bg-gray-800 transition">Download / Play</a>
+        <div class="md:col-span-2 bento-card p-6 md:p-10 flex flex-col md:flex-row gap-8" data-aos="fade-up">
+            <div class="w-full md:w-1/2 bg-black rounded-3xl overflow-hidden aspect-square">
+                <canvas id="snakeGame" width="400" height="400"></canvas>
             </div>
-
-            <div class="bento-card p-10 flex flex-col" data-aos="fade-up">
-                <div class="bg-gray-100 rounded-2xl h-64 mb-6 overflow-hidden">
-                    <img src="roblox-game.jpeg" class="w-full h-full object-cover">
+            
+            <div class="w-full md:w-1/2 flex flex-col justify-center">
+                <h3 class="text-3xl font-bold mb-4">Snake AI</h3>
+                <p class="text-gray-500 mb-6 text-lg">Trained for 87k generations. Watch it master the game in real-time.</p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-center">
+                        <p class="text-xs text-gray-400 font-bold uppercase">High Score</p>
+                        <p class="text-2xl font-bold">101</p>
+                    </div>
+                    <button onclick="resetGame()" class="bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition">Reset AI</button>
                 </div>
-                <h3 class="text-2xl font-bold mb-2">Pirate Ship Battles</h3>
-                <p class="text-gray-500 mb-6">Strategic naval combat with destructive environments. 60,000+ plays on Roblox.</p>
-                <a href="https://www.roblox.com/games/9808892180/Pirate-Ship-Battles" target="_blank" class="mt-auto bg-black text-white px-6 py-3 rounded-full font-semibold text-center hover:bg-gray-800 transition">Play Now</a>
             </div>
         </div>
-    </section>
+
+        <div class="bento-card p-10 flex flex-col" data-aos="fade-up">
+            <div class="bg-gray-100 rounded-2xl h-64 mb-6 overflow-hidden">
+                <img src="vr-project.jpg" class="w-full h-full object-cover">
+            </div>
+            <h3 class="text-2xl font-bold mb-2">VR Sandbox 2</h3>
+            <p class="text-gray-500 mb-6">Built for Meta Quest. 150,000+ downloads.</p>
+            <a href="https://www.meta.com/experiences/vr-sandbox-2/6229056097107643/" target="_blank" class="mt-auto bg-black text-white px-6 py-3 rounded-full font-semibold text-center hover:bg-gray-800 transition">Download / Play</a>
+        </div>
+
+        <div class="bento-card p-10 flex flex-col" data-aos="fade-up">
+            <div class="bg-gray-100 rounded-2xl h-64 mb-6 overflow-hidden">
+                <img src="roblox-game.jpeg" class="w-full h-full object-cover">
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Pirate Ship Battles</h3>
+            <p class="text-gray-500 mb-6">60,000+ plays on Roblox.</p>
+            <a href="https://www.roblox.com/games/9808892180/Pirate-Ship-Battles" target="_blank" class="mt-auto bg-black text-white px-6 py-3 rounded-full font-semibold text-center hover:bg-gray-800 transition">Play Now</a>
+        </div>
+    </div>
+</section>
 
     <script src="snake.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
