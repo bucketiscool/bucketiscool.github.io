@@ -3,75 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beckett Graham | Home</title>
+    <title>Beckett Graham</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #fbfbfd; color: #1d1d1f; scroll-behavior: smooth; }
-        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.1); }
-        .bento-card { background: white; border-radius: 32px; border: 1px solid #e5e7eb; transition: all 0.4s ease; overflow: hidden; display: block; }
-        .bento-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fbfbfd; color: #1d1d1f; }
+        .glass-nav { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .bento-card { border-radius: 28px; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .bento-card:hover { transform: scale(1.02); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="antialiased">
+<body class="antialiased text-[#1d1d1f]">
 
     <nav class="glass-nav fixed w-full z-50 top-0">
         <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="font-bold text-xl tracking-tight hover:text-blue-600 transition">Beckett Graham</a>
-            <div class="space-x-8 text-sm font-medium hidden md:flex">
-                <a href="/" class="hover:text-blue-600 transition">Home</a>
-                <a href="/portfolio/" class="hover:text-blue-600 transition">Portfolio</a>
-                <a href="/gallery/" class="hover:text-blue-600 transition">Gallery</a>
-                <a href="/games/" class="hover:text-blue-600 transition">Games</a>
+            <a href="/" class="font-semibold text-lg tracking-tight">Beckett Graham</a>
+            <div class="flex space-x-8 text-[13px] font-medium opacity-80">
+                <a href="/portfolio/" class="hover:opacity-100 transition">Portfolio</a>
+                <a href="/gallery/" class="hover:opacity-100 transition">Gallery</a>
+                <a href="/games/" class="hover:opacity-100 transition">Games</a>
             </div>
         </div>
     </nav>
 
-    <section class="max-w-6xl mx-auto px-6 py-20">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-        
-        <a href="/portfolio/" class="md:col-span-8 bento-card p-10 flex flex-col justify-between min-h-[400px] bg-white group border-none shadow-sm hover:shadow-xl transition-all duration-700">
-            <div>
-                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold mb-4">Mechatronics</p>
-                <h2 class="text-4xl font-semibold tracking-tight text-zinc-900">Engineering Portfolio</h2>
-                <p class="text-gray-500 mt-4 max-w-sm leading-relaxed">A collection of robotics, automation, and structural designs from my work at the University of Guelph.</p>
-            </div>
-            <div class="text-sm font-medium text-zinc-400 group-hover:text-zinc-900 transition-colors">
-                Explore Projects —
-            </div>
-        </a>
+    <section class="pt-48 pb-24 px-6 text-center" data-aos="fade-up">
+        <h1 class="text-6xl md:text-8xl font-bold tracking-tight mb-6">Built to last.</h1>
+        <p class="text-xl md:text-2xl text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
+            Mechatronics engineering student at the University of Guelph, focusing on robotics, AI simulations, and mechanical design.
+        </p>
+    </section>
 
-        <a href="/games/" class="md:col-span-4 bento-card p-10 flex flex-col justify-between min-h-[400px] bg-zinc-900 group border-none shadow-sm hover:shadow-2xl transition-all duration-700">
-            <div>
-                <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-bold mb-4">Software</p>
-                <h2 class="text-3xl font-semibold tracking-tight text-white">Interactive</h2>
-                <p class="text-zinc-400 mt-4 leading-relaxed text-sm">Real-time AI simulations and physics-based environments.</p>
-            </div>
-            <div class="text-sm font-medium text-zinc-500 group-hover:text-white transition-colors">
-                Enter Arcade —
-            </div>
-        </a>
+    <main class="max-w-7xl mx-auto px-6 pb-32">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            <a href="/portfolio/" class="md:col-span-8 bento-card bg-white p-12 flex flex-col justify-between h-[500px] shadow-sm group overflow-hidden relative" data-aos="fade-up">
+                <div class="relative z-10">
+                    <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">Engineering</span>
+                    <h2 class="text-4xl font-semibold mt-4">Selected Works</h2>
+                    <p class="text-gray-500 mt-4 max-w-xs">Structural analysis, robotics, and mechatronic assemblies.</p>
+                </div>
+                <div class="absolute bottom-0 right-0 w-2/3 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <img src="your-robot-render.png" class="translate-y-10 translate-x-10 scale-110">
+                </div>
+                <div class="relative z-10 text-sm font-medium">View Portfolio →</div>
+            </a>
 
-        <a href="/gallery/" class="md:col-span-12 bento-card p-10 flex flex-col md:flex-row items-center justify-between bg-white border-none shadow-sm hover:shadow-xl transition-all duration-700">
-            <div class="max-w-md">
-                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold mb-4">Visual Documentation</p>
-                <h2 class="text-3xl font-semibold tracking-tight text-zinc-900">Gallery</h2>
-                <p class="text-gray-500 mt-2">Build logs and high-fidelity photography of mechanical assemblies.</p>
-            </div>
-            <div class="mt-6 md:mt-0 px-8 py-3 bg-zinc-100 rounded-full text-sm font-semibold group-hover:bg-zinc-900 group-hover:text-white transition-all">
-                View Gallery
-            </div>
-        </a>
+            <a href="/games/" class="md:col-span-4 bento-card bg-[#1d1d1f] p-12 flex flex-col justify-between h-[500px] text-white shadow-xl group" data-aos="fade-up" data-aos-delay="100">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Software</span>
+                    <h2 class="text-4xl font-semibold mt-4 tracking-tight">Arcade</h2>
+                    <p class="text-gray-400 mt-4">Live Q-Learning simulations and VR environments.</p>
+                </div>
+                <div class="text-sm font-medium opacity-60 group-hover:opacity-100 transition-opacity">Launch Games →</div>
+            </a>
 
-    </div>
-</section>
+            <a href="/gallery/" class="md:col-span-12 bento-card bg-white p-12 flex flex-col md:flex-row items-center justify-between min-h-[300px] shadow-sm group" data-aos="fade-up">
+                <div class="max-w-md">
+                    <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">Documentation</span>
+                    <h2 class="text-4xl font-semibold mt-4 tracking-tight">The Gallery</h2>
+                    <p class="text-gray-500 mt-4">High-fidelity build logs and project photography.</p>
+                </div>
+                <div class="mt-8 md:mt-0 h-48 w-full md:w-1/2 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 font-medium italic overflow-hidden">
+                    <img src="gallery-preview.jpg" class="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
+                </div>
+            </a>
 
-    <footer class="py-20 text-center bg-white border-t border-gray-50">
-        <a href="mailto:beckettgraham@icloud.com" class="text-2xl font-bold hover:text-blue-600 transition">Contact Me.</a>
+        </div>
+    </main>
+
+    <footer class="py-24 border-t border-gray-100 text-center">
+        <p class="text-gray-400 text-sm mb-4">Interested in collaborating?</p>
+        <a href="mailto:beckettgraham@icloud.com" class="text-2xl font-semibold hover:text-blue-600 transition tracking-tight">beckettgraham@icloud.com</a>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init({ duration: 800, once: false });</script>
+    <script>AOS.init({ duration: 1000, easing: 'ease-out-quart', once: true });</script>
 </body>
 </html>
