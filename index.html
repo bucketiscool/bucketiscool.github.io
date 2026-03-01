@@ -8,120 +8,144 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #fbfbfd; color: #1d1d1f; }
+        body { font-family: 'Inter', sans-serif; background-color: #fbfbfd; color: #1d1d1f; scroll-behavior: smooth; }
         .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.1); }
-        .apple-card { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 24px; overflow: hidden; background: #fff; border: 1px solid #e5e7eb; }
-        .apple-card:hover { transform: scale(1.02); }
-        .hero-gradient { background: linear-gradient(180deg, #fff 0%, #f5f5f7 100%); }
+        .bento-card { background: white; border-radius: 32px; border: 1px solid #e5e7eb; transition: all 0.4s ease; overflow: hidden; }
+        .bento-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        .stat-circle { border: 2px solid #0066cc; border-radius: 50%; width: 80px; height: 80px; display: flex; items-center; justify-center; font-weight: bold; color: #0066cc; }
     </style>
 </head>
 <body class="antialiased">
 
     <nav class="glass-nav fixed w-full z-50 top-0">
         <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <span class="font-semibold text-xl tracking-tight">Beckett Graham</span>
-            <div class="space-x-8 text-sm font-medium">
-                <a href="#projects" class="hover:text-blue-600 transition">Projects</a>
-                <a href="#about" class="hover:text-blue-600 transition">Experience</a>
-                <a href="mailto:beckettgraham@icloud.com" class="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition">Contact</a>
+            <span class="font-bold text-xl tracking-tight">Beckett Graham</span>
+            <div class="space-x-8 text-sm font-medium hidden md:flex">
+                <a href="#academics" class="hover:text-blue-600 transition">Admissions</a>
+                <a href="#engineering" class="hover:text-blue-600 transition">Engineering</a>
+                <a href="projects.html" class="hover:text-blue-600 transition">Gallery</a>
             </div>
         </div>
     </nav>
 
-    <section class="hero-gradient min-h-screen flex items-center pt-20">
-        <div class="max-w-5xl mx-auto px-6 text-center">
-            <div data-aos="fade-up" data-aos-duration="1000">
-                <span class="text-blue-600 font-semibold tracking-wide uppercase text-sm mb-4 block">Class of 2026 • Aspiring Mechatronics Engineer</span>
-                <h1 class="text-5xl md:text-8xl font-bold tracking-tight mb-6">Beckett Graham.</h1>
-                <p class="text-xl md:text-2xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-                    Building the future through code and hardware. Accepted to Western, Guelph, and Brock. 
-                    <span class="text-black font-semibold">96% Average.</span>
-                </p>
-                <div class="flex flex-wrap justify-center gap-4">
-                    <div class="bg-gray-100 px-6 py-3 rounded-2xl text-sm font-medium">99% Adv. Functions</div>
-                    <div class="bg-gray-100 px-6 py-3 rounded-2xl text-sm font-medium">100% Comp. Engineering</div>
-                    <div class="bg-gray-100 px-6 py-3 rounded-2xl text-sm font-medium">97% Data Management</div>
+    <section class="min-h-screen flex items-center pt-20 bg-white">
+        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div data-aos="fade-right" data-aos-duration="1000">
+                <h1 class="text-6xl md:text-8xl font-bold tracking-tighter mb-6 leading-tight">Mechatronics <br><span class="text-blue-600">Driven.</span></h1>
+                <p class="text-2xl text-gray-500 mb-8 leading-relaxed">I'm Beckett Graham. A 17-year-old developer and builder with a 96% average and a passion for robotics.</p>
+                <div class="flex gap-4">
+                    <a href="#engineering" class="bg-black text-white px-8 py-4 rounded-full font-semibold hover:bg-gray-800 transition">View My Builds</a>
+                    <a href="mailto:beckettgraham@icloud.com" class="border border-gray-300 px-8 py-4 rounded-full font-semibold hover:bg-gray-50 transition">Contact</a>
+                </div>
+            </div>
+            <div data-aos="zoom-in" class="relative">
+                <img src="hero-me.jpg" class="rounded-[40px] shadow-2xl w-full h-[500px] object-cover" alt="Beckett Graham">
+                <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-3xl shadow-xl border border-gray-100">
+                    <span class="text-4xl font-bold text-blue-600">96%</span>
+                    <p class="text-xs uppercase tracking-widest font-bold text-gray-400">Academic Average</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="projects" class="py-24 px-6 max-w-6xl mx-auto">
-        <h2 class="text-3xl font-bold mb-12 text-center" data-aos="fade-up">Selected Works</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <div class="md:col-span-2 apple-card relative h-[400px]" data-aos="fade-up">
-                <img src="vr-game.jpg" alt="VR Game" class="absolute inset-0 w-full h-full object-cover opacity-80 hover:opacity-100 transition">
-                <div class="absolute bottom-0 p-8 bg-gradient-to-t from-black to-transparent w-full text-white">
-                    <h3 class="text-2xl font-bold">VR Project</h3>
-                    <p class="opacity-80">150,000+ Downloads. Developed in Unity/C++.</p>
+    <section id="academics" class="py-32 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold mb-16" data-aos="fade-up">2026 Admissions & Offers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bento-card p-10 flex flex-col items-center" data-aos="fade-up" data-aos-delay="100">
+                    <img src="western-logo.png" class="h-20 mb-6 object-contain" alt="Western">
+                    <h3 class="font-bold text-xl">Western University</h3>
+                    <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm underline">Offer Received</span>
+                </div>
+                <div class="bento-card p-10 flex flex-col items-center border-2 border-blue-500" data-aos="fade-up" data-aos-delay="200">
+                    <img src="guelph-logo.png" class="h-20 mb-6 object-contain" alt="Guelph">
+                    <h3 class="font-bold text-xl">University of Guelph</h3>
+                    <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm underline">Offer Received</span>
+                </div>
+                <div class="bento-card p-10 flex flex-col items-center" data-aos="fade-up" data-aos-delay="300">
+                    <img src="brock-logo.png" class="h-20 mb-6 object-contain" alt="Brock">
+                    <h3 class="font-bold text-xl">Brock University</h3>
+                    <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm underline">Offer Received</span>
                 </div>
             </div>
-
-            <div class="apple-card p-8 flex flex-col justify-center bg-zinc-900 text-white" data-aos="fade-up" data-aos-delay="100">
-                <h3 class="text-xl font-bold mb-4 italic italic">Reinforcement Learning</h3>
-                <p class="text-gray-400">Trained an AI agent to master the classic game of Snake using neural networks and spatial awareness rewards.</p>
-            </div>
-
-            <div class="apple-card p-8 bg-blue-50" data-aos="fade-up">
-                <h3 class="text-xl font-bold mb-2">NFC Mini Record Player</h3>
-                <p class="text-gray-600 mb-6 text-sm">3D printed records with RFID readers & MicroSD audio playback.</p>
-                <img src="record-player.jpg" class="rounded-xl shadow-lg mt-auto" alt="NFC Player">
-            </div>
-
-            <div class="md:col-span-2 apple-card bg-gray-50 flex flex-col md:flex-row items-center" data-aos="fade-up" data-aos-delay="100">
-                <div class="p-8 md:w-1/2">
-                    <h3 class="text-2xl font-bold mb-2">WiFi Model Train</h3>
-                    <p class="text-gray-600">Fully 3D printed and controlled via smartphone over local WiFi network.</p>
-                </div>
-                <div class="md:w-1/2 h-full bg-gray-200">
-                    <img src="train.jpg" class="w-full h-full object-cover" alt="Train Project">
-                </div>
-            </div>
-
+            <p class="mt-12 text-gray-400 italic">Currently awaiting decisions from McMaster and Queen's.</p>
         </div>
     </section>
 
-    <section class="py-24 bg-white">
-        <div class="max-w-4xl mx-auto px-6 text-center" data-aos="zoom-in">
-            <h2 class="text-3xl font-bold mb-6 italic">"ADHD is my superpower."</h2>
-            <p class="text-xl text-gray-500 leading-relaxed">
-                I've learned to use my neurodiversity to fuel high-intensity focus on complex engineering problems. 
-                Whether it's leading a football team as a backup QB or debugging C++, I bring 100% reliability and a different perspective to the table.
-            </p>
+    <section id="engineering" class="py-32 max-w-6xl mx-auto px-6">
+        <div class="flex justify-between items-end mb-16">
+            <div>
+                <h2 class="text-5xl font-bold">Engineering</h2>
+                <p class="text-gray-500 mt-2">Hardware, Software, and Robotics.</p>
+            </div>
+            <a href="projects.html" class="text-blue-600 font-bold hover:underline">See full gallery →</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div class="md:col-span-8 bento-card relative h-[450px]" data-aos="fade-right">
+                <img src="vr-project.jpg" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-black/40 p-12 flex flex-col justify-end text-white">
+                    <h3 class="text-3xl font-bold">150,000+ Downloads</h3>
+                    <p class="text-lg opacity-90">Custom VR Game developed in C++ and Unity.</p>
+                </div>
+            </div>
+            <div class="md:col-span-4 bento-card bg-zinc-900 text-white p-10 flex flex-col justify-center" data-aos="fade-left">
+                <h3 class="text-2xl font-bold mb-4">Snake AI</h3>
+                <p class="text-gray-400">Reinforcement learning project where I taught an agent to master Snake using rewards-based neural training.</p>
+            </div>
+            <div class="md:col-span-6 bento-card p-10 flex gap-8 items-center" data-aos="fade-up">
+                <div class="w-1/2"><img src="nfc-player.jpg" class="rounded-2xl"></div>
+                <div class="w-1/2">
+                    <h3 class="font-bold text-xl">NFC Record Player</h3>
+                    <p class="text-gray-500 text-sm mt-2">3D printed hardware + RFI Reader music system.</p>
+                </div>
+            </div>
+            <div class="md:col-span-6 bento-card p-10 flex gap-8 items-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-1/2"><img src="wifi-train.jpg" class="rounded-2xl"></div>
+                <div class="w-1/2">
+                    <h3 class="font-bold text-xl">IoT Model Train</h3>
+                    <p class="text-gray-500 text-sm mt-2">WiFi-controlled locomotive with lights and speed modulation.</p>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="py-24 max-w-6xl mx-auto px-6 border-t border-gray-100">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <section class="py-32 bg-white border-t border-gray-100 overflow-hidden">
+        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
             <div data-aos="fade-right">
-                <h2 class="text-4xl font-bold mb-6">Westdale Warriors <br><span class="text-blue-600">City Champs</span></h2>
-                <p class="text-gray-600 text-lg mb-6">
-                    Quarterback (Gr 10-12). Part of the first city championship win in a decade. 
-                    Leadership isn't just about the field—it's about the Pumpkin Walks at the local elementary school and tutoring peers during lunch.
+                <span class="text-blue-600 font-bold tracking-widest uppercase text-sm">Athletics</span>
+                <h2 class="text-5xl font-bold mt-4 mb-6">Westdale Warriors <br>City Champions.</h2>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                    As a backup QB from Grade 10-12, I focus on readiness and reliability. We broke a decade-long drought this year by securing the City Championship title. 
                 </p>
             </div>
-            <div class="grid grid-cols-2 gap-4" data-aos="fade-left">
-                <div class="h-48 bg-gray-200 rounded-3xl overflow-hidden"><img src="football1.jpg" class="object-cover w-full h-full"></div>
-                <div class="h-48 bg-gray-200 rounded-3xl overflow-hidden mt-8"><img src="pumpkin.jpg" class="object-cover w-full h-full"></div>
+            <div class="relative" data-aos="fade-left">
+                <img src="football-champ.jpg" class="rounded-[40px] shadow-2xl">
             </div>
         </div>
     </section>
 
-    <footer class="py-20 bg-gray-50 text-center border-t border-gray-100">
-        <p class="text-gray-400 text-sm mb-4 italic">Born Oct 26, 2008 • Hamilton, ON</p>
-        <p class="text-2xl font-bold mb-8">Let's build something.</p>
-        <a href="mailto:beckettgraham@icloud.com" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1 hover:text-blue-800 hover:border-blue-800 transition">beckettgraham@icloud.com</a>
+    <section class="py-32 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold mb-12" data-aos="fade-up">In the Community</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                <div class="bento-card p-8 bg-white" data-aos="zoom-in">
+                    <h3 class="font-bold text-xl mb-2">The Pumpkin Walk</h3>
+                    <p class="text-gray-500">Volunteering as a team to create a magical Halloween experience for local elementary students.</p>
+                </div>
+                <div class="bento-card p-8 bg-white" data-aos="zoom-in" data-aos-delay="100">
+                    <h3 class="font-bold text-xl mb-2">Play Project Parkour</h3>
+                    <p class="text-gray-500">Summer camp volunteer helping kids build confidence and physical literacy through movement.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 text-center">
+        <a href="mailto:beckettgraham@icloud.com" class="text-4xl font-bold hover:text-blue-600 transition">Let's connect.</a>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({
-            duration: 800,
-            once: false,
-            mirror: true
-        });
-    </script>
+    <script>AOS.init({ duration: 800, once: false });</script>
 </body>
 </html>
