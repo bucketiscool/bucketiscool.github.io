@@ -8,8 +8,8 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #fbfbfd; color: #1d1d1f; scroll-behavior: smooth; }
-        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.1); }
+        body { font-family: 'Inter', sans-serif; background-color: #fbfbfd; color: #1d1d1f; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.1); }
         .bento-card { background: white; border-radius: 32px; border: 1px solid #e5e7eb; transition: all 0.4s ease; overflow: hidden; }
         .bento-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
     </style>
@@ -18,35 +18,69 @@
 
     <nav class="glass-nav fixed w-full z-50 top-0">
         <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="font-bold text-xl tracking-tight hover:text-blue-600 transition">Beckett Graham</a>
-            <div class="space-x-8 text-sm font-medium hidden md:flex">
-                <a href="/" class="hover:text-blue-600 transition">Home</a>
-                <a href="/portfolio/" class="hover:text-blue-600 transition">Portfolio</a>
-                <a href="/gallery/" class="hover:text-blue-600 transition">Gallery</a>
-                <a href="/games/" class="hover:text-blue-600 transition">Games</a>
+            <a href="/" class="font-bold text-xl tracking-tight">Beckett Graham</a>
+            <div class="space-x-8 text-sm font-medium">
+                <a href="/gallery/" class="text-blue-600">Gallery</a>
+                <a href="/games/" class="hover:text-blue-600">Games</a>
             </div>
         </div>
     </nav>
 
     <section class="min-h-screen pt-32 pb-24 max-w-6xl mx-auto px-6">
         <div class="mb-16 text-center" data-aos="fade-up">
-            <h1 class="text-5xl font-bold mb-4">Photo Gallery</h1>
-            <p class="text-gray-500 text-xl">Capturing moments and mechanics.</p>
+            <h1 class="text-5xl font-bold mb-4">Auto-Sync Gallery</h1>
+            <p class="text-gray-500 text-xl">Just drop files into GitHub; I'll handle the rest.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bento-card relative h-80" data-aos="fade-up">
-                <img src="hero-me.jpg" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition duration-500" alt="Gallery Photo">
-            </div>
-            
-            <div class="bento-card relative h-80" data-aos="fade-up" data-aos-delay="100">
-                <img src="football-champ.jpg" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition duration-500" alt="Gallery Photo">
-            </div>
-
+        <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             </div>
     </section>
 
+    <script>
+        // --- CONFIGURATION ---
+        const repoOwner = "bucketiscool"; 
+        const repoName = "bucketiscool.github.io";
+        const folderPath = "gallery/photos"; // The path to your images folder
+
+        async function loadGallery() {
+            const grid = document.getElementById('gallery-grid');
+            
+            try {
+                // Fetch the list of files from GitHub's API
+                const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`);
+                const files = await response.json();
+
+                // Filter to only show image files
+                const imageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+                const images = files.filter(file => {
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    return imageExtensions.includes(ext);
+                });
+
+                images.forEach((file, index) => {
+                    const card = document.createElement('div');
+                    card.className = "bento-card relative h-80";
+                    card.setAttribute('data-aos', 'fade-up');
+                    card.setAttribute('data-aos-delay', (index % 3) * 100);
+
+                    // Use 'download_url' for the direct image path
+                    card.innerHTML = `
+                        <img src="${file.download_url}" 
+                             class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition duration-500" 
+                             alt="Gallery Image">
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error loading images:", error);
+                grid.innerHTML = "<p>Error loading photos. Make sure your repo is public!</p>";
+            }
+        }
+
+        loadGallery();
+    </script>
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init({ duration: 800, once: false });</script>
+    <script>AOS.init({ duration: 800 });</script>
 </body>
 </html>
