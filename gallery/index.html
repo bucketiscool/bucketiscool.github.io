@@ -68,24 +68,29 @@
                 });
 
                 images.forEach((file, index) => {
-                    const card = document.createElement('div');
-                    // 'animate-pulse-slow' provides the loading feel
-                    card.className = "bento-card relative h-80 animate-pulse-slow overflow-hidden bg-gray-100";
+    const card = document.createElement('div');
+    card.className = "bento-card relative h-80 animate-pulse-slow overflow-hidden bg-gray-100";
 
-                    card.innerHTML = `
-                        <img src="${file.download_url}" 
-                             class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-opacity duration-700 opacity-0" 
-                             alt="Gallery Image"
-                             onload="handleImageLoad(this)">
-                    `;
-                    grid.appendChild(card);
-                });
+    // CDN Logic: This tells Statically to resize and compress the image for the web
+    // It converts heavy ARW/JPGs to lightweight WebP files automatically
+    const fastUrl = `https://cdn.statically.io/gh/${repoOwner}/${repoName}/main/${file.path}?w=800&f=webp`;
 
-                // Small helper function to stop the pulse and fade the image in
-                function handleImageLoad(img) {
-                    img.classList.remove('opacity-0');
-                    img.parentElement.classList.remove('animate-pulse-slow');
-                }
+    card.innerHTML = `
+        <img src="${fastUrl}" 
+             class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-opacity duration-700 opacity-0" 
+             alt="Gallery Image"
+             loading="lazy"
+             onload="handleImageLoad(this)">
+    `;
+    grid.appendChild(card);
+});
+
+function handleImageLoad(img) {
+    img.classList.remove('opacity-0');
+    img.parentElement.classList.remove('animate-pulse-slow');
+    // Remove background color once loaded to save memory
+    img.parentElement.style.backgroundColor = "transparent";
+}
             } catch (error) {
                 console.error("Error loading images:", error);
                 grid.innerHTML = "<p>Error loading photos. Make sure your repo is public!</p>";
