@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Auto | Beckett Graham</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fbfbfd; color: #1d1d1f; }
+        .glass-nav { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .bento-container { border-radius: 28px; overflow: hidden; background: white; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="glass-nav fixed w-full z-50 top-0">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="/" class="font-semibold text-lg tracking-tight">Beckett Graham</a>
+        <div class="flex space-x-4 md:space-x-8 text-[13px] font-medium opacity-80">
+          <a href="/portfolio/" class="hover:opacity-100 transition">Portfolio</a>
+          <a href="/gallery/" class="hover:opacity-100 transition">Gallery</a>
+          <a href="/games/" class="hover:opacity-100 transition">Games</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="pt-32 pb-24 px-6 max-w-6xl mx-auto">
+        <header class="mb-12" data-aos="fade-up">
+            <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-600">Automation Tool</span>
+            <h1 class="text-5xl font-bold tracking-tight mt-2">YouTube Automator</h1>
+            <p class="text-gray-500 mt-4 text-lg">Upload, rank, and process Shorts directly to your channel.</p>
+        </header>
+
+        <div class="bento-container" data-aos="fade-up" data-aos-delay="100">
+            <iframe 
+                src="https://your-huggingface-space-url.hf.space" 
+                frameborder="0" 
+                width="100%" 
+                height="900px" 
+                allow="accelerometer; ambient-light-sensor; input-device-capabilities; microphone; camera; clipboard-read; clipboard-write; display-capture; encrypted-media; fullscreen; gamepad; geolocation; gyroscope; hid; identity-credentials-get; idle-detection; magnetometer; midi; payment; picture-in-picture; publickey-credentials-get; screen-wake-lock; speaker-selection; usb; web-share; xr-spatial-tracking"
+            ></iframe>
+        </div>
+    </main>
+
+    <footer class="py-12 border-t border-gray-100 text-center text-sm text-gray-400">
+        &copy; 2026 Beckett Graham • Built for Mechatronics & AI
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({ duration: 1000, easing: 'ease-out-quart', once: true });</script>
+</body>
+</html>
