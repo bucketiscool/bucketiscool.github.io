@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume | Beckett Graham</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #fbfbfd; color: #1d1d1f; overflow-x: hidden; }
+        .glass-nav { background: rgba(251, 251, 253, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        
+        /* Premium Bento Cards matched to home page */
+        .bento-card { border-radius: 32px; border: 1px solid rgba(0,0,0,0.015); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .bento-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+
+        /* Skill Tag Hover Glow */
+        .skill-tag { position: relative; transition: all 0.3s; }
+        .skill-tag::before { content: ''; position: absolute; inset: -4px; background: rgba(59,130,246,0.1); border-radius: 99px; filter: blur(4px); opacity: 0; transition: opacity 0.3s; }
+        .skill-tag:hover::before { opacity: 1; }
+
+        /* PRINT STYLE: Ensures beautifully structured PDF on cmd+p */
+        @media print {
+            body { background: white !important; font-size: 11pt !important; color: black !important; }
+            .no-print, nav, footer, .print-btn { display: none !important; }
+            main { padding: 0 !important; width: 100% !important; margin: 0 auto !important; }
+            .max-w-7xl { width: 100% !important; }
+            .bento-card { border: none !important; background: transparent !important; box-shadow: none !important; margin-bottom: 2rem !important; border-radius: 0 !important; page-break-inside: avoid; }
+            .grid { display: block !important; }
+            .md\:col-span-4, .md\:col-span-8, .md\:grid-cols-2 { grid-column: span 1 / span 1 !important; display: block !important; }
+            h1, h2, h3 { color: black !important; text-shadow: none !important; }
+            .print-cols { display: grid !important; grid-template-columns: 2fr 1fr !important; gap: 2rem !important; }
+            .border-b { border-color: black !important; }
+            .text-gray-500, .text-gray-400 { color: black !important; }
+            .mb-24 { margin-bottom: 2rem !important; }
+            .mb-16 { margin-bottom: 1rem !important; }
+            .print-spacing { margin-bottom: 1.5rem !important; }
+            .bento-card { margin-top: 0 !important; }
+            h1.text-9xl { font-size: 3rem !important; margin-bottom: 1rem !important; }
+            .print-small { font-size: 10pt !important; }
+            .print-border { border-bottom: 2px solid black !important; margin-bottom: 1rem !important; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="fixed top-0 left-0 w-full h-full glow-bg z-[-1]"></div>
+
+    <nav class="glass-nav fixed w-full z-50 top-0">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="index.html" class="font-semibold text-lg tracking-tight hover:opacity-70 transition-opacity">Beckett Graham</a>
+        <a href="mailto:beckettgraham@icloud.com" class="text-[14px] font-medium text-gray-500 hover:text-black transition-colors">beckettgraham@icloud.com</a>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 pt-48 pb-12 mb-24 print:pt-0">
+        
+        <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-16 print-border print:pb-0" data-aos="fade-up">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Engineering future student</span>
+                <h1 class="text-9xl font-bold tracking-tighter mb-4 print:mb-2 print:text-5xl">Resume</h1>
+            </div>
+            
+            <button onclick="window.print()" class="print-btn inline-flex items-center justify-center px-10 py-5 text-lg font-semibold text-white bg-black rounded-full hover:scale-105 hover:bg-gray-800 hover:shadow-2xl transition-all duration-300 gap-3 group">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="group-hover:-translate-y-1 transition-transform">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.45 12.1l-.35.35c-.2.2-.51.2-.71 0l-3.35-3.35c-.2-.2-.2-.51 0-.71.2-.2.51-.2.71 0l2.6 2.6V7.5c0-.28.22-.5.5-.5s.5.22.5.5v5.3l1.85-1.85c.2-.2.51-.2.71 0 .2.2.2.51 0 .71l-.35.35c-.2.2-.51.2-.71 0zM12 18.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5 10 0 10 .5-.22.5-.5.5" fill="white"/>
+                </svg>
+                Print Resume
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 print:grid-cols-1 print:gap-10">
+            
+            <a href="#" class="md:col-span-4 bento-card bg-white p-10 flex flex-col justify-between shadow-sm overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Education</span>
+                    <h2 class="text-2xl md:text-3xl font-semibold mt-4 tracking-tight print:text-xl">High School Diploma</h2>
+                    <h3 class="text-lg font-medium text-blue-600 mt-2 print:text-base print:text-black">Westdale Secondary, Hamilton, ON</h3>
+                    
+                    <div class="mt-8 space-y-4 print:space-y-2">
+                        <p class="text-gray-500 font-medium print:text-sm print:text-black">
+                            • Honour Roll, 2022-2026
+                        </p>
+                        <p class="text-gray-500 font-medium print:text-sm print:text-black">
+                            • Final Grade: <span class="text-green-600 font-semibold print:text-black">96%</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-8 text-sm font-semibold print:text-xs print:text-black">
+                    Graduated 2026 &rarr;
+                </div>
+            </a>
+
+            <div class="md:col-span-8 bento-card bg-white p-12 shadow-sm" data-aos="fade-up" data-aos-delay="200">
+                <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Profile</span>
+                <h2 class="text-4xl md:text-5xl font-semibold mt-4 tracking-tight mb-8 print:text-2xl print:mb-4">Professional Summary</h2>
+                <div class="prose prose-lg text-gray-500 font-light leading-relaxed max-w-none print:prose-sm print:text-black">
+                    <p>Dedicated professional with a strong background in personalized shopping experiences. Known for problem-solving skills, fostering customer loyalty and satisfaction. Technical developer and hands-on builder with a passion for <span class="text-black font-medium">robotics and coding</span>, bringing analytical thinking and creative solutions to every project.</p>
+                </div>
+            </div>
+
+            <div class="md:col-span-12 bento-card bg-white p-12 shadow-sm" data-aos="fade-up" data-aos-delay="300">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12 print:mb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Competencies</span>
+                        <h2 class="text-4xl md:text-5xl font-semibold mt-4 tracking-tight print:text-2xl">Core Skills</h2>
+                    </div>
+                    <div class="text-lg font-medium text-gray-900 border border-gray-100 bg-gray-50 px-6 py-2 rounded-full print:border-none print:bg-none print:text-sm print:p-0">
+                        Focus: <span class="text-blue-600 font-semibold">C++, Python, Java</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 print:grid-cols-2 print:gap-4">
+                    <div class="bento-card bg-[#fbfbfd] p-8 space-y-3 print:border print:p-4 print:border-gray-200">
+                        <h4 class="font-semibold text-lg print:text-sm">Soft Skills</h4>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Customer service</div>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Planning and organization</div>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Multitasking</div>
+                    </div>
+                    <div class="bento-card bg-[#fbfbfd] p-8 space-y-3 print:border print:p-4 print:border-gray-200">
+                        <h4 class="font-semibold text-lg print:text-sm">Strategic</h4>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Media strategy</div>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Problem-solving</div>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Delivery procedures</div>
+                    </div>
+                    <div class="bento-card bg-[#fbfbfd] p-8 space-y-3 print:border print:p-4 print:border-gray-200">
+                        <h4 class="font-semibold text-lg print:text-sm">Design</h4>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• 3D Printing</div>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Computer Design</div>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Attention to detail</div>
+                    </div>
+                    <div class="bento-card bg-[#fbfbfd] p-8 space-y-3 print:border print:p-4 print:border-gray-200">
+                        <h4 class="font-semibold text-lg print:text-sm">Programming</h4>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• C++ Programming</div>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Python Development</div>
+                        <div class="text-gray-500 font-light print:text-xs print:text-black">• Java Knowledge</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:col-span-8 bento-card bg-white p-12 shadow-sm" data-aos="fade-up" data-aos-delay="400">
+                <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Employment</span>
+                <h2 class="text-4xl md:text-5xl font-semibold mt-4 tracking-tight mb-8 print:text-2xl print:mb-4">Work Experience</h2>
+                
+                <div class="prose prose-lg text-gray-500 font-light max-w-none print:prose-sm print:text-black print:leading-tight print-spacing">
+                    <div class="flex flex-col md:flex-row justify-between items-start gap-2 mb-6 border-b border-gray-100 pb-6 print:pb-3 print-small">
+                        <div>
+                            <h3 class="font-bold text-xl text-black print:text-base">Personal Shopper</h3>
+                            <p class="font-medium text-blue-600 print:text-black">Fortinos Supermarket, Hamilton, ON</p>
+                        </div>
+                        <div class="text-sm font-semibold text-gray-400 text-right print:text-black">
+                            11/2023 to Current
+                        </div>
+                    </div>
+                    
+                    <ul class="space-y-4 print:space-y-1.5 list-disc pl-5">
+                        <li>Delivered personalized shopping experiences by understanding customer preferences and product knowledge.</li>
+                        <li>Assisted customers in selecting high-quality products, enhancing overall satisfaction and loyalty.</li>
+                        <li>Facilitated timely product delivery while minimizing errors to enhance customer satisfaction.</li>
+                        <li>Engaged with customers to address concerns and rectify errors while maintaining a calm demeanor.</li>
+                        <li>Developed strong relationships with regular customers, leading to repeat business and referrals.</li>
+                        <li>Memorized store layouts and planograms to fulfill orders using shortest, most efficient route.</li>
+                        <li>Balanced multiple tasks simultaneously, prioritizing urgent requests without compromising attention to detail or overall service quality.</li>
+                        <li>Recommended alternative products or options when specific items were out of stock or unavailable.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="md:col-span-4 grid grid-cols-1 gap-6 print:mt-0 print:border-none">
+                
+                <div class="bento-card bg-[#1d1d1f] p-10 text-white shadow-xl overflow-hidden relative" data-aos="fade-up" data-aos-delay="500">
+                    <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Athletics</span>
+                    <h2 class="text-2xl font-semibold mt-4 tracking-tight">Quarterback</h2>
+                    <h3 class="text-lg font-medium text-blue-400 mt-2">Westdale Warriors Football</h3>
+                    <p class="mt-6 text-gray-400 font-light text-sm leading-relaxed print:text-white print:font-medium">
+                        City Championship Winner (Grades 10-12). Contributed to championship-winning roster that ended a decade-long drought. Demonstrated commitment to practice 5 days a week, teamwork, and readiness to perform in a competitive athletic environment.
+                    </p>
+                    <div class="absolute -bottom-10 -right-10 opacity-20 group-hover:opacity-40 transition-opacity duration-700">
+                        </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 print:grid-cols-1 print:gap-4">
+                    <div class="bento-card bg-white p-8 space-y-3 print:border print:border-gray-100">
+                        <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Languages</span>
+                        <h4 class="font-semibold text-lg print:text-sm">English</h4>
+                        <div class="text-green-600 font-medium text-sm print:text-xs">Native or Bilingual</div>
+                        <h4 class="font-semibold text-lg print:text-sm pt-2">French</h4>
+                        <div class="text-gray-500 font-light text-sm print:text-xs">• Elementary</div>
+                    </div>
+                    <div class="bento-card bg-white p-8 space-y-3 print:border print:border-gray-100">
+                        <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Calendar</span>
+                        <h4 class="font-semibold text-lg print:text-sm">Availability</h4>
+                        <div class="text-blue-600 font-semibold text-sm print:text-xs">Full Availability, All Summer</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="py-12 border-t border-gray-200/60 mt-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-sm text-gray-400 font-medium">
+                &copy; 2026 Beckett Graham. Hamilton, Ontario.
+            </p>
+            <div class="flex space-x-6 text-sm font-medium text-gray-400">
+                <a href="index.html" class="hover:text-black transition-colors">Home Page</a>
+                <a href="mailto:beckettgraham@icloud.com" class="hover:text-black transition-colors">Contact Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, easing: 'ease-out-quart', once: true, offset: 50 });
+    </script>
+</body>
+</html>
