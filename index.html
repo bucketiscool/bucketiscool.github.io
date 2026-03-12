@@ -1,72 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beckett Graham</title>
+    <title>Beckett Graham | Mechatronics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #fbfbfd; color: #1d1d1f; }
-        .glass-nav { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .bento-card { border-radius: 28px; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-        .bento-card:hover { transform: scale(1.02); }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #fbfbfd; 
+            color: #1d1d1f; 
+            overflow-x: hidden;
+        }
+        
+        /* Apple-style glassmorphism */
+        .glass-nav { 
+            background: rgba(251, 251, 253, 0.7); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+        }
+        
+        /* Premium Bento Cards with refined shadows */
+        .bento-card { 
+            border-radius: 32px; 
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        
+        .bento-card:hover { 
+            transform: translateY(-4px) scale(1.01); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.08);
+        }
+
+        /* Ambient Glow Effect */
+        .glow-bg {
+            position: absolute;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, rgba(251,251,253,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="antialiased text-[#1d1d1f]">
+<body class="antialiased">
 
-    <nav class="glass-nav fixed w-full z-50 top-0">
+    <div class="glow-bg"></div>
+
+    <nav class="glass-nav fixed w-full z-50 top-0 transition-all duration-300">
       <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-        <a href="/" class="font-semibold text-lg tracking-tight">Beckett Graham</a>
-    
-        <div class="flex space-x-4 md:space-x-8 text-[13px] font-medium opacity-80">
-          <a href="/portfolio/" class="hover:opacity-100 transition">Portfolio</a>
-          <a href="/games/" class="hover:opacity-100 transition">Games</a>
+        <a href="/" class="font-semibold text-lg tracking-tight hover:opacity-70 transition-opacity">Beckett Graham</a>
+        
+        <div class="flex space-x-6 md:space-x-8 text-[14px] font-medium text-gray-500">
+          <a href="/portfolio/" class="hover:text-black transition-colors">Portfolio</a>
+          <a href="/games/" class="hover:text-black transition-colors">Games</a>
         </div>
       </div>
     </nav>
 
-    <section class="pt-48 pb-24 px-6 text-center" data-aos="fade-up">
-        <h1 class="text-6xl md:text-9xl font-bold tracking-tight mb-8">Beckett</h1>
-        <p class="text-xl md:text-2xl text-blue-600 max-w-2xl mx-auto font-light leading-relaxed">
-            Mechatronics engineering future student focusing on robotics, AI simulations, and mechanical design.
+    <section class="pt-56 pb-24 px-6 text-center relative" data-aos="fade-up" data-aos-duration="1200">
+        <h1 class="text-7xl md:text-[9rem] font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600">
+            Beckett
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
+            Mechatronics engineering future student focusing on <span class="text-black font-medium">robotics</span>, <span class="text-black font-medium">AI simulations</span>, and <span class="text-black font-medium">mechanical design</span>.
         </p>
     </section>
 
-    <main class="max-w-7xl mx-auto px-6 pb-32">
+    <main class="max-w-7xl mx-auto px-6 pb-12">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             
-            <a href="/portfolio/" class="md:col-span-8 bento-card bg-white p-12 flex flex-col justify-between h-[300px] shadow-sm group overflow-hidden relative" data-aos="fade-up">
+            <a href="/portfolio/" class="md:col-span-8 bento-card bg-white p-12 flex flex-col justify-between h-[340px] shadow-sm group overflow-hidden relative" data-aos="fade-up">
                 <div class="relative z-10">
-                    <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">Engineering</span>
-                    <h2 class="text-4xl font-semibold mt-4">Portfolio</h2>
-                    <p class="text-gray-500 mt-4 max-w-xs">Comunity involvement, athletics, robotics, and mechatronic</p>
+                    <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Engineering</span>
+                    <h2 class="text-4xl md:text-5xl font-semibold mt-4 tracking-tight">Portfolio</h2>
+                    <p class="text-gray-500 mt-4 max-w-sm text-lg leading-relaxed">Community involvement, athletics, robotics, and mechatronics.</p>
                 </div>
-                <div class="absolute bottom-0 right-0 w-2/3 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <img src="your-robot-render.png" class="translate-y-10 translate-x-10 scale-110">
+                <div class="absolute bottom-0 right-0 w-2/3 md:w-1/2 opacity-20 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700 ease-out">
+                    <img src="your-robot-render.png" class="translate-y-10 translate-x-10 object-contain" alt="Robot Render">
                 </div>
-                <div class="relative z-10 text-sm font-medium">View Portfolio →</div>
+                <div class="relative z-10 text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                    View Portfolio <span class="text-lg leading-none">&rarr;</span>
+                </div>
             </a>
 
-            <a href="/games/" class="md:col-span-4 bento-card bg-[#1d1d1f] p-12 flex flex-col justify-between h-[300px] text-white shadow-xl group" data-aos="fade-up" data-aos-delay="100">
-                <div>
-                    <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">Software</span>
-                    <h2 class="text-4xl font-semibold mt-4 tracking-tight">Arcade</h2>
-                    <p class="text-gray-400 mt-4">Live Q-Learning simulations and VR environments.</p>
+            <a href="/games/" class="md:col-span-4 bento-card bg-[#1d1d1f] p-12 flex flex-col justify-between h-[340px] text-white shadow-xl group overflow-hidden relative" data-aos="fade-up" data-aos-delay="100">
+                <div class="relative z-10">
+                    <span class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Software</span>
+                    <h2 class="text-4xl md:text-5xl font-semibold mt-4 tracking-tight">Arcade</h2>
+                    <p class="text-gray-400 mt-4 text-lg leading-relaxed">Live Q-Learning simulations and VR environments.</p>
                 </div>
-                <div class="text-sm font-medium opacity-60 group-hover:opacity-100 transition-opacity">Launch Games →</div>
+                <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-blue-600 rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
+                
+                <div class="relative z-10 text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                    Launch Games <span class="text-lg leading-none">&rarr;</span>
+                </div>
             </a>
 
         </div>
     </main>
 
-    <footer class="py-24 border-t border-gray-100 text-center">
-        <a href="mailto:beckettgraham@icloud.com" class="text-2xl font-semibold hover:text-blue-600 transition tracking-tight">beckettgraham@icloud.com</a>
+    <section class="max-w-4xl mx-auto px-6 py-24 text-center" data-aos="fade-up" data-aos-offset="100">
+        <h2 class="text-5xl font-bold tracking-tight mb-6">Let's build the future.</h2>
+        <p class="text-xl text-gray-500 mb-10 max-w-xl mx-auto font-light">
+            Always open to discussing robotics, automation, and innovative engineering projects.
+        </p>
+        <a href="mailto:beckettgraham@icloud.com" class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-black rounded-full hover:scale-105 hover:bg-gray-800 hover:shadow-2xl transition-all duration-300">
+            Get in touch
+        </a>
+    </section>
+
+    <footer class="py-12 border-t border-gray-200/60 mt-12">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-sm text-gray-400 font-medium">
+                &copy; 2026 Beckett Graham. All rights reserved.
+            </p>
+            <div class="flex space-x-6 text-sm font-medium text-gray-400">
+                <a href="#" class="hover:text-black transition-colors">LinkedIn</a>
+                <a href="#" class="hover:text-black transition-colors">GitHub</a>
+                <a href="mailto:beckettgraham@icloud.com" class="hover:text-black transition-colors">Email</a>
+            </div>
+        </div>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init({ duration: 1000, easing: 'ease-out-quart', once: true });</script>
+    <script>
+        AOS.init({ 
+            duration: 1000, 
+            easing: 'ease-out-quart', 
+            once: true,
+            offset: 50
+        });
+    </script>
 </body>
 </html>
