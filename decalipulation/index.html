@@ -1,1 +1,85 @@
-hello
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decalipulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fbfbfd;
+            color: #1d1d1f;
+            overflow-x: hidden;
+        }
+
+        .glass-nav {
+            background: rgba(251, 251, 253, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .glow-bg {
+            position: absolute;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, rgba(251,251,253,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <div class="glow-bg"></div>
+
+    <nav class="glass-nav fixed w-full z-50 top-0 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <span class="font-semibold text-lg tracking-tight">Decalipulation</span>
+        </div>
+    </nav>
+
+    <section class="pt-56 pb-24 px-6 text-center relative" data-aos="fade-up" data-aos-duration="1200">
+        <h1 class="text-7xl md:text-[9rem] font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600">
+            Decalipulation
+        </h1>
+
+        <p class="text-xl md:text-2xl text-gray-500 max-w-3xl mx-auto font-light leading-relaxed">
+            <span class="text-black font-medium">/ˌdɛkəˌlɪpjəˈleɪʃən/</span>
+        </p>
+
+        <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mt-6 leading-relaxed">
+            <span class="font-semibold text-black">Noun.</span>
+            The strategic manipulation or influence of very large populations — typically on a scale of millions or more — especially through mass communication, digital platforms, or institutional power.
+        </p>
+    </section>
+
+    <footer class="py-12 border-t border-gray-200/60 mt-12 bg-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-sm text-gray-400 font-medium">
+                &copy; 2026 — A Word by You.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-out-quart',
+            once: true,
+            offset: 50
+        });
+    </script>
+
+</body>
+</html>
