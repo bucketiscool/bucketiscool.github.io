@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gravity Unit — Complete Problem Set</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --border: #1f2433;
+    --accent: #4fc3f7;
+    --accent2: #81c784;
+    --accent3: #ffb74d;
+    --accent4: #f06292;
+    --text: #e0e6f0;
+    --muted: #6b7a99;
+    --done: #2a3a2a;
+    --done-text: #81c784;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+  }
+
+  .header {
+    max-width: 900px;
+    margin: 0 auto 48px;
+    border-left: 3px solid var(--accent);
+    padding-left: 20px;
+  }
+
+  .header .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .progress-bar {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .progress-bar .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .count-display {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  .section {
+    max-width: 900px;
+    margin: 0 auto 40px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .tag-textbook { background: rgba(79,195,247,0.15); color: var(--accent); }
+  .tag-ws1 { background: rgba(129,199,132,0.15); color: var(--accent2); }
+  .tag-ws2 { background: rgba(255,183,77,0.15); color: var(--accent3); }
+  .tag-lesson { background: rgba(240,98,146,0.15); color: var(--accent4); }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .section-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .problem-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .problem {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .problem:hover {
+    border-color: var(--accent);
+    background: #161924;
+  }
+
+  .problem.done {
+    background: var(--done);
+    border-color: #2e4a2e;
+  }
+
+  .problem.done .p-text,
+  .problem.done .p-topic {
+    opacity: 0.5;
+    text-decoration: line-through;
+    text-decoration-color: var(--done-text);
+  }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--muted);
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .problem.done .checkbox {
+    background: var(--accent2);
+    border-color: var(--accent2);
+  }
+
+  .checkmark {
+    opacity: 0;
+    color: #0d0f14;
+    font-size: 12px;
+    font-weight: 700;
+    transition: opacity 0.2s;
+  }
+
+  .problem.done .checkmark { opacity: 1; }
+
+  .p-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 30px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .p-content { flex: 1; }
+
+  .p-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    transition: opacity 0.2s;
+  }
+
+  .p-topic {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    transition: opacity 0.2s;
+  }
+
+  .difficulty {
+    flex-shrink: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-top: 2px;
+  }
+
+  .diff-1 { color: var(--accent2); background: rgba(129,199,132,0.1); }
+  .diff-2 { color: var(--accent3); background: rgba(255,183,77,0.1); }
+  .diff-3 { color: var(--accent4); background: rgba(240,98,146,0.1); }
+
+  .key-formulas {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+  }
+
+  .key-formulas h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .formula-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+  }
+
+  .formula-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px 14px;
+  }
+
+  .formula-item .f-name {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .formula-item .f-eq {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+  }
+
+  .divider {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="label">Grade 12 Physics · Gravity Unit</div>
+  <h1>Complete Problem Set</h1>
+  <p>Textbook Q14–29 · Worksheet 1 (odd) · Worksheet 2 (all) · Lesson Examples</p>
+</div>
+
+<div class="progress-bar">
+  <span class="label">PROGRESS</span>
+  <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
+  <span class="count-display" id="countDisplay">0 / 0</span>
+</div>
+
+<!-- KEY FORMULAS -->
+<div class="key-formulas">
+  <h3>Key Formulas</h3>
+  <div class="formula-grid">
+    <div class="formula-item">
+      <div class="f-name">Universal Gravitation</div>
+      <div class="f-eq">Fg = GMm / r²</div>
+    </div>
+    <div class="formula-item">
+      <div class="f-name">Field Strength</div>
+      <div class="f-eq">g = GM / r²</div>
+    </div>
+    <div class="formula-item">
+      <div class="f-name">Gravitational PE</div>
+      <div class="f-eq">Eg = −GMm / r</div>
+    </div>
+    <div class="formula-item">
+      <div class="f-name">Total Energy</div>
+      <div class="f-eq">ET = Ek + Eg</div>
+    </div>
+    <div class="formula-item">
+      <div class="f-name">Escape Velocity</div>
+      <div class="f-eq">v_esc = √(2GM/r)</div>
+    </div>
+    <div class="formula-item">
+      <div class="f-name">Orbital Ek</div>
+      <div class="f-eq">Ek = GMm / 2r</div>
+    </div>
+    <div class="formula-item">
+      <div class="f-name">Orbital ET</div>
+      <div class="f-eq">ET = −GMm / 2r</div>
+    </div>
+    <div class="formula-item">
+      <div class="f-name">Schwarzschild Radius</div>
+      <div class="f-eq">r_s = 2GM / c²</div>
+    </div>
+    <div class="formula-item">
+      <div class="f-name">Kepler's 3rd Law</div>
+      <div class="f-eq">r³ / T² = GM / 4π²</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- TEXTBOOK SECTION -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-tag tag-textbook">Textbook</span>
+    <span class="section-title">Irwin Physics 12 — Page 313–315</span>
+    <span class="section-subtitle">Chapter 6: Energy Transfer</span>
+  </div>
+  <div class="problem-grid" id="textbook-problems"></div>
+</div>
+
+<!-- WORKSHEET 1 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-tag tag-ws1">Worksheet 1</span>
+    <span class="section-title">Gravitational Fields & Forces — Odd Questions Only</span>
+    <span class="section-subtitle">Lesson 1</span>
+  </div>
+  <div class="problem-grid" id="ws1-problems"></div>
+</div>
+
+<!-- WORKSHEET 2 -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-tag tag-ws2">Worksheet 2</span>
+    <span class="section-title">Gravitational Energy & Orbits — All Questions</span>
+    <span class="section-subtitle">Lessons 2 & 3 · Answers provided</span>
+  </div>
+  <div class="problem-grid" id="ws2-problems"></div>
+</div>
+
+<!-- LESSON EXAMPLES -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-tag tag-lesson">Lesson Examples</span>
+    <span class="section-title">In-Class Practice Problems</span>
+    <span class="section-subtitle">Lessons 1–3</span>
+  </div>
+  <div class="problem-grid" id="lesson-problems"></div>
+</div>
+
+<script>
+const data = {
+  textbook: [
+    { num: "Q14", text: "A 920-kg satellite is projected vertically upward from Earth's surface with an initial kinetic energy of 7.0×10⁹ J. Find (a) its maximum height, (b) the initial KE needed to keep going indefinitely, (c) the initial speed needed to keep going indefinitely.", topic: "GPE · Escape Energy", diff: 2 },
+    { num: "Q15", text: "A 550-kg satellite projected upward from Earth's surface reaches a maximum height of 6000 km. Find (a) its change in gravitational potential energy, (b) its initial kinetic energy.", topic: "GPE · Conservation of Energy", diff: 2 },
+    { num: "Q16", text: "A 20,000-kg meteorite from outer space is headed directly toward Earth with a speed of 3.0 km/s. Find its speed when it is 200 km above Earth's surface.", topic: "Conservation of Energy · GPE", diff: 2 },
+    { num: "Q17", text: "The escape speed at the event horizon of a black hole equals the speed of light, c. What would Earth's size have to be if compressed to a black hole? (Schwarzschild radius)", topic: "Black Holes · Schwarzschild Radius", diff: 2 },
+    { num: "Q18", text: "At what location from Earth are the gravitational fields of Earth and the Moon balanced? (i.e., find the Lagrange point between them)", topic: "Gravitational Fields · Force Balance", diff: 3 },
+    { num: "Q19", text: "Find the energy per kilogram required to move a payload from Earth's surface to the Moon's surface.", topic: "GPE · Energy Transfer", diff: 3 },
+    { num: "Q20", text: "Find the speed of an Earth satellite in orbit 400 km above Earth's surface. What is the period of the orbit?", topic: "Orbital Speed · Kepler's Laws", diff: 1 },
+    { num: "Q21", text: "Find the altitude of a communications satellite in geostationary Earth orbit above the equator. (T = 24 h)", topic: "Geosynchronous Orbit · Kepler's Laws", diff: 2 },
+    { num: "Q22", text: "When the space shuttle boosts the ISS orbit from ~320 km to 350 km, how much energy does it add to the station's orbit? (mass of ISS ≈ 420,000 kg)", topic: "Orbital Energy · ΔET", diff: 2 },
+    { num: "Q23", text: "(a) Show that orbital speed decreases as radius increases. (b) What effect does increasing orbital radius have on the period?", topic: "Orbital Speed · Period Analysis", diff: 2 },
+    { num: "Q24", text: "Calculate the Moon's total energy in its orbit around Earth.", topic: "Orbital Energy · ET = −GMm/2r", diff: 1 },
+    { num: "Q25", text: "Saturn has a mass of 5.7×10²⁶ kg and radius of 6.0×10⁷ m. What is the minimum orbital speed of a satellite orbiting Saturn?", topic: "Orbital Speed · Saturn", diff: 1 },
+    { num: "Q26", text: "Apollo astronauts were in orbit 100 km above the lunar surface. What is the escape speed from the Moon at this altitude?", topic: "Escape Velocity · Moon", diff: 1 },
+    { num: "Q27", text: "Given the orbit height in Q26, how long would it take the Apollo spacecraft to complete one orbit around the Moon?", topic: "Orbital Period · Kepler's Laws", diff: 2 },
+    { num: "Q28", text: "(a) Calculate the orbital speed of Mars around the Sun (mean distance = 2.28×10¹¹ m). (b) Calculate the orbital speed at 80 km above Mars' surface.", topic: "Orbital Speed · Mars", diff: 2 },
+    { num: "Q29", text: "Calculate the escape speed of a spacecraft leaving the Moon's surface.", topic: "Escape Velocity · Moon", diff: 1 },
+  ],
+
+  ws1: [
+    { num: "1", text: "A 4700 kg asteroid has a force of 200 N acting on it from another asteroid 300 km away. What is the mass of the other asteroid?", topic: "Universal Gravitation · Fg = GMm/r²", diff: 1, ans: "5.74×10¹⁹ kg" },
+    { num: "3a", text: "Masses at A (2.0 kg), B (4.0 kg), C (3.0 kg) in a straight line. AB = 40 m, BC = 20 m. Find the net gravitational force on B.", topic: "Net Gravitational Force · Vector Addition", diff: 2, ans: "1.7×10⁻¹² N [E]" },
+    { num: "3b", text: "Using the same setup as 3a, find the net gravitational field strength at B's location.", topic: "Gravitational Field Strength", diff: 2, ans: "4.2×10⁻¹³ N/kg [E]" },
+    { num: "5", text: "How far from a 6.0×10¹⁵ kg mass is the gravitational field intensity 0.0042 N/kg?", topic: "Field Strength · Solving for r", diff: 1, ans: "9.8×10³ m" },
+    { num: "7", text: "At what height above Earth's surface is the gravitational field strength half of what it is on the surface?", topic: "Field Strength vs. Distance", diff: 2, ans: "2.65×10⁶ m" },
+    { num: "9", text: "An astronaut drops a rock from a cliff 30 m high on Jupiter (M = 1.90×10²⁷ kg, r = 7.18×10⁷ m). How long to reach the bottom?", topic: "Field Strength · Kinematics on Jupiter", diff: 2, ans: "1.6 s" },
+    { num: "11", text: "A centrifuge reaches 1500 km/h at r = 1.0 m. How many times the force of gravity is the centripetal force on a particle at the rim?", topic: "Centripetal Force vs. Gravity", diff: 2, ans: "1.8×10⁴ times" },
+    { num: "13", text: "An astronaut weighs 784 N on Earth. How far above Earth's surface must she be to have a weight of 40.0 N?", topic: "Field Strength · Weight vs. Altitude", diff: 2, ans: "2.18×10⁷ m" },
+    { num: "15", text: "What is the force of gravity on you (60.0 kg) at an altitude of 1000 km?", topic: "Universal Gravitation · Fg at altitude", diff: 1, ans: "441 N [toward Earth]" },
+    { num: "17", text: "An oxygen tank weighs 98 N on Earth. What would it weigh on a planet with radius 3× Earth's and mass ½ Earth's?", topic: "Field Strength on Other Planets", diff: 2, ans: "5.4 N [toward centre]" },
+    { num: "19", text: "Determine the net gravitational field strength on the centre mass: 12.0 kg, 15.0 kg, 22.0 kg — left to right; separations 13.0 cm and 19.0 cm.", topic: "Net Field Strength · Multiple Masses", diff: 3, ans: "6.71×10⁻⁹ N/kg [W]" },
+  ],
+
+  ws2: [
+    { num: "1", text: "With what initial velocity must an object be projected vertically upward from Earth's surface to rise to a height equal to Earth's radius? (ignore air resistance and Earth's rotation)", topic: "Escape/Partial Escape · Conservation of Energy", diff: 2, ans: "7.91×10³ m/s [up]" },
+    { num: "2", text: "Calculate the change in GPE for a 1.0 kg mass lifted 100 km above Earth's surface. What % error results from using ΔEg = mgΔh with surface g?", topic: "GPE Methods Comparison · % Error", diff: 2, ans: "9.7×10⁵ J, 1.3% error" },
+    { num: "3a", text: "The Moon (m = 7.35×10²² kg, d = 3.85×10⁸ m from Earth's centre) is an Earth satellite. Find its gravitational potential energy relative to Earth.", topic: "GPE · Eg = −GMm/r", diff: 1, ans: "−7.61×10²⁸ J" },
+    { num: "3b", text: "For the Moon, find its kinetic energy and orbital velocity.", topic: "Orbital Ek · v = √(GM/r)", diff: 1, ans: "3.81×10²⁸ J · 1.02×10³ m/s" },
+    { num: "3c", text: "For the Moon, find its binding energy to Earth.", topic: "Binding Energy = −ET", diff: 1, ans: "3.81×10²⁸ J" },
+    { num: "4", text: "What is the total energy needed to place a 2000 kg satellite in circular Earth orbit at an altitude of 500 km?", topic: "Launch Energy · ET(orbit) − Eg(surface)", diff: 2, ans: "6.7×10¹⁰ J" },
+    { num: "5", text: "How much additional energy must be supplied to the satellite in Q4, once in orbit, to allow it to escape from Earth's gravity?", topic: "Escape from Orbit · Ebinding = −ET", diff: 2, ans: "5.8×10¹⁰ J" },
+    { num: "6a", text: "A 1200 kg booster tank is momentarily at rest at 2000 km altitude. How much work does gravity do on it returning to Earth's surface?", topic: "Work by Gravity · ΔEg", diff: 2, ans: "1.8×10¹⁰ J" },
+    { num: "6b", text: "For the booster in Q6a, find the velocity with which it strikes Earth's surface.", topic: "Conservation of Energy · Impact Speed", diff: 2, ans: "5.4×10³ m/s [down]" },
+    { num: "7", text: "A space vehicle at the top of Earth's atmosphere has Ek = 5.0×10⁹ J and Eg = −6.4×10⁹ J. What is its binding energy?", topic: "Binding Energy · ET = Ek + Eg", diff: 1, ans: "1.4×10⁹ J" },
+    { num: "8a", text: "A 2000 kg satellite orbits at mean altitude 400 km. What is its gravitational potential energy?", topic: "Orbital GPE · Eg = −GMm/r", diff: 1, ans: "−1.18×10¹¹ J" },
+    { num: "8b", text: "For the satellite in Q8a, what is its orbital kinetic energy?", topic: "Orbital Ek = GMm/2r", diff: 1, ans: "5.89×10¹⁰ J" },
+    { num: "8c", text: "For the satellite in Q8a, what is its total orbital energy?", topic: "ET = −GMm/2r", diff: 1, ans: "−5.89×10¹⁰ J" },
+    { num: "9", text: "Calculate the escape velocity from our solar system (from the surface of the Sun: M = 1.99×10³⁰ kg, r = 6.96×10⁸ m).", topic: "Escape Velocity · Sun", diff: 1, ans: "6.18×10⁵ m/s [outward]" },
+    { num: "10", text: "The Moon's mass is 6.7×10²² kg, radius 1.6×10⁶ m. With what velocity must an object be projected from the Moon's surface to rise to an altitude of ½ the Moon's radius?", topic: "Partial Escape · Conservation of Energy", diff: 2, ans: "1.4×10³ m/s [up]" },
+    { num: "11a", text: "A 500 kg spaceship is in circular orbit of radius 2r_Earth. What is its orbital velocity?", topic: "Orbital Speed · v = √(GM/r)", diff: 1, ans: "5.60×10³ m/s [tangential]" },
+    { num: "11b", text: "For the spaceship in Q11a, find Ek, Eg, and ET while in orbit at 2r_Earth.", topic: "Orbital Energies", diff: 1, ans: "Ek=7.83×10⁹ J · Eg=−1.57×10¹⁰ J · ET=−7.83×10⁹ J" },
+    { num: "11c", text: "What is the gravitational PE of the satellite at 4r_Earth from Earth's centre?", topic: "Eg at new altitude", diff: 1, ans: "−7.83×10⁹ J" },
+    { num: "11d", text: "Find the new velocity and kinetic energy of the satellite at 4r_Earth.", topic: "Orbital Speed at new altitude", diff: 2, ans: "3.96×10³ m/s · 3.91×10⁹ J" },
+    { num: "11e", text: "What is the total energy at 4r_Earth?", topic: "Total Orbital Energy", diff: 1, ans: "−3.91×10⁹ J" },
+    { num: "11f", text: "What is the energy difference between the satellite at 2r_Earth and 4r_Earth?", topic: "ΔET between orbits", diff: 2, ans: "3.91×10⁹ J" },
+    { num: "11g", text: "What velocity must be applied to the satellite (at 2r_Earth) to cause the energy change found in 11f?", topic: "Impulse to change orbit", diff: 3, ans: "3.96×10³ m/s [upward/outward]" },
+    { num: "12", text: "What is the Schwarzschild radius of Earth? (M_Earth = 5.98×10²⁴ kg)", topic: "Black Holes · r_s = 2GM/c²", diff: 1, ans: "≈ 8.7 mm" },
+  ],
+
+  lesson: [
+    { num: "L1-1", text: "Three objects in a configuration: m₁ = 5.0 kg, m₂ = 12.0 kg, m₃ = 8.0 kg. Distance from m₁ to m₂ = 0.50 m vertically, m₁ to m₃ = 0.60 m horizontally. Find the net force of gravity on object 1.", topic: "Lesson 1 · Net Gravitational Force", diff: 2 },
+    { num: "L1-2", text: "Calculate the gravitational field strength on the ISS at an altitude of 400 km above Earth's surface. Then find the force of gravity on a 20 kg mass on the ISS.", topic: "Lesson 1 · Field Strength at Altitude", diff: 1 },
+    { num: "L1-3", text: "What is the strength of Earth's gravitational field at 450,000 km from Earth's centre (far side of Moon on Artemis II flyby)? Also find the Moon's field strength and the combined field strength at that location.", topic: "Lesson 1 · Artemis II · Combined Field", diff: 2 },
+    { num: "L1-4", text: "CHALLENGE: At approximately what distance from Earth would the net gravitational field strength be at a minimum during the Artemis II journey to the Moon? (Earth–Moon distance ≈ 3.84×10⁸ m; M_Moon = 7.35×10²² kg; M_Earth = 5.98×10²⁴ kg)", topic: "Lesson 1 · Lagrange Point L1", diff: 3 },
+    { num: "L2-1", text: "Find the change in GPE as a 65 kg astronaut is lifted from Earth's surface to 440 km altitude — using both the precise formula (Eg = −GMm/r) and the simple formula (ΔEg = mgΔh). Compare the results.", topic: "Lesson 2 · GPE Two Methods", diff: 2 },
+    { num: "L2-2", text: "A 2300 kg rocket shuts off its engines 494 km above Earth's surface at a velocity of 3.0 km/s [up]. Ignoring air resistance, what maximum height will it reach?", topic: "Lesson 2 · Conservation of Energy · Max Height", diff: 2 },
+    { num: "L3-1", text: "What is the escape velocity from Earth? Use an energy statement to derive the formula and solve for M_Earth = 5.98×10²⁴ kg, r_Earth = 6.37×10⁶ m.", topic: "Lesson 3 · Escape Velocity Derivation", diff: 1 },
+    { num: "L3-2", text: "A 3000 kg rocket moves away from the Moon's surface at 125 m/s. Find: Ek, Eg, ET, and binding (escape) energy. (m_moon = 7.35×10²² kg, r_moon = 1.74×10⁶ m)", topic: "Lesson 3 · Binding Energy · Moon Rocket", diff: 2 },
+    { num: "L3-3", text: "If Earth's mass collapsed into a black hole, what would its Schwarzschild radius be? Derive the formula by setting escape velocity equal to c.", topic: "Lesson 3 · Schwarzschild Radius · Earth", diff: 2 },
+    { num: "L3-4", text: "A 5.00×10² kg satellite is placed in geosynchronous orbit (T = 24 h). (a) Find the required orbital radius. (b) Find Eg at Earth's surface. (c) Find ET when in orbit. (d) How much work must be done to launch it? (e) Once in orbit, how much energy needed to escape Earth?", topic: "Lesson 3 · Geosynchronous Satellite · Full Analysis", diff: 3 },
+  ]
+};
+
+function renderProblems(containerId, problems, tagColor) {
+  const container = document.getElementById(containerId);
+  problems.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.dataset.id = containerId + '-' + p.num;
+
+    const diffLabel = ['', 'easy', 'medium', 'hard'][p.diff];
+    const ansHtml = p.ans ? `<div class="p-topic">✓ Answer: ${p.ans}</div>` : '';
+
+    div.innerHTML = `
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <span class="p-num">${p.num}</span>
+      <div class="p-content">
+        <div class="p-text">${p.text}</div>
+        <div class="p-topic">${p.topic}</div>
+        ${ansHtml}
+      </div>
+      <span class="difficulty diff-${p.diff}">${diffLabel}</span>
+    `;
+
+    const saved = localStorage.getItem ? localStorage.getItem(div.dataset.id) : null;
+
+    div.addEventListener('click', () => {
+      div.classList.toggle('done');
+      try { localStorage.setItem(div.dataset.id, div.classList.contains('done') ? '1' : ''); } catch(e){}
+      updateProgress();
+    });
+
+    container.appendChild(div);
+  });
+}
+
+renderProblems('textbook-problems', data.textbook);
+renderProblems('ws1-problems', data.ws1);
+renderProblems('ws2-problems', data.ws2);
+renderProblems('lesson-problems', data.lesson);
+
+function updateProgress() {
+  const all = document.querySelectorAll('.problem');
+  const done = document.querySelectorAll('.problem.done');
+  const pct = all.length ? (done.length / all.length * 100) : 0;
+  document.getElementById('barFill').style.width = pct + '%';
+  document.getElementById('countDisplay').textContent = done.length + ' / ' + all.length;
+}
+
+updateProgress();
+</script>
+</body>
+</html>
