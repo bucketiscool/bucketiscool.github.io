@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BG STUDIO | Web Design & Development</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --forest-green: #2D5A43; /* Matches your logo style */
+            --off-white: #F9F7F2;
+        }
+        body {
+            background-color: var(--off-white);
+            color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .bg-forest { background-color: var(--forest-green); }
+        .text-forest { color: var(--forest-green); }
+        .border-forest { border-color: var(--forest-green); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="flex justify-between items-center px-8 py-6 max-w-6xl mx-auto">
+        <img src="logo.png" alt="BG STUDIO Logo" class="h-12 w-auto">
+        <div class="space-x-8 text-sm font-medium tracking-wide uppercase">
+            <a href="#services" class="hover:opacity-60 transition">Services</a>
+            <a href="#contact" class="hover:opacity-60 transition">Contact</a>
+            <a href="https://instagram.com/bg_studios.design" target="_blank">
+                <img src="instagram.png" alt="Instagram" class="h-5 w-5 inline">
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="max-w-4xl mx-auto px-8 py-24 text-center">
+        <h1 class="text-5xl md:text-7xl font-light tracking-tight mb-6">Elevate your <br><span class="italic">digital presence.</span></h1>
+        <p class="text-lg text-gray-600 mb-10 max-w-lg mx-auto">Professional website redesigns and custom from-scratch builds for local GTHA businesses.</p>
+        <a href="#contact" class="bg-forest text-white px-8 py-4 rounded-full text-sm font-bold hover:opacity-90 transition inline-block">Start Your Project</a>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="max-w-6xl mx-auto px-8 py-20 border-t border-gray-200">
+        <div class="grid md:grid-cols-2 gap-12">
+            <div class="p-8 border border-gray-200 rounded-2xl bg-white shadow-sm">
+                <h3 class="text-2xl font-semibold mb-4 text-forest">Redesign</h3>
+                <p class="text-gray-600">Give your existing site a modern, high-end facelift. We focus on speed, mobile optimization, and clean aesthetics.</p>
+            </div>
+            <div class="p-8 border border-gray-200 rounded-2xl bg-white shadow-sm">
+                <h3 class="text-2xl font-semibold mb-4 text-forest">From Scratch</h3>
+                <p class="text-gray-600">Building your first digital storefront? We create high-converting landing pages built on your own custom domain.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="max-w-2xl mx-auto px-8 py-24">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-light mb-2 text-forest">Let's Talk</h2>
+            <p class="text-gray-500">Submit your request below for a custom quote.</p>
+        </div>
+
+        <!-- Form linked to your email via Formspree -->
+        <form action="https://formspree.io/f/xknkyjzv" method="POST" class="space-y-6">
+            <input type="hidden" name="_to" value="beckettgraham@icloud.com">
+            
+            <div>
+                <label class="block text-xs uppercase tracking-widest font-bold mb-2">Name</label>
+                <input type="text" name="name" required class="w-full bg-transparent border-b border-forest py-3 focus:outline-none focus:border-opacity-50 transition">
+            </div>
+            
+            <div>
+                <label class="block text-xs uppercase tracking-widest font-bold mb-2">Email Address</label>
+                <input type="email" name="email" required class="w-full bg-transparent border-b border-forest py-3 focus:outline-none focus:border-opacity-50 transition">
+            </div>
+
+            <div>
+                <label class="block text-xs uppercase tracking-widest font-bold mb-2">Project Details</label>
+                <textarea name="message" rows="4" required class="w-full bg-transparent border-b border-forest py-3 focus:outline-none focus:border-opacity-50 transition" placeholder="Tell us about your business..."></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-forest text-white py-4 rounded-lg font-bold hover:opacity-90 transition">Send Request</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-12 border-t border-gray-200">
+        <p class="text-xs text-gray-400 uppercase tracking-widest">© 2026 BG STUDIO | GTHA Web Design</p>
+        <div class="mt-4 flex justify-center space-x-4">
+            <a href="https://instagram.com/bg_studios.design" target="_blank" class="text-forest hover:opacity-60">Instagram</a>
+        </div>
+    </footer>
+
+</body>
+</html>
