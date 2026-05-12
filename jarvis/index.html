@@ -3,345 +3,498 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Jarvis Remote</title>
+  <title>Jarvis</title>
   <style>
     :root {
-      --bg: #08131a;
-      --bg2: #102632;
-      --panel: rgba(10, 24, 33, 0.88);
-      --line: rgba(105, 209, 197, 0.22);
-      --text: #e8f7f5;
-      --muted: #8fb6b1;
-      --accent: #69d1c5;
-      --accent-2: #b8ffed;
-      --danger: #ff7b7b;
-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      --bg: #212121;
+      --panel: #171717;
+      --panel-2: #1e1e1e;
+      --line: #2b2b2b;
+      --text: #ececec;
+      --muted: #a3a3a3;
+      --accent: #10a37f;
+      --accent-hover: #0e8f6f;
+      --danger: #8b3a3a;
+      --user: #2a2a2a;
+      --assistant: #171717;
+      --shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
     body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Georgia, "Times New Roman", serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top, rgba(105, 209, 197, 0.14), transparent 30%),
-        linear-gradient(180deg, var(--bg2), var(--bg));
-    }
-
-    .app {
-      width: min(1100px, calc(100% - 24px));
-      margin: 24px auto;
       display: grid;
-      gap: 16px;
+      grid-template-columns: 260px 1fr;
     }
 
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-    }
-
-    .hero {
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: end;
-    }
-
-    .eyebrow {
-      font-size: 12px;
-      letter-spacing: 0.24em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      line-height: 1;
-      font-weight: 700;
-    }
-
-    .subtitle {
-      margin: 8px 0 0;
-      color: var(--muted);
-      max-width: 52ch;
-    }
-
-    .status-badge {
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      color: var(--accent-2);
-      white-space: nowrap;
-      align-self: start;
-    }
-
-    .config {
-      padding: 16px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    input[type="text"],
-    input[type="password"],
-    textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.03);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font: inherit;
-    }
-
-    textarea {
-      min-height: 92px;
-      resize: vertical;
-    }
-
-    .chat-shell {
-      display: grid;
-      grid-template-columns: 1.25fr 0.75fr;
-      gap: 16px;
-    }
-
-    .chat-panel,
-    .tools-panel {
-      padding: 16px;
-    }
-
-    .messages {
-      height: 460px;
-      overflow: auto;
+    .sidebar {
+      background: #171717;
+      border-right: 1px solid var(--line);
+      padding: 14px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      padding-right: 4px;
-      margin-bottom: 14px;
     }
 
-    .msg {
-      padding: 12px 14px;
-      border-radius: 14px;
-      max-width: 86%;
-      line-height: 1.45;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .msg.user {
-      align-self: end;
-      background: rgba(105, 209, 197, 0.12);
-      border: 1px solid rgba(105, 209, 197, 0.25);
-    }
-
-    .msg.assistant {
-      align-self: start;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .msg.system {
-      align-self: center;
-      background: rgba(255, 123, 123, 0.1);
-      border: 1px solid rgba(255, 123, 123, 0.25);
-      color: #ffd6d6;
-    }
-
-    .composer {
-      display: grid;
-      gap: 12px;
-    }
-
-    .actions {
+    .brand {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #202020;
+      border: 1px solid var(--line);
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #0d7d62, #19b88f);
+      color: white;
+      font-weight: 700;
+    }
+
+    .brand-copy strong,
+    .panel-title {
+      display: block;
+      font-size: 14px;
+    }
+
+    .brand-copy span,
+    .helper,
+    .meta,
+    .empty-copy {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
 
     button,
-    .file-label {
-      border: 1px solid var(--line);
-      background: rgba(105, 209, 197, 0.08);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 11px 14px;
+    .upload-label,
+    input,
+    textarea {
       font: inherit;
+    }
+
+    .sidebar button,
+    .upload-label,
+    .composer button {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--text);
       cursor: pointer;
-      transition: transform 0.15s ease, background 0.15s ease;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
-    button:hover,
-    .file-label:hover {
-      transform: translateY(-1px);
-      background: rgba(105, 209, 197, 0.14);
+    .sidebar button,
+    .upload-label {
+      width: 100%;
+      background: #202020;
+      padding: 11px 12px;
+      text-align: left;
     }
 
-    button.primary {
-      background: linear-gradient(135deg, rgba(105, 209, 197, 0.24), rgba(184, 255, 237, 0.18));
+    .sidebar button:hover,
+    .upload-label:hover,
+    .composer button:hover {
+      background: #262626;
+      border-color: #383838;
     }
 
-    button.danger {
-      border-color: rgba(255, 123, 123, 0.35);
-      color: #ffd5d5;
+    .sidebar button.primary,
+    .composer button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .sidebar button.primary:hover,
+    .composer button.primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .sidebar button.danger {
+      background: #2b1d1d;
+      border-color: #4b2b2b;
+    }
+
+    .section {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #1b1b1b;
+      border: 1px solid var(--line);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #202020;
+      border: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #f59e0b;
+    }
+
+    .status-dot.live {
+      background: #22c55e;
+    }
+
+    .status-dot.error {
+      background: #ef4444;
+    }
+
+    .sidebar input {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #202020;
+      color: var(--text);
+      padding: 10px 12px;
+    }
+
+    .main {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(33, 33, 33, 0.88);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .chat {
+      overflow: auto;
+      padding: 24px 0 40px;
+    }
+
+    .welcome,
+    .message {
+      width: min(820px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .welcome {
+      min-height: calc(100vh - 240px);
+      display: grid;
+      align-content: center;
+      gap: 18px;
+    }
+
+    .welcome h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 2.9rem);
+      line-height: 1.1;
+      font-weight: 600;
+    }
+
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .card {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      box-shadow: var(--shadow);
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .message-wrap {
+      border-top: 1px solid transparent;
+    }
+
+    .message-wrap.user {
+      background: var(--user);
+    }
+
+    .message-wrap.assistant {
+      background: var(--assistant);
+    }
+
+    .message {
+      padding: 22px 0;
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 16px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      background: #444;
+    }
+
+    .avatar.assistant {
+      background: linear-gradient(135deg, #0d7d62, #19b88f);
+    }
+
+    .avatar.user {
+      background: #4a4a4a;
+    }
+
+    .content {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    .composer-shell {
+      padding: 16px;
+      border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(33, 33, 33, 0.72), #212121);
+    }
+
+    .composer {
+      width: min(820px, calc(100% - 32px));
+      margin: 0 auto;
+      border-radius: 24px;
+      border: 1px solid #3a3a3a;
+      background: #2b2b2b;
+      box-shadow: var(--shadow);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .composer textarea {
+      width: 100%;
+      min-height: 54px;
+      max-height: 180px;
+      resize: none;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      padding: 6px 8px;
+      line-height: 1.5;
+    }
+
+    .composer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .composer-actions,
+    .composer-tools {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .composer button {
+      background: #343434;
+      padding: 10px 12px;
+    }
+
+    .composer button.icon {
+      min-width: 44px;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .composer button.send {
+      min-width: 68px;
+    }
+
+    .upload-label {
+      background: #343434;
+      padding: 10px 12px;
+      width: auto;
     }
 
     input[type="file"] {
       display: none;
     }
 
-    .stack {
-      display: grid;
-      gap: 12px;
-    }
-
-    .mini-card {
-      padding: 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .mini-card h2 {
-      margin: 0 0 8px;
-      font-size: 1rem;
-    }
-
-    .mini-card p,
-    .mini-card ul {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .mini-card ul {
-      padding-left: 18px;
-    }
-
     .file-list {
-      display: grid;
+      display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .file-pill {
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 14px;
-    }
-
-    .footnote {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #1f1f1f;
+      border: 1px solid #343434;
       font-size: 12px;
       color: var(--muted);
     }
 
-    @media (max-width: 900px) {
-      .chat-shell {
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 960px) {
+      body {
         grid-template-columns: 1fr;
       }
 
-      .messages {
-        height: 360px;
+      .sidebar {
+        display: none;
+      }
+
+      .welcome-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar,
+      .composer-shell {
+        padding-left: 12px;
+        padding-right: 12px;
       }
     }
   </style>
 </head>
 <body>
-  <main class="app">
-    <section class="panel hero">
-      <div>
-        <div class="eyebrow">Private Remote Assistant</div>
-        <h1>Jarvis Remote</h1>
-        <p class="subtitle">Type, speak, or upload files. This page connects to your Jarvis backend running at home and works from any browser once your backend is reachable on the internet.</p>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">J</div>
+      <div class="brand-copy">
+        <strong>Jarvis</strong>
+        <span>Remote assistant</span>
       </div>
-      <div id="statusBadge" class="status-badge">Disconnected</div>
-    </section>
+    </div>
 
-    <section class="panel config">
-      <div>
-        <label for="apiBase">Jarvis API URL</label>
-        <input id="apiBase" type="text" placeholder="https://your-jarvis-server.example.com">
-      </div>
-      <div>
-        <label for="apiKey">API Key (optional)</label>
-        <input id="apiKey" type="password" placeholder="Paste your key if your backend uses one">
-      </div>
-      <div>
-        <label for="voiceSelect">Voice Reply</label>
-        <input id="voiceSelect" type="text" placeholder="Browser speech will use the default voice">
-      </div>
-      <div>
-        <label>&nbsp;</label>
-        <button id="saveSettingsBtn" class="primary">Save Connection</button>
-      </div>
-    </section>
+    <button id="newChatBtn" class="primary">New chat</button>
 
-    <section class="chat-shell">
-      <section class="panel chat-panel">
-        <div id="messages" class="messages"></div>
+    <div class="section">
+      <div class="panel-title">Connection</div>
+      <div class="chip">
+        <span id="statusDot" class="status-dot"></span>
+        <span id="statusText">Needs setup</span>
+      </div>
+      <input id="apiBase" type="text" placeholder="https://api.beckettgraham.ca">
+      <input id="apiKey" type="password" placeholder="API key if you use one">
+      <button id="saveSettingsBtn">Save connection</button>
+      <div class="helper">Your website URL can be `beckettgraham.ca/jarvis`, but the Jarvis API still needs its own reachable backend URL or reverse proxy.</div>
+    </div>
 
-        <div class="composer">
-          <textarea id="messageInput" placeholder="Ask Jarvis anything, paste math, or describe the file you uploaded."></textarea>
-          <div class="actions">
-            <button id="sendBtn" class="primary">Send</button>
-            <button id="voiceBtn">Start Voice</button>
-            <button id="speakReplyBtn">Voice Reply: On</button>
-            <label class="file-label" for="fileInput">Upload Files</label>
-            <input id="fileInput" type="file" multiple>
-            <button id="clearFilesBtn">Clear Files</button>
-            <button id="clearChatBtn" class="danger">Clear Chat</button>
+    <div class="section">
+      <div class="panel-title">Files</div>
+      <label class="upload-label" for="fileInput">Upload files</label>
+      <input id="fileInput" type="file" multiple>
+      <button id="clearFilesBtn">Clear files</button>
+      <div id="fileList" class="file-list">
+        <div class="file-pill">No files</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="panel-title">Voice</div>
+      <button id="voiceBtn">Start voice</button>
+      <button id="speakReplyBtn">Voice reply: On</button>
+      <div class="helper">Voice input uses the browser microphone. Voice replies use the browser speaker voice.</div>
+    </div>
+
+    <div class="section">
+      <div class="panel-title">Session</div>
+      <button id="clearChatBtn" class="danger">Clear chat</button>
+      <div class="meta">This page sends your message, chat history, and uploaded files to your Jarvis backend.</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h1>Jarvis</h1>
+      <div class="meta">Remote chat, voice, files, and image help</div>
+    </header>
+
+    <section id="chat" class="chat">
+      <div id="welcome" class="welcome">
+        <h2>How can I help today?</h2>
+        <div class="welcome-grid">
+          <div class="card">
+            <strong>Talk naturally</strong>
+            <div class="empty-copy">Ask homework questions, get writing help, or solve math problems.</div>
+          </div>
+          <div class="card">
+            <strong>Upload files</strong>
+            <div class="empty-copy">Send notes, code, images, or documents and ask Jarvis to explain them.</div>
+          </div>
+          <div class="card">
+            <strong>Use your voice</strong>
+            <div class="empty-copy">Start voice input from the browser and let Jarvis speak replies back.</div>
           </div>
         </div>
-      </section>
+      </div>
+      <div id="messages"></div>
+    </section>
 
-      <aside class="panel tools-panel">
-        <div class="stack">
-          <div class="mini-card">
-            <h2>Files Ready</h2>
-            <div id="fileList" class="file-list">
-              <div class="file-pill">No files selected</div>
-            </div>
+    <footer class="composer-shell">
+      <div class="composer">
+        <textarea id="messageInput" placeholder="Message Jarvis"></textarea>
+        <div class="file-list hidden" id="inlineFileList"></div>
+        <div class="composer-row">
+          <div class="composer-tools">
+            <label class="upload-label" for="fileInput">Attach</label>
+            <button id="voiceBtnMobile" class="icon" title="Voice input">Mic</button>
           </div>
-
-          <div class="mini-card">
-            <h2>What This Sends</h2>
-            <p>The page posts your message, chat history, and uploaded files to your Jarvis backend at <code>/api/chat</code>.</p>
-          </div>
-
-          <div class="mini-card">
-            <h2>Backend Response Shape</h2>
-            <ul>
-              <li>Return JSON with <code>reply</code> as the assistant text.</li>
-              <li>Optional <code>speak</code> lets you override the spoken text.</li>
-              <li>Optional <code>files_read</code> can confirm what Jarvis processed.</li>
-            </ul>
-          </div>
-
-          <div class="mini-card">
-            <h2>Notes</h2>
-            <p class="footnote">Speech input uses the browser Web Speech API when available. Spoken replies use your browser's built-in speech synthesis.</p>
+          <div class="composer-actions">
+            <button id="sendBtn" class="primary send">Send</button>
           </div>
         </div>
-      </aside>
-    </section>
+      </div>
+    </footer>
   </main>
 
   <script>
@@ -357,48 +510,111 @@
       apiBase: document.getElementById("apiBase"),
       apiKey: document.getElementById("apiKey"),
       saveSettingsBtn: document.getElementById("saveSettingsBtn"),
+      statusDot: document.getElementById("statusDot"),
+      statusText: document.getElementById("statusText"),
       messages: document.getElementById("messages"),
+      welcome: document.getElementById("welcome"),
       messageInput: document.getElementById("messageInput"),
       sendBtn: document.getElementById("sendBtn"),
+      newChatBtn: document.getElementById("newChatBtn"),
       voiceBtn: document.getElementById("voiceBtn"),
+      voiceBtnMobile: document.getElementById("voiceBtnMobile"),
       speakReplyBtn: document.getElementById("speakReplyBtn"),
       fileInput: document.getElementById("fileInput"),
       fileList: document.getElementById("fileList"),
+      inlineFileList: document.getElementById("inlineFileList"),
       clearFilesBtn: document.getElementById("clearFilesBtn"),
       clearChatBtn: document.getElementById("clearChatBtn"),
-      statusBadge: document.getElementById("statusBadge"),
+      chat: document.getElementById("chat"),
     };
 
+    function defaultApiBase() {
+      const sameOrigin = `${window.location.origin}/jarvis-api`;
+      return window.location.hostname.includes("github.io") ? "" : sameOrigin;
+    }
+
+    function autosizeTextarea() {
+      els.messageInput.style.height = "auto";
+      els.messageInput.style.height = `${Math.min(els.messageInput.scrollHeight, 180)}px`;
+    }
+
+    function updateStatus(kind, text) {
+      els.statusText.textContent = text;
+      els.statusDot.className = "status-dot";
+      if (kind) {
+        els.statusDot.classList.add(kind);
+      }
+    }
+
     function loadSettings() {
-      els.apiBase.value = localStorage.getItem("jarvis_api_base") || "";
+      els.apiBase.value = localStorage.getItem("jarvis_api_base") || defaultApiBase();
       els.apiKey.value = localStorage.getItem("jarvis_api_key") || "";
       state.speakReplies = (localStorage.getItem("jarvis_speak_replies") || "true") === "true";
       refreshSpeakButton();
-      updateStatus(els.apiBase.value ? "Ready" : "Set API URL");
+      updateStatus(els.apiBase.value.trim() ? "" : "error", els.apiBase.value.trim() ? "Ready" : "Add API URL");
     }
 
     function saveSettings() {
       localStorage.setItem("jarvis_api_base", els.apiBase.value.trim());
       localStorage.setItem("jarvis_api_key", els.apiKey.value.trim());
       localStorage.setItem("jarvis_speak_replies", String(state.speakReplies));
-      updateStatus(els.apiBase.value.trim() ? "Ready" : "Set API URL");
-      addMessage("system", "Connection settings saved in this browser.");
+      updateStatus(els.apiBase.value.trim() ? "" : "error", els.apiBase.value.trim() ? "Saved" : "Add API URL");
+      addSystemMessage("Connection settings saved in this browser.");
     }
 
-    function updateStatus(text) {
-      els.statusBadge.textContent = text;
+    function hideWelcome() {
+      els.welcome.classList.add("hidden");
     }
 
     function addMessage(role, text) {
-      const div = document.createElement("div");
-      div.className = `msg ${role}`;
-      div.textContent = text;
-      els.messages.appendChild(div);
-      els.messages.scrollTop = els.messages.scrollHeight;
+      hideWelcome();
+      const wrap = document.createElement("div");
+      wrap.className = `message-wrap ${role}`;
+
+      const message = document.createElement("div");
+      message.className = "message";
+
+      const avatar = document.createElement("div");
+      avatar.className = `avatar ${role}`;
+      avatar.textContent = role === "assistant" ? "J" : "You";
+
+      const content = document.createElement("div");
+      content.className = "content";
+      content.textContent = text;
+
+      message.appendChild(avatar);
+      message.appendChild(content);
+      wrap.appendChild(message);
+      els.messages.appendChild(wrap);
+      els.chat.scrollTop = els.chat.scrollHeight;
+    }
+
+    function addSystemMessage(text) {
+      hideWelcome();
+      const wrap = document.createElement("div");
+      wrap.className = "message-wrap assistant";
+
+      const message = document.createElement("div");
+      message.className = "message";
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar assistant";
+      avatar.textContent = "J";
+
+      const content = document.createElement("div");
+      content.className = "content";
+      content.textContent = text;
+      content.style.color = "#f5c2c7";
+
+      message.appendChild(avatar);
+      message.appendChild(content);
+      wrap.appendChild(message);
+      els.messages.appendChild(wrap);
+      els.chat.scrollTop = els.chat.scrollHeight;
     }
 
     function refreshSpeakButton() {
-      els.speakReplyBtn.textContent = `Voice Reply: ${state.speakReplies ? "On" : "Off"}`;
+      els.speakReplyBtn.textContent = `Voice reply: ${state.speakReplies ? "On" : "Off"}`;
     }
 
     async function fileToPayload(file) {
@@ -418,17 +634,23 @@
     }
 
     function renderFiles() {
-      els.fileList.innerHTML = "";
-      if (!state.files.length) {
-        els.fileList.innerHTML = '<div class="file-pill">No files selected</div>';
-        return;
-      }
-      for (const file of state.files) {
-        const item = document.createElement("div");
-        item.className = "file-pill";
-        item.textContent = `${file.name} (${Math.round(file.size / 1024) || 1} KB)`;
-        els.fileList.appendChild(item);
-      }
+      const render = (container) => {
+        container.innerHTML = "";
+        if (!state.files.length) {
+          container.innerHTML = '<div class="file-pill">No files</div>';
+          return;
+        }
+        for (const file of state.files) {
+          const pill = document.createElement("div");
+          pill.className = "file-pill";
+          pill.textContent = `${file.name} (${Math.max(1, Math.round(file.size / 1024))} KB)`;
+          container.appendChild(pill);
+        }
+      };
+
+      render(els.fileList);
+      render(els.inlineFileList);
+      els.inlineFileList.classList.toggle("hidden", state.files.length === 0);
     }
 
     function speakText(text) {
@@ -448,25 +670,21 @@
       const apiKey = els.apiKey.value.trim();
 
       if (!apiBase) {
-        addMessage("system", "Add your Jarvis API URL first.");
+        addSystemMessage("Add your Jarvis API URL first.");
+        updateStatus("error", "Missing API URL");
         return;
       }
 
       if (!message && state.files.length === 0) {
-        addMessage("system", "Type a message or upload at least one file.");
+        addSystemMessage("Type a message or upload at least one file.");
         return;
       }
 
-      if (message) {
-        addMessage("user", message);
-        state.history.push({ role: "user", content: message });
-      } else {
-        addMessage("user", "[Uploaded files]");
-        state.history.push({ role: "user", content: "[Uploaded files]" });
-      }
-
+      addMessage("user", message || "[Uploaded files]");
+      state.history.push({ role: "user", content: message || "[Uploaded files]" });
       els.messageInput.value = "";
-      updateStatus("Sending...");
+      autosizeTextarea();
+      updateStatus("", "Sending...");
 
       try {
         const filePayloads = await Promise.all(state.files.map(fileToPayload));
@@ -483,27 +701,35 @@
           }),
         });
 
+        const data = await response.json();
         if (!response.ok) {
-          throw new Error(`Server returned ${response.status}`);
+          throw new Error(data.error || `Server returned ${response.status}`);
         }
 
-        const data = await response.json();
         const reply = data.reply || "Jarvis did not return any text.";
         addMessage("assistant", reply);
         state.history.push({ role: "assistant", content: reply });
         speakText(data.speak || reply);
-        updateStatus("Connected");
+        updateStatus("live", "Connected");
       } catch (error) {
-        addMessage("system", `Request failed: ${error.message}`);
-        updateStatus("Error");
+        addSystemMessage(`Request failed: ${error.message}`);
+        updateStatus("error", "Connection error");
       }
+    }
+
+    function clearChat() {
+      state.history = [];
+      els.messages.innerHTML = "";
+      els.welcome.classList.remove("hidden");
+      window.speechSynthesis?.cancel();
+      updateStatus(els.apiBase.value.trim() ? "" : "error", els.apiBase.value.trim() ? "Ready" : "Add API URL");
     }
 
     function setupVoiceInput() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        addMessage("system", "This browser does not support voice input.");
         els.voiceBtn.disabled = true;
+        els.voiceBtnMobile.disabled = true;
         return;
       }
 
@@ -515,13 +741,15 @@
       state.recognition.onstart = () => {
         state.voiceInputActive = true;
         els.voiceBtn.textContent = "Listening...";
-        updateStatus("Listening");
+        els.voiceBtnMobile.textContent = "Mic...";
+        updateStatus("", "Listening");
       };
 
       state.recognition.onend = () => {
         state.voiceInputActive = false;
-        els.voiceBtn.textContent = "Start Voice";
-        updateStatus(els.apiBase.value.trim() ? "Ready" : "Set API URL");
+        els.voiceBtn.textContent = "Start voice";
+        els.voiceBtnMobile.textContent = "Mic";
+        updateStatus(els.apiBase.value.trim() ? "" : "error", els.apiBase.value.trim() ? "Ready" : "Add API URL");
       };
 
       state.recognition.onresult = (event) => {
@@ -531,32 +759,41 @@
           .trim();
         if (transcript) {
           els.messageInput.value = transcript;
+          autosizeTextarea();
           sendMessage();
         }
       };
 
       state.recognition.onerror = (event) => {
-        addMessage("system", `Voice input error: ${event.error}`);
+        addSystemMessage(`Voice input error: ${event.error}`);
+        updateStatus("error", "Voice error");
       };
     }
 
-    els.saveSettingsBtn.addEventListener("click", saveSettings);
-    els.sendBtn.addEventListener("click", sendMessage);
-    els.messageInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        sendMessage();
-      }
-    });
-
-    els.voiceBtn.addEventListener("click", () => {
+    function toggleVoice() {
       if (!state.recognition) {
+        addSystemMessage("This browser does not support voice input.");
         return;
       }
       if (state.voiceInputActive) {
         state.recognition.stop();
       } else {
         state.recognition.start();
+      }
+    }
+
+    els.saveSettingsBtn.addEventListener("click", saveSettings);
+    els.sendBtn.addEventListener("click", sendMessage);
+    els.newChatBtn.addEventListener("click", clearChat);
+    els.clearChatBtn.addEventListener("click", clearChat);
+    els.voiceBtn.addEventListener("click", toggleVoice);
+    els.voiceBtnMobile.addEventListener("click", toggleVoice);
+
+    els.messageInput.addEventListener("input", autosizeTextarea);
+    els.messageInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
       }
     });
 
@@ -577,17 +814,10 @@
       renderFiles();
     });
 
-    els.clearChatBtn.addEventListener("click", () => {
-      state.history = [];
-      els.messages.innerHTML = "";
-      window.speechSynthesis?.cancel();
-      addMessage("system", "Chat cleared.");
-    });
-
     loadSettings();
     setupVoiceInput();
     renderFiles();
-    addMessage("assistant", "Jarvis Remote is loaded. Add your backend URL, then start chatting.");
+    autosizeTextarea();
   </script>
 </body>
 </html>
