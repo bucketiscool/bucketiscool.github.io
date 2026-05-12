@@ -569,13 +569,8 @@
       sidebarToggle: document.getElementById("sidebarToggle"),
     };
 
-    function defaultApiBase() {
-      return "http://192.168.2.54:8766";
-    }
-
-    function defaultApiKey() {
-      return "";
-    }
+    const LOCAL_API_BASE = "http://192.168.2.54:8766";
+    const LOCAL_API_KEY = "";
 
     function autosizeTextarea() {
       els.messageInput.style.height = "auto";
@@ -690,8 +685,8 @@
 
     async function sendMessage() {
       const message = els.messageInput.value.trim();
-      const apiBase = (localStorage.getItem("jarvis_api_base") || defaultApiBase()).trim().replace(/\/+$/, "");
-      const apiKey = (localStorage.getItem("jarvis_api_key") || defaultApiKey()).trim();
+      const apiBase = LOCAL_API_BASE.replace(/\/+$/, "");
+      const apiKey = LOCAL_API_KEY.trim();
 
       if (!apiBase) {
         addSystemMessage("Jarvis API URL is missing.");
@@ -723,7 +718,13 @@
           }),
         });
 
-        const data = await response.json();
+        const rawText = await response.text();
+        let data;
+        try {
+          data = JSON.parse(rawText);
+        } catch (parseError) {
+          throw new Error(`Server returned non-JSON content. Check that Jarvis is running at ${apiBase}. Response started with: ${rawText.slice(0, 120)}`);
+        }
         if (!response.ok) {
           throw new Error(data.error || `Server returned ${response.status}`);
         }
@@ -826,6 +827,8 @@
     setupVoiceInput();
     renderFiles();
     autosizeTextarea();
+    localStorage.removeItem("jarvis_api_base");
+    localStorage.removeItem("jarvis_api_key");
     if (window.innerWidth <= 960) {
       document.body.classList.add("sidebar-collapsed");
     }
