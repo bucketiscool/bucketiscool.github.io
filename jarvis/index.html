@@ -44,6 +44,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      transition: transform 0.2s ease;
     }
 
     .brand {
@@ -132,15 +133,6 @@
       border-color: #4b2b2b;
     }
 
-    .section {
-      display: grid;
-      gap: 10px;
-      padding: 12px;
-      border-radius: 14px;
-      background: #1b1b1b;
-      border: 1px solid var(--line);
-    }
-
     .chip {
       display: inline-flex;
       align-items: center;
@@ -200,6 +192,26 @@
       margin: 0;
       font-size: 16px;
       font-weight: 600;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .sidebar-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #262626;
+      color: var(--text);
+      cursor: pointer;
     }
 
     .chat {
@@ -359,6 +371,7 @@
       background: #343434;
       padding: 10px 12px;
       width: auto;
+      text-align: center;
     }
 
     input[type="file"] {
@@ -384,13 +397,31 @@
       display: none;
     }
 
+    body.sidebar-collapsed {
+      grid-template-columns: 0 1fr;
+    }
+
+    body.sidebar-collapsed .sidebar {
+      transform: translateX(-100%);
+      overflow: hidden;
+      pointer-events: none;
+    }
+
     @media (max-width: 960px) {
       body {
         grid-template-columns: 1fr;
       }
 
       .sidebar {
-        display: none;
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(82vw, 300px);
+        z-index: 20;
+        box-shadow: var(--shadow);
+      }
+
+      body.sidebar-collapsed .sidebar {
+        transform: translateX(-100%);
       }
 
       .welcome-grid {
@@ -401,6 +432,53 @@
       .composer-shell {
         padding-left: 12px;
         padding-right: 12px;
+      }
+
+      .welcome,
+      .message,
+      .composer {
+        width: min(100%, calc(100% - 16px));
+      }
+
+      .welcome {
+        min-height: calc(100vh - 210px);
+      }
+
+      .message {
+        grid-template-columns: 28px 1fr;
+        gap: 12px;
+      }
+
+      .avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        font-size: 11px;
+      }
+
+      .content {
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .composer {
+        border-radius: 18px;
+        padding: 10px;
+      }
+
+      .composer textarea {
+        min-height: 46px;
+        padding: 4px 4px 0;
+      }
+
+      .composer-row {
+        align-items: stretch;
+      }
+
+      .composer-tools,
+      .composer-actions {
+        width: 100%;
+        justify-content: space-between;
       }
     }
   </style>
@@ -416,46 +494,15 @@
     </div>
 
     <button id="newChatBtn" class="primary">New chat</button>
-
-    <div class="section">
-      <div class="panel-title">Connection</div>
-      <div class="chip">
-        <span id="statusDot" class="status-dot"></span>
-        <span id="statusText">Needs setup</span>
-      </div>
-      <input id="apiBase" type="text" placeholder="http://192.168.2.54:8766">
-      <input id="apiKey" type="password" placeholder="API key if you use one">
-      <button id="saveSettingsBtn">Save connection</button>
-      <div class="helper">Local-only setup: on your home Wi-Fi, use `http://192.168.2.54:8766` as the Jarvis API URL.</div>
-    </div>
-
-    <div class="section">
-      <div class="panel-title">Files</div>
-      <label class="upload-label" for="fileInput">Upload files</label>
-      <input id="fileInput" type="file" multiple>
-      <button id="clearFilesBtn">Clear files</button>
-      <div id="fileList" class="file-list">
-        <div class="file-pill">No files</div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="panel-title">Voice</div>
-      <button id="voiceBtn">Start voice</button>
-      <button id="speakReplyBtn">Voice reply: On</button>
-      <div class="helper">Voice input uses the browser microphone. Voice replies use the browser speaker voice.</div>
-    </div>
-
-    <div class="section">
-      <div class="panel-title">Session</div>
-      <button id="clearChatBtn" class="danger">Clear chat</button>
-      <div class="meta">This page sends your message, chat history, and uploaded files to your Jarvis backend.</div>
-    </div>
+    <div class="helper">Jarvis on your home Wi-Fi.</div>
   </aside>
 
   <main class="main">
     <header class="topbar">
-      <h1>Jarvis</h1>
+      <div class="topbar-left">
+        <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar">☰</button>
+        <h1>Jarvis</h1>
+      </div>
       <div class="meta">Remote chat, voice, files, and image help</div>
     </header>
 
@@ -487,7 +534,9 @@
         <div class="composer-row">
           <div class="composer-tools">
             <label class="upload-label" for="fileInput">Attach</label>
+            <input id="fileInput" type="file" multiple>
             <button id="voiceBtnMobile" class="icon" title="Voice input">Mic</button>
+            <button id="speakReplyBtn" class="icon" title="Voice reply">Voice</button>
           </div>
           <div class="composer-actions">
             <button id="sendBtn" class="primary send">Send</button>
@@ -507,29 +556,25 @@
     };
 
     const els = {
-      apiBase: document.getElementById("apiBase"),
-      apiKey: document.getElementById("apiKey"),
-      saveSettingsBtn: document.getElementById("saveSettingsBtn"),
-      statusDot: document.getElementById("statusDot"),
-      statusText: document.getElementById("statusText"),
       messages: document.getElementById("messages"),
       welcome: document.getElementById("welcome"),
       messageInput: document.getElementById("messageInput"),
       sendBtn: document.getElementById("sendBtn"),
       newChatBtn: document.getElementById("newChatBtn"),
-      voiceBtn: document.getElementById("voiceBtn"),
       voiceBtnMobile: document.getElementById("voiceBtnMobile"),
       speakReplyBtn: document.getElementById("speakReplyBtn"),
       fileInput: document.getElementById("fileInput"),
-      fileList: document.getElementById("fileList"),
       inlineFileList: document.getElementById("inlineFileList"),
-      clearFilesBtn: document.getElementById("clearFilesBtn"),
-      clearChatBtn: document.getElementById("clearChatBtn"),
       chat: document.getElementById("chat"),
+      sidebarToggle: document.getElementById("sidebarToggle"),
     };
 
     function defaultApiBase() {
       return "http://192.168.2.54:8766";
+    }
+
+    function defaultApiKey() {
+      return "";
     }
 
     function autosizeTextarea() {
@@ -537,28 +582,9 @@
       els.messageInput.style.height = `${Math.min(els.messageInput.scrollHeight, 180)}px`;
     }
 
-    function updateStatus(kind, text) {
-      els.statusText.textContent = text;
-      els.statusDot.className = "status-dot";
-      if (kind) {
-        els.statusDot.classList.add(kind);
-      }
-    }
-
     function loadSettings() {
-      els.apiBase.value = localStorage.getItem("jarvis_api_base") || defaultApiBase();
-      els.apiKey.value = localStorage.getItem("jarvis_api_key") || "";
       state.speakReplies = (localStorage.getItem("jarvis_speak_replies") || "true") === "true";
       refreshSpeakButton();
-      updateStatus(els.apiBase.value.trim() ? "" : "error", els.apiBase.value.trim() ? "Ready" : "Add API URL");
-    }
-
-    function saveSettings() {
-      localStorage.setItem("jarvis_api_base", els.apiBase.value.trim());
-      localStorage.setItem("jarvis_api_key", els.apiKey.value.trim());
-      localStorage.setItem("jarvis_speak_replies", String(state.speakReplies));
-      updateStatus(els.apiBase.value.trim() ? "" : "error", els.apiBase.value.trim() ? "Saved" : "Add API URL");
-      addSystemMessage("Connection settings saved in this browser.");
     }
 
     function hideWelcome() {
@@ -647,7 +673,6 @@
         }
       };
 
-      render(els.fileList);
       render(els.inlineFileList);
       els.inlineFileList.classList.toggle("hidden", state.files.length === 0);
     }
@@ -665,12 +690,11 @@
 
     async function sendMessage() {
       const message = els.messageInput.value.trim();
-      const apiBase = els.apiBase.value.trim().replace(/\/+$/, "");
-      const apiKey = els.apiKey.value.trim();
+      const apiBase = (localStorage.getItem("jarvis_api_base") || defaultApiBase()).trim().replace(/\/+$/, "");
+      const apiKey = (localStorage.getItem("jarvis_api_key") || defaultApiKey()).trim();
 
       if (!apiBase) {
-        addSystemMessage("Add your Jarvis API URL first.");
-        updateStatus("error", "Missing API URL");
+        addSystemMessage("Jarvis API URL is missing.");
         return;
       }
 
@@ -683,7 +707,6 @@
       state.history.push({ role: "user", content: message || "[Uploaded files]" });
       els.messageInput.value = "";
       autosizeTextarea();
-      updateStatus("", "Sending...");
 
       try {
         const filePayloads = await Promise.all(state.files.map(fileToPayload));
@@ -709,10 +732,8 @@
         addMessage("assistant", reply);
         state.history.push({ role: "assistant", content: reply });
         speakText(data.speak || reply);
-        updateStatus("live", "Connected");
       } catch (error) {
         addSystemMessage(`Request failed: ${error.message}`);
-        updateStatus("error", "Connection error");
       }
     }
 
@@ -721,7 +742,6 @@
       els.messages.innerHTML = "";
       els.welcome.classList.remove("hidden");
       window.speechSynthesis?.cancel();
-      updateStatus(els.apiBase.value.trim() ? "" : "error", els.apiBase.value.trim() ? "Ready" : "Add API URL");
     }
 
     function setupVoiceInput() {
@@ -739,16 +759,12 @@
 
       state.recognition.onstart = () => {
         state.voiceInputActive = true;
-        els.voiceBtn.textContent = "Listening...";
         els.voiceBtnMobile.textContent = "Mic...";
-        updateStatus("", "Listening");
       };
 
       state.recognition.onend = () => {
         state.voiceInputActive = false;
-        els.voiceBtn.textContent = "Start voice";
         els.voiceBtnMobile.textContent = "Mic";
-        updateStatus(els.apiBase.value.trim() ? "" : "error", els.apiBase.value.trim() ? "Ready" : "Add API URL");
       };
 
       state.recognition.onresult = (event) => {
@@ -765,7 +781,6 @@
 
       state.recognition.onerror = (event) => {
         addSystemMessage(`Voice input error: ${event.error}`);
-        updateStatus("error", "Voice error");
       };
     }
 
@@ -781,12 +796,12 @@
       }
     }
 
-    els.saveSettingsBtn.addEventListener("click", saveSettings);
     els.sendBtn.addEventListener("click", sendMessage);
     els.newChatBtn.addEventListener("click", clearChat);
-    els.clearChatBtn.addEventListener("click", clearChat);
-    els.voiceBtn.addEventListener("click", toggleVoice);
     els.voiceBtnMobile.addEventListener("click", toggleVoice);
+    els.sidebarToggle.addEventListener("click", () => {
+      document.body.classList.toggle("sidebar-collapsed");
+    });
 
     els.messageInput.addEventListener("input", autosizeTextarea);
     els.messageInput.addEventListener("keydown", (event) => {
@@ -807,16 +822,13 @@
       renderFiles();
     });
 
-    els.clearFilesBtn.addEventListener("click", () => {
-      state.files = [];
-      els.fileInput.value = "";
-      renderFiles();
-    });
-
     loadSettings();
     setupVoiceInput();
     renderFiles();
     autosizeTextarea();
+    if (window.innerWidth <= 960) {
+      document.body.classList.add("sidebar-collapsed");
+    }
   </script>
 </body>
 </html>
