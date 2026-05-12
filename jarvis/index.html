@@ -309,6 +309,11 @@
       color: var(--muted);
     }
 
+    .content.voice-state {
+      color: var(--muted);
+      font-style: italic;
+    }
+
     .typing {
       display: inline-flex;
       align-items: center;
@@ -332,6 +337,35 @@
       animation-delay: 0.3s;
     }
 
+    .speaker-wave {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .speaker-wave span {
+      width: 4px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      animation: wave 1s infinite ease-in-out;
+      transform-origin: center bottom;
+    }
+
+    .speaker-wave span:nth-child(2) {
+      animation-delay: 0.12s;
+    }
+
+    .speaker-wave span:nth-child(3) {
+      animation-delay: 0.24s;
+    }
+
+    .speaker-wave span:nth-child(4) {
+      animation-delay: 0.36s;
+    }
+
     @keyframes pulse {
       0%, 80%, 100% {
         transform: scale(0.7);
@@ -339,6 +373,17 @@
       }
       40% {
         transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes wave {
+      0%, 100% {
+        transform: scaleY(0.45);
+        opacity: 0.55;
+      }
+      50% {
+        transform: scaleY(1.2);
         opacity: 1;
       }
     }
@@ -578,8 +623,7 @@
           <div class="composer-tools">
             <label class="upload-label" for="fileInput">Attach</label>
             <input id="fileInput" type="file" multiple>
-            <button id="voiceBtnMobile" class="icon" title="Voice input">Mic</button>
-            <button id="speakReplyBtn" class="icon" title="Voice reply">Voice</button>
+            <button id="voiceBtnMobile" class="icon" title="Voice mode">Voice</button>
           </div>
           <div class="composer-actions">
             <button id="sendBtn" class="primary send">Send</button>
@@ -598,6 +642,8 @@
       speakReplies: true,
       isLoading: false,
       loadingMessageEl: null,
+      voiceStateEl: null,
+      isSpeaking: false,
     };
 
     const els = {
@@ -607,7 +653,6 @@
       sendBtn: document.getElementById("sendBtn"),
       newChatBtn: document.getElementById("newChatBtn"),
       voiceBtnMobile: document.getElementById("voiceBtnMobile"),
-      speakReplyBtn: document.getElementById("speakReplyBtn"),
       fileInput: document.getElementById("fileInput"),
       inlineFileList: document.getElementById("inlineFileList"),
       chat: document.getElementById("chat"),
@@ -623,8 +668,7 @@
     }
 
     function loadSettings() {
-      state.speakReplies = (localStorage.getItem("jarvis_speak_replies") || "true") === "true";
-      refreshSpeakButton();
+      state.speakReplies = true;
     }
 
     function hideWelcome() {
@@ -678,12 +722,50 @@
       els.chat.scrollTop = els.chat.scrollHeight;
     }
 
+    function showVoiceState(kind) {
+      clearVoiceState();
+      hideWelcome();
+      const wrap = document.createElement("div");
+      wrap.className = "message-wrap assistant";
+
+      const message = document.createElement("div");
+      message.className = "message";
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar assistant";
+      avatar.textContent = "J";
+
+      const content = document.createElement("div");
+      content.className = "content voice-state";
+
+      if (kind === "listening") {
+        content.textContent = "Listening...";
+      } else if (kind === "talking") {
+        content.innerHTML = 'Talking<span class="speaker-wave" aria-label="Jarvis is talking"><span></span><span></span><span></span><span></span></span>';
+      }
+
+      message.appendChild(avatar);
+      message.appendChild(content);
+      wrap.appendChild(message);
+      els.messages.appendChild(wrap);
+      els.chat.scrollTop = els.chat.scrollHeight;
+      state.voiceStateEl = wrap;
+    }
+
+    function clearVoiceState() {
+      if (state.voiceStateEl) {
+        state.voiceStateEl.remove();
+        state.voiceStateEl = null;
+      }
+    }
+
     function setLoading(isLoading) {
       state.isLoading = isLoading;
       els.sendBtn.disabled = isLoading;
       els.voiceBtnMobile.disabled = isLoading;
       els.messageInput.disabled = isLoading;
       if (isLoading) {
+        clearVoiceState();
         if (!state.loadingMessageEl) {
           hideWelcome();
           const wrap = document.createElement("div");
@@ -718,10 +800,6 @@
         els.messageInput.disabled = false;
         els.sendBtn.textContent = "Send";
       }
-    }
-
-    function refreshSpeakButton() {
-      els.speakReplyBtn.textContent = `Voice reply: ${state.speakReplies ? "On" : "Off"}`;
     }
 
     async function fileToPayload(file) {
@@ -767,6 +845,18 @@
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1;
       utterance.pitch = 1;
+      utterance.onstart = () => {
+        state.isSpeaking = true;
+        showVoiceState("talking");
+      };
+      utterance.onend = () => {
+        state.isSpeaking = false;
+        clearVoiceState();
+      };
+      utterance.onerror = () => {
+        state.isSpeaking = false;
+        clearVoiceState();
+      };
       window.speechSynthesis.speak(utterance);
     }
 
@@ -833,12 +923,12 @@
       els.messages.innerHTML = "";
       els.welcome.classList.remove("hidden");
       window.speechSynthesis?.cancel();
+      clearVoiceState();
     }
 
     function setupVoiceInput() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        els.voiceBtn.disabled = true;
         els.voiceBtnMobile.disabled = true;
         return;
       }
@@ -846,31 +936,38 @@
       state.recognition = new SpeechRecognition();
       state.recognition.lang = "en-US";
       state.recognition.interimResults = false;
-      state.recognition.continuous = false;
+      state.recognition.continuous = true;
 
       state.recognition.onstart = () => {
         state.voiceInputActive = true;
-        els.voiceBtnMobile.textContent = "Mic...";
+        els.voiceBtnMobile.textContent = "Stop";
+        showVoiceState("listening");
       };
 
       state.recognition.onend = () => {
         state.voiceInputActive = false;
-        els.voiceBtnMobile.textContent = "Mic";
+        els.voiceBtnMobile.textContent = "Voice";
+        if (!state.isLoading && !state.isSpeaking) {
+          clearVoiceState();
+        }
       };
 
       state.recognition.onresult = (event) => {
         const transcript = Array.from(event.results)
+          .filter(result => result.isFinal)
           .map(result => result[0].transcript)
           .join(" ")
           .trim();
         if (transcript) {
           els.messageInput.value = transcript;
           autosizeTextarea();
+          state.recognition.stop();
           sendMessage();
         }
       };
 
       state.recognition.onerror = (event) => {
+        clearVoiceState();
         addSystemMessage(`Voice input error: ${event.error}`);
       };
     }
@@ -903,12 +1000,6 @@
         event.preventDefault();
         sendMessage();
       }
-    });
-
-    els.speakReplyBtn.addEventListener("click", () => {
-      state.speakReplies = !state.speakReplies;
-      refreshSpeakButton();
-      localStorage.setItem("jarvis_speak_replies", String(state.speakReplies));
     });
 
     els.fileInput.addEventListener("change", (event) => {
