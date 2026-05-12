@@ -305,6 +305,44 @@
       font-size: 15px;
     }
 
+    .content.loading {
+      color: var(--muted);
+    }
+
+    .typing {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+    }
+
+    .typing span {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #7a7a7a;
+      animation: pulse 1s infinite ease-in-out;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes pulse {
+      0%, 80%, 100% {
+        transform: scale(0.7);
+        opacity: 0.45;
+      }
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
     .composer-shell {
       padding: 16px;
       border-top: 1px solid var(--line);
@@ -365,6 +403,11 @@
 
     .composer button.send {
       min-width: 68px;
+    }
+
+    .composer button[disabled] {
+      opacity: 0.6;
+      cursor: wait;
     }
 
     .upload-label {
@@ -552,7 +595,9 @@
       files: [],
       recognition: null,
       voiceInputActive: false,
-      speakReplies: false,
+      speakReplies: true,
+      isLoading: false,
+      loadingMessageEl: null,
     };
 
     const els = {
@@ -633,6 +678,48 @@
       els.chat.scrollTop = els.chat.scrollHeight;
     }
 
+    function setLoading(isLoading) {
+      state.isLoading = isLoading;
+      els.sendBtn.disabled = isLoading;
+      els.voiceBtnMobile.disabled = isLoading;
+      els.messageInput.disabled = isLoading;
+      if (isLoading) {
+        if (!state.loadingMessageEl) {
+          hideWelcome();
+          const wrap = document.createElement("div");
+          wrap.className = "message-wrap assistant";
+
+          const message = document.createElement("div");
+          message.className = "message";
+
+          const avatar = document.createElement("div");
+          avatar.className = "avatar assistant";
+          avatar.textContent = "J";
+
+          const content = document.createElement("div");
+          content.className = "content loading";
+          content.innerHTML = '<div class="typing" aria-label="Jarvis is thinking"><span></span><span></span><span></span></div>';
+
+          message.appendChild(avatar);
+          message.appendChild(content);
+          wrap.appendChild(message);
+          els.messages.appendChild(wrap);
+          els.chat.scrollTop = els.chat.scrollHeight;
+          state.loadingMessageEl = wrap;
+        }
+        els.sendBtn.textContent = "Thinking...";
+      } else {
+        if (state.loadingMessageEl) {
+          state.loadingMessageEl.remove();
+          state.loadingMessageEl = null;
+        }
+        els.sendBtn.disabled = false;
+        els.voiceBtnMobile.disabled = false;
+        els.messageInput.disabled = false;
+        els.sendBtn.textContent = "Send";
+      }
+    }
+
     function refreshSpeakButton() {
       els.speakReplyBtn.textContent = `Voice reply: ${state.speakReplies ? "On" : "Off"}`;
     }
@@ -702,6 +789,7 @@
       state.history.push({ role: "user", content: message || "[Uploaded files]" });
       els.messageInput.value = "";
       autosizeTextarea();
+      setLoading(true);
 
       try {
         const filePayloads = await Promise.all(state.files.map(fileToPayload));
@@ -730,10 +818,12 @@
         }
 
         const reply = data.reply || "Jarvis did not return any text.";
+        setLoading(false);
         addMessage("assistant", reply);
         state.history.push({ role: "assistant", content: reply });
         speakText(data.speak || reply);
       } catch (error) {
+        setLoading(false);
         addSystemMessage(`Request failed: ${error.message}`);
       }
     }
@@ -786,6 +876,9 @@
     }
 
     function toggleVoice() {
+      if (state.isLoading) {
+        return;
+      }
       if (!state.recognition) {
         addSystemMessage("This browser does not support voice input.");
         return;
