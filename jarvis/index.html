@@ -423,10 +423,10 @@
         <span id="statusDot" class="status-dot"></span>
         <span id="statusText">Needs setup</span>
       </div>
-      <input id="apiBase" type="text" placeholder="https://api.beckettgraham.ca">
+      <input id="apiBase" type="text" placeholder="http://192.168.2.54:8766">
       <input id="apiKey" type="password" placeholder="API key if you use one">
       <button id="saveSettingsBtn">Save connection</button>
-      <div class="helper">Your website URL can be `beckettgraham.ca/jarvis`, but the Jarvis API still needs its own reachable backend URL or reverse proxy.</div>
+      <div class="helper">Local-only setup: on your home Wi-Fi, use `http://192.168.2.54:8766` as the Jarvis API URL.</div>
     </div>
 
     <div class="section">
@@ -529,8 +529,7 @@
     };
 
     function defaultApiBase() {
-      const sameOrigin = `${window.location.origin}/jarvis-api`;
-      return window.location.hostname.includes("github.io") ? "" : sameOrigin;
+      return "http://192.168.2.54:8766";
     }
 
     function autosizeTextarea() {
