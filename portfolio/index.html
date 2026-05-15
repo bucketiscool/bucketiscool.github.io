@@ -21,6 +21,51 @@
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
+
+        /* Western accepted card styles */
+        .western-accepted {
+            background: linear-gradient(135deg, #4F2D7F 0%, #6B3FA0 100%);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .western-accepted::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.12) 0%, transparent 60%);
+        }
+        .western-accepted:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(79, 45, 127, 0.35);
+        }
+        .western-accepted h3 {
+            color: white;
+        }
+        .western-accepted img {
+            filter: brightness(0) invert(1);
+        }
+        .accepted-badge {
+            background: white;
+            color: #4F2D7F;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 6px 16px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .accepted-badge::before {
+            content: '✓';
+            font-weight: 900;
+        }
+        .confetti-dot {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.25;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -32,7 +77,6 @@
                 <a href="/" class="hover:text-blue-600 transition">Home</a>
                 <a href="/portfolio/" class="hover:text-blue-600 transition">Portfolio</a>
                 <a href="/games/" class="hover:text-blue-600 transition">Games</a>
-                <a href="/decalipulation/" class="hover:text-blue-600 transition">decalipulation</a>
             </div>
         </div>
     </nav>
@@ -42,11 +86,11 @@
             <div data-aos="fade-right" data-aos-duration="1000">
                 <h1 class="font-bold mb-6 leading-[0.9] flex flex-col">
                     <span class="text-[12vw] md:text-7xl lg:text-8xl tracking-tighter whitespace-nowrap">
-                        Mechatronics
+                        Engineering
                     </span>
     
                     <span class="text-[12vw] md:text-7xl lg:text-8xl tracking-tighter text-blue-600 whitespace-nowrap">
-                        Engineering
+                        1
                     </span>
                 </h1>
                 <p class="text-2xl text-gray-500 mb-8 leading-relaxed">I'm Beckett Graham. A 17-year-old developer and builder with a passion for robotics, football and coding.</p>
@@ -73,17 +117,25 @@
             <div class="bento-card p-10 flex flex-col items-center" data-aos="fade-up" data-aos-delay="100">
                 <img src="McMaster.png" class="h-20 mb-6 object-contain" alt="McMaster">
                 <h3 class="font-bold text-xl">McMaster University</h3>
-                <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm ">Offer Received</span>
+                <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm">Offer Received</span>
             </div>
-            <div class="bento-card p-10 flex flex-col items-center" data-aos="fade-up" data-aos-delay="150">
-                <img src="western-logo.png" class="h-20 mb-6 object-contain" alt="Western">
-                <h3 class="font-bold text-xl">Western University</h3>
-                <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm ">Offer Received</span>
+
+            <!-- Western — ACCEPTED -->
+            <div class="bento-card western-accepted p-10 flex flex-col items-center" data-aos="fade-up" data-aos-delay="150">
+                <!-- decorative background dots -->
+                <span class="confetti-dot w-24 h-24 bg-white absolute -top-6 -right-6"></span>
+                <span class="confetti-dot w-12 h-12 bg-white absolute bottom-10 -left-4"></span>
+
+                <img src="western-logo.png" class="h-20 mb-6 object-contain relative z-10" alt="Western">
+                <h3 class="font-bold text-xl relative z-10">Western University</h3>
+                <p class="text-purple-200 text-xs font-medium mt-1 mb-3 relative z-10 tracking-wide uppercase">Engineering 1</p>
+                <span class="accepted-badge relative z-10">Accepted</span>
             </div>
+
             <div class="bento-card p-10 flex flex-col items-center" data-aos="fade-up" data-aos-delay="200">
                 <img src="QueensLogo_colour.png" class="h-20 mb-6 object-contain" alt="Queens">
                 <h3 class="font-bold text-xl">Queen's University</h3>
-                <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm ">Offer Received</span>
+                <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm">Offer Received</span>
             </div>
         </div>
 
@@ -91,12 +143,12 @@
             <div class="bento-card p-10 flex flex-col items-center w-full md:w-[calc(33.333%-1.33rem)]" data-aos="fade-up" data-aos-delay="250">
                 <img src="brock-logo.png" class="h-20 mb-6 object-contain" alt="Brock">
                 <h3 class="font-bold text-xl">Brock University</h3>
-                <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm ">Offer Received</span>
+                <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm">Offer Received</span>
             </div>
             <div class="bento-card p-10 flex flex-col items-center w-full md:w-[calc(33.333%-1.33rem)]" data-aos="fade-up" data-aos-delay="300">
                 <img src="guelph-logo.png" class="h-20 mb-6 object-contain" alt="Guelph">
                 <h3 class="font-bold text-xl">University of Guelph</h3>
-                <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm ">Offer Received</span>
+                <span class="mt-2 text-green-600 font-semibold bg-green-50 px-4 py-1 rounded-full text-sm">Offer Received</span>
             </div>
         </div>    
     </div>
