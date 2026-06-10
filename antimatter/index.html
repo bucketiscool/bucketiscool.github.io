@@ -243,17 +243,27 @@
       50% { transform: scaleY(1); opacity: 1; }
     }
 
+    /* Refined Clean UI Overlay with Left/Right Splitting */
     .panel-shell {
       position: fixed;
       inset: 0;
       z-index: 10;
       display: flex;
       align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.3); /* Lighter background since we share the screen */
       opacity: 0;
       pointer-events: none;
       transition: opacity 300ms ease;
+    }
+
+    .panel-shell.panel-right {
+      justify-content: flex-end;
+      padding-right: clamp(2rem, 6vw, 8rem);
+    }
+
+    .panel-shell.panel-left {
+      justify-content: flex-start;
+      padding-left: clamp(2rem, 6vw, 8rem);
     }
 
     .panel-shell.is-open {
@@ -262,8 +272,9 @@
     }
 
     .content-card {
-      width: min(43rem, 100%);
-      max-height: min(78vh, 52rem);
+      width: 42vw;
+      max-width: 42rem;
+      max-height: min(85vh, 56rem);
       overflow: auto;
       padding: clamp(1.5rem, 4vw, 2.5rem);
       border: 1px solid var(--line);
@@ -272,7 +283,7 @@
       box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
-      transform: translate3d(1.3rem, 0, 0) scale(0.98);
+      transform: translate3d(0, 2rem, 0) scale(0.98);
       transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
       scrollbar-width: thin;
       scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
@@ -305,8 +316,8 @@
 
     #panel-title {
       margin: 0;
-      font-size: clamp(1.65rem, 5vw, 3.05rem);
-      line-height: 1;
+      font-size: clamp(1.65rem, 4vw, 2.65rem);
+      line-height: 1.05;
       font-weight: 800;
       letter-spacing: -0.02em;
       color: #ffffff;
@@ -315,7 +326,7 @@
     #panel-subtitle {
       margin: 0.72rem 0 1.5rem;
       color: #cccccc;
-      font-size: clamp(1rem, 2vw, 1.15rem);
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
       line-height: 1.5;
     }
 
@@ -335,7 +346,7 @@
     .panel-section p,
     .panel-section li {
       color: #b3b3b3;
-      font-size: 1rem;
+      font-size: 0.95rem;
       line-height: 1.6;
     }
 
@@ -427,14 +438,17 @@
         font-size: clamp(1.35rem, 8vw, 2.25rem);
       }
 
-      .panel-shell {
-        place-items: end stretch;
+      .panel-shell.panel-right,
+      .panel-shell.panel-left {
+        justify-content: center;
+        align-items: flex-end;
         padding: 1rem;
       }
 
       .content-card {
         width: 100%;
-        max-height: 74vh;
+        max-width: none;
+        max-height: 60vh;
       }
     }
 
@@ -719,6 +733,7 @@
       hoveredNode: null,
       focusStart: null,
       focusTarget: null,
+      lookTargetOffset: new THREE.Vector3(0, 0, 0),
       focusT: 1,
       returnStart: null,
       returnT: 1,
@@ -780,19 +795,10 @@
     window.addEventListener("pointerleave", clearHover, { passive: true });
     window.addEventListener("click", onCanvasClick);
     
-    // Fixed: Stop event propagation to prevent immediate reopening bug
-    closeButton.addEventListener("click", (e) => {
-        e.stopPropagation();
-        closePanel();
-    });
-    
+    closeButton.addEventListener("click", closePanel);
     panelShell.addEventListener("click", (e) => {
-        if (e.target === panelShell) {
-            e.stopPropagation();
-            closePanel();
-        }
+        if (e.target === panelShell) closePanel();
     });
-    
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && state.locked) closePanel();
     });
@@ -846,70 +852,130 @@
       scene.add(new THREE.Points(geometry, material));
     }
     
-    // Fixed: Added Custom 3D Geometries for each Node
     function createNodeCore(index, colorStr, accentStr) {
         const group = new THREE.Group();
-        
+
         if (index === 0) {
-            // The First Microsecond - Pure Energy Burst
-            const coreGeom = new THREE.OctahedronGeometry(0.7, 0);
-            const coreMat = new THREE.MeshBasicMaterial({ color: accentStr, wireframe: false });
-            const core = new THREE.Mesh(coreGeom, coreMat);
+            // Node 1: Bunch of Particles
+            const geom = new THREE.BufferGeometry();
+            const verts = [];
+            for(let i=0; i<400; i++) {
+                const r = 1.3 * Math.cbrt(Math.random());
+                const t = Math.random() * 2 * Math.PI;
+                const p = Math.acos(2 * Math.random() - 1);
+                verts.push(r*Math.sin(p)*Math.cos(t), r*Math.sin(p)*Math.sin(t), r*Math.cos(p));
+            }
+            geom.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+            const mat = new THREE.PointsMaterial({color: colorStr, size: 0.06, transparent: true, opacity: 0.9});
+            const mesh = new THREE.Points(geom, mat);
+            group.add(mesh);
+            group.userData.isParticles = true;
+            group.userData.mesh = mesh;
+            return group;
 
-            const shellGeom = new THREE.IcosahedronGeometry(1.3, 1);
-            const shellMat = new THREE.MeshBasicMaterial({ color: colorStr, wireframe: true, transparent: true, opacity: 0.4 });
-            const shell = new THREE.Mesh(shellGeom, shellMat);
+        } else if (index === 1) {
+            // Node 2: Big Bang / CMB mapped sphere
+            const geom = new THREE.IcosahedronGeometry(1.2, 16);
+            const posAttribute = geom.attributes.position;
+            const colors = [];
+            const colorObj = new THREE.Color();
 
-            group.add(core, shell);
-            group.userData = { isCustomNode: true, animType: 'energy', core: core, shell: shell };
-        }
-        else if (index === 1) {
-            // Cosmic Tug-of-War - Interlocking Collision
-            const mat1 = new THREE.MeshBasicMaterial({ color: colorStr, wireframe: true, transparent: true, opacity: 0.6 });
-            const mat2 = new THREE.MeshBasicMaterial({ color: accentStr, wireframe: true, transparent: true, opacity: 0.6 });
+            // Pseudo-random 3D noise to mimic the CMB heat map
+            for(let i=0; i<posAttribute.count; i++) {
+                const x = posAttribute.getX(i);
+                const y = posAttribute.getY(i);
+                const z = posAttribute.getZ(i);
+                
+                let noise = Math.sin(x*5) * Math.cos(y*5) * Math.sin(z*5);
+                noise += 0.5 * Math.sin(x*9 - y*4 + z*6);
+                
+                const n = (noise + 1.5) / 3.0; // Normalize
+                
+                if (n < 0.3) colorObj.setHex(0x001166); // Dark blue
+                else if (n < 0.5) colorObj.setHex(0x0088ff); // Light blue
+                else if (n < 0.6) colorObj.setHex(0x44ff44); // Green
+                else if (n < 0.8) colorObj.setHex(0xffff00); // Yellow
+                else colorObj.setHex(0xff3300); // Red
+                
+                colors.push(colorObj.r, colorObj.g, colorObj.b);
+            }
+            geom.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            const mat = new THREE.MeshStandardMaterial({
+                vertexColors: true,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+            const mesh = new THREE.Mesh(geom, mat);
+            group.add(mesh);
+            group.userData.isCMB = true;
+            return group;
 
-            const mesh1 = new THREE.Mesh(new THREE.TetrahedronGeometry(1.1, 0), mat1);
-            const mesh2 = new THREE.Mesh(new THREE.TetrahedronGeometry(1.1, 0), mat2);
+        } else if (index === 2) {
+            // Node 3: Particle Accelerator
+            const ringGeom = new THREE.TorusGeometry(1.2, 0.03, 16, 64);
+            const ringMat = new THREE.MeshBasicMaterial({color: 0x555555, wireframe: true, transparent: true, opacity: 0.4});
+            const ring = new THREE.Mesh(ringGeom, ringMat);
+            ring.rotation.x = Math.PI / 2;
+            group.add(ring);
 
-            mesh1.position.x = -0.2;
-            mesh2.position.x = 0.2;
-
-            group.add(mesh1, mesh2);
-            group.userData = { isCustomNode: true, animType: 'clash', mesh1: mesh1, mesh2: mesh2 };
-        }
-        else if (index === 2) {
-            // Recreating the Dawn - Particle Accelerator Rings
-            const mat = new THREE.MeshBasicMaterial({ color: colorStr, wireframe: true, transparent: true, opacity: 0.5 });
-            const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.08, 8, 32), mat);
-            const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.08, 8, 32), mat);
-            const ring3 = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.08, 8, 32), mat);
-
-            ring1.rotation.x = Math.PI / 2;
-            ring2.rotation.y = Math.PI / 2;
-
-            const particleMat = new THREE.MeshBasicMaterial({ color: accentStr });
-            const particle = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), particleMat);
-            particle.position.x = 1.1;
-            ring1.add(particle);
-
-            group.add(ring1, ring2, ring3);
-            group.userData = { isCustomNode: true, animType: 'rings', ring1: ring1, ring2: ring2, ring3: ring3, particle: particle };
-        }
-        else if (index === 3) {
-            // Capturing Ghosts - Magnetic Penning Trap
-            const trapMat = new THREE.MeshBasicMaterial({ color: colorStr, wireframe: true, transparent: true, opacity: 0.3 });
-            const trap = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 1.8, 16, 4, true), trapMat);
-
-            const coreMat = new THREE.MeshBasicMaterial({ color: accentStr, transparent: true, opacity: 0.8 });
-            const core = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), coreMat);
-
-            group.add(trap, core);
-            group.userData = { isCustomNode: true, animType: 'trap', trap: trap, core: core };
-        }
-        else if (index === 4) { 
-            // Earth Node
-            const texLoader = new THREE.TextureLoader();
+            const pGroup = new THREE.Group();
+            const pGeom = new THREE.SphereGeometry(0.08, 8, 8);
+            const pMat1 = new THREE.MeshBasicMaterial({color: 0x00ffff}); // Matter
+            const pMat2 = new THREE.MeshBasicMaterial({color: 0xff00ff}); // Antimatter
             
+            const p1 = new THREE.Mesh(pGeom, pMat1);
+            const p2 = new THREE.Mesh(pGeom, pMat2);
+            
+            pGroup.add(p1);
+            pGroup.add(p2);
+            group.add(pGroup);
+
+            group.userData.isAccelerator = true;
+            group.userData.p1 = p1;
+            group.userData.p2 = p2;
+            return group;
+
+        } else if (index === 3) {
+            // Node 4: Unstable Atom
+            const nucleus = new THREE.Group();
+            const nGeom = new THREE.SphereGeometry(0.12, 16, 16);
+            const protonMat = new THREE.MeshStandardMaterial({color: 0xff3333, emissive: 0x440000});
+            const neutronMat = new THREE.MeshStandardMaterial({color: 0x5555ff, emissive: 0x000044});
+
+            for(let i=0; i<14; i++) {
+                const isProton = i % 2 === 0;
+                const particle = new THREE.Mesh(nGeom, isProton ? protonMat : neutronMat);
+                particle.position.set(
+                    (Math.random()-0.5)*0.3,
+                    (Math.random()-0.5)*0.3,
+                    (Math.random()-0.5)*0.3
+                );
+                nucleus.add(particle);
+            }
+            group.add(nucleus);
+
+            const glowGeom = new THREE.SphereGeometry(0.5, 32, 32);
+            const glowMat = new THREE.MeshBasicMaterial({color: 0xffaa00, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending});
+            const glow = new THREE.Mesh(glowGeom, glowMat);
+            group.add(glow);
+
+            // Add erratic electron rings
+            const shellGeom = new THREE.TorusGeometry(1.0, 0.01, 8, 32);
+            const shellMat = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.2});
+            const shell1 = new THREE.Mesh(shellGeom, shellMat);
+            const shell2 = new THREE.Mesh(shellGeom, shellMat);
+            shell1.rotation.x = Math.PI / 3;
+            shell2.rotation.y = Math.PI / 3;
+            group.add(shell1, shell2);
+
+            group.userData.isAtom = true;
+            group.userData.nucleus = nucleus;
+            group.userData.glow = glow;
+            return group;
+
+        } else if (index === 4) { 
+            // Node 5: Earth
+            const texLoader = new THREE.TextureLoader();
             const earthGeom = new THREE.SphereGeometry(1.2, 32, 32);
             const earthMat = new THREE.MeshStandardMaterial({
                 map: texLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg'),
@@ -931,9 +997,23 @@
             
             group.add(earth);
             group.add(clouds);
-            group.userData = { isEarth: true, earthMesh: earth, cloudsMesh: clouds };
+            
+            group.userData.isEarth = true;
+            group.userData.earthMesh = earth;
+            group.userData.cloudsMesh = clouds;
+            
+            return group;
         }
 
+        // Fallback Abstract Node
+        const geometry = new THREE.IcosahedronGeometry(1.2, 1);
+        const material = new THREE.MeshBasicMaterial({
+            color: colorStr,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.6
+        });
+        group.add(new THREE.Mesh(geometry, material));
         return group;
     }
     
@@ -1149,10 +1229,23 @@
         state.savedScrollY = window.scrollY;
         
         state.focusStart = camera.position.clone();
-        const offset = new THREE.Vector3(2.5, 0.5, 6); 
-        state.focusTarget = nodeData.root.position.clone().add(offset);
-        state.focusT = 0;
         
+        // Define specific left/right split logic
+        let camOffset;
+        if (nodeData.root.position.x < 0 || nodeData.root.position.x === 0) {
+            // Node is on the Left side of the path (or center). Open panel on Right.
+            panelShell.className = 'panel-shell panel-right is-open';
+            camOffset = new THREE.Vector3(1.2, 0.2, 4.5); // Move camera to right of node
+            state.lookTargetOffset = new THREE.Vector3(2.5, 0, 0); // Push node to the left visually
+        } else {
+            // Node is on the Right side of the path. Open panel on Left.
+            panelShell.className = 'panel-shell panel-left is-open';
+            camOffset = new THREE.Vector3(-1.2, 0.2, 4.5); // Move camera to left of node
+            state.lookTargetOffset = new THREE.Vector3(-2.5, 0, 0); // Push node to the right visually
+        }
+        
+        state.focusTarget = nodeData.root.position.clone().add(camOffset);
+        state.focusT = 0;
         state.lockedTimelineSeconds = nodeData.item.timelineTarget.seconds;
         
         document.body.classList.add('is-focused');
@@ -1181,7 +1274,6 @@
         });
         
         panelSections.innerHTML = sectionsHTML;
-        panelShell.classList.add('is-open');
     }
     
     function closePanel() {
@@ -1192,7 +1284,7 @@
         state.lockedTimelineSeconds = null;
         
         document.body.classList.remove('is-focused');
-        panelShell.classList.remove('is-open');
+        panelShell.className = 'panel-shell'; // Strip open and directional classes
         
         window.scrollTo(0, state.savedScrollY);
         updateScrollState(); 
@@ -1243,36 +1335,35 @@
       const time = clock.getElapsedTime();
       
       nodes.forEach(nodeData => {
+          const core = nodeData.core;
+
+          // Animations that should run constantly for visual fidelity
+          if (core.userData.isEarth) {
+              core.userData.earthMesh.rotation.y += 0.002;
+              core.userData.cloudsMesh.rotation.y += 0.003;
+          } else if (core.userData.isAccelerator) {
+              core.userData.p1.position.set(1.2 * Math.cos(time * 8), 0, 1.2 * Math.sin(time * 8));
+              core.userData.p2.position.set(1.2 * Math.cos(-time * 8), 0, 1.2 * Math.sin(-time * 8));
+          } else if (core.userData.isAtom) {
+              core.userData.nucleus.position.set((Math.random()-0.5)*0.08, (Math.random()-0.5)*0.08, (Math.random()-0.5)*0.08);
+              core.userData.glow.scale.setScalar(1 + Math.sin(time * 15) * 0.1);
+          }
+
+          // Ambient rotations (only if not actively focused, or keeping slow if focused)
           if (nodeData.root !== state.activeNode?.root) {
-              const uData = nodeData.core.userData;
-              
-              // Animating Custom Nodes
-              if (uData.isCustomNode) {
-                  if (uData.animType === 'energy') {
-                      uData.core.rotation.y = time * 2.0;
-                      uData.core.rotation.x = time * 1.5;
-                      uData.shell.rotation.y = -time * 0.5;
-                  } else if (uData.animType === 'clash') {
-                      uData.mesh1.rotation.y = time * 1.2;
-                      uData.mesh1.rotation.x = time * 0.8;
-                      uData.mesh2.rotation.y = -time * 1.2;
-                      uData.mesh2.rotation.x = -time * 0.8;
-                  } else if (uData.animType === 'rings') {
-                      uData.ring1.rotation.z = time * 1.5;
-                      uData.ring2.rotation.x = time * 1.0;
-                      uData.ring3.rotation.y = -time * 1.0;
-                  } else if (uData.animType === 'trap') {
-                      uData.trap.rotation.y = time * 0.4;
-                      uData.trap.rotation.x = time * 0.2;
-                      uData.core.position.y = Math.sin(time * 4) * 0.2;
-                  }
-              } 
-              // Animating Earth Node
-              else if (uData.isEarth) {
-                  uData.earthMesh.rotation.y = time * 0.05;
-                  uData.cloudsMesh.rotation.y = time * 0.07;
+              if (core.userData.isParticles) {
+                  core.rotation.y = time * 0.05;
+                  core.rotation.x = time * 0.02;
+              } else if (core.userData.isCMB) {
+                  core.rotation.y = time * 0.12;
+                  core.rotation.x = time * 0.05;
+              } else if (core.userData.isAccelerator) {
+                  core.rotation.y = time * 0.2;
+                  core.rotation.x = time * 0.1;
+              } else if (core.userData.isAtom) {
+                  core.rotation.y = time * 0.15;
+                  core.rotation.x = time * 0.1;
               }
-              
               nodeData.halo.rotation.y = -time * 0.15;
           }
       });
@@ -1282,12 +1373,12 @@
               state.focusT += 0.02;
               const t = state.focusT < 0.5 ? 2 * state.focusT * state.focusT : -1 + (4 - 2 * state.focusT) * state.focusT;
               camera.position.lerpVectors(state.focusStart, state.focusTarget, t);
-              const lookTarget = state.activeNode.root.position.clone();
+              const lookTarget = state.activeNode.root.position.clone().add(state.lookTargetOffset);
               camera.lookAt(lookTarget);
           } else {
-             const floatOffset = Math.sin(time) * 0.2;
+             const floatOffset = Math.sin(time) * 0.1;
              camera.position.y = state.focusTarget.y + floatOffset;
-             camera.lookAt(state.activeNode.root.position);
+             camera.lookAt(state.activeNode.root.position.clone().add(state.lookTargetOffset));
           }
           if (state.lockedTimelineSeconds !== null) {
               state.displayedTimelineSeconds = state.lockedTimelineSeconds;
@@ -1306,9 +1397,7 @@
               camera.lookAt(lookDir); 
           } else {
               camera.position.z = targetZ;
-              
-              // Fixed: Removed the negative multiplier on state.pointer.x to fix the inverted camera axis.
-              const targetLookX = (state.pointer.x * 2);
+              const targetLookX = -(state.pointer.x * 2);
               const targetLookY = (state.pointer.y * 1) + 0.55;
               const lookTarget = new THREE.Vector3(targetLookX, targetLookY, targetZ - 10);
               camera.lookAt(lookTarget);
