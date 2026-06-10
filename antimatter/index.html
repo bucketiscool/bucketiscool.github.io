@@ -1267,6 +1267,9 @@
     }
     
     function closePanel() {
+        // MUST unlock state before attempting to update scroll state
+        state.locked = false;
+        
         state.returnStart = camera.position.clone();
         state.returnT = 0;
         state.activeNode = null;
@@ -1277,11 +1280,6 @@
         
         window.scrollTo(0, state.savedScrollY);
         updateScrollState(); 
-
-        // Safe timeout completely disconnects the state unlock from the click event resolution
-        setTimeout(() => {
-            state.locked = false;
-        }, 50);
     }
     
     function getCameraZForProgress(progress) {
@@ -1390,7 +1388,8 @@
           } else {
               camera.position.z = targetZ;
               
-              const targetLookX = (state.pointer.x * 2); 
+              // Restored the negative sign here to correctly invert pointer tracking
+              const targetLookX = -(state.pointer.x * 2); 
               const targetLookY = (state.pointer.y * 1) + 0.55;
               
               const lookTarget = new THREE.Vector3(targetLookX, targetLookY, targetZ - 10);
