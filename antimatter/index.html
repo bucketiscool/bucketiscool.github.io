@@ -874,8 +874,8 @@
             return group;
 
         } else if (index === 1) {
-            // Node 2: Reverted to safe resolution (16), solely relying on multiplier for visual fix
-            const geom = new THREE.IcosahedronGeometry(1.2, 16); 
+            // Node 2: Reverted to safe resolution (4), solely relying on multiplier for visual fix
+            const geom = new THREE.IcosahedronGeometry(1.2, 4); 
             const posAttribute = geom.attributes.position;
             const colors = [];
             const colorObj = new THREE.Color();
