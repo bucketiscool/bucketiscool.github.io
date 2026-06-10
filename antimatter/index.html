@@ -250,7 +250,7 @@
       z-index: 10;
       display: flex;
       align-items: center;
-      background: rgba(0, 0, 0, 0.3); /* Lighter background since we share the screen */
+      background: rgba(0, 0, 0, 0.3);
       opacity: 0;
       pointer-events: none;
       transition: opacity 300ms ease;
@@ -795,13 +795,12 @@
     window.addEventListener("pointerleave", clearHover, { passive: true });
     window.addEventListener("click", onCanvasClick);
     
-    // Pass 'e' and trigger closePanel
     closeButton.addEventListener("click", closePanel);
     panelShell.addEventListener("click", (e) => {
-        if (e.target === panelShell) closePanel(e);
+        if (e.target === panelShell) closePanel();
     });
     window.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && state.locked) closePanel(event);
+      if (event.key === "Escape" && state.locked) closePanel();
     });
 
     animate();
@@ -875,19 +874,17 @@
             return group;
 
         } else if (index === 1) {
-            // Node 2: Big Bang / CMB mapped sphere (Increased detail)
-            const geom = new THREE.IcosahedronGeometry(1.2, 32); // Increased geometry resolution
+            // Node 2: Reverted to safe resolution (16), solely relying on multiplier for visual fix
+            const geom = new THREE.IcosahedronGeometry(1.2, 16); 
             const posAttribute = geom.attributes.position;
             const colors = [];
             const colorObj = new THREE.Color();
 
-            // Pseudo-random 3D noise to mimic the CMB heat map
             for(let i=0; i<posAttribute.count; i++) {
                 const x = posAttribute.getX(i);
                 const y = posAttribute.getY(i);
                 const z = posAttribute.getZ(i);
                 
-                // Multiplied the coordinates by higher numbers so the noise map scale shrinks
                 let noise = Math.sin(x*12) * Math.cos(y*12) * Math.sin(z*12);
                 noise += 0.5 * Math.sin(x*22 - y*14 + z*18);
                 
@@ -1164,7 +1161,7 @@
         }
     }
     
-    function onCanvasClick(e) {
+    function onCanvasClick() {
         if (state.locked || !state.hoveredNode) return;
         const nodeData = nodes.find(n => n.root === state.hoveredNode);
         if (nodeData) {
@@ -1226,18 +1223,15 @@
         
         state.focusStart = camera.position.clone();
         
-        // Define specific left/right split logic
         let camOffset;
         if (nodeData.root.position.x < 0 || nodeData.root.position.x === 0) {
-            // Node is on the Left side of the path (or center). Open panel on Right.
             panelShell.className = 'panel-shell panel-right is-open';
-            camOffset = new THREE.Vector3(1.2, 0.2, 4.5); // Move camera to right of node
-            state.lookTargetOffset = new THREE.Vector3(2.5, 0, 0); // Push node to the left visually
+            camOffset = new THREE.Vector3(1.2, 0.2, 4.5); 
+            state.lookTargetOffset = new THREE.Vector3(2.5, 0, 0); 
         } else {
-            // Node is on the Right side of the path. Open panel on Left.
             panelShell.className = 'panel-shell panel-left is-open';
-            camOffset = new THREE.Vector3(-1.2, 0.2, 4.5); // Move camera to left of node
-            state.lookTargetOffset = new THREE.Vector3(-2.5, 0, 0); // Push node to the right visually
+            camOffset = new THREE.Vector3(-1.2, 0.2, 4.5); 
+            state.lookTargetOffset = new THREE.Vector3(-2.5, 0, 0); 
         }
         
         state.focusTarget = nodeData.root.position.clone().add(camOffset);
@@ -1272,21 +1266,22 @@
         panelSections.innerHTML = sectionsHTML;
     }
     
-    function closePanel(e) {
-        // Prevent click from bubbling up to the window and instantly triggering onCanvasClick
-        if (e) e.stopPropagation(); 
-        
-        state.locked = false;
+    function closePanel() {
         state.returnStart = camera.position.clone();
         state.returnT = 0;
         state.activeNode = null;
         state.lockedTimelineSeconds = null;
         
         document.body.classList.remove('is-focused');
-        panelShell.className = 'panel-shell'; // Strip open and directional classes
+        panelShell.className = 'panel-shell'; 
         
         window.scrollTo(0, state.savedScrollY);
         updateScrollState(); 
+
+        // Safe timeout completely disconnects the state unlock from the click event resolution
+        setTimeout(() => {
+            state.locked = false;
+        }, 50);
     }
     
     function getCameraZForProgress(progress) {
@@ -1336,7 +1331,6 @@
       nodes.forEach(nodeData => {
           const core = nodeData.core;
 
-          // Animations that should run constantly for visual fidelity
           if (core.userData.isEarth) {
               core.userData.earthMesh.rotation.y += 0.002;
               core.userData.cloudsMesh.rotation.y += 0.003;
@@ -1348,7 +1342,6 @@
               core.userData.glow.scale.setScalar(1 + Math.sin(time * 15) * 0.1);
           }
 
-          // Ambient rotations (only if not actively focused, or keeping slow if focused)
           if (nodeData.root !== state.activeNode?.root) {
               if (core.userData.isParticles) {
                   core.rotation.y = time * 0.05;
@@ -1397,7 +1390,6 @@
           } else {
               camera.position.z = targetZ;
               
-              // Removed the negative multiplier to fix horizontal camera inversion
               const targetLookX = (state.pointer.x * 2); 
               const targetLookY = (state.pointer.y * 1) + 0.55;
               
