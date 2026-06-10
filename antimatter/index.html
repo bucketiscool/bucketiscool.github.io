@@ -22,7 +22,6 @@
 
     html {
       min-height: 100%;
-      /* Removed scroll-behavior: smooth to prevent conflict with 3D camera transitions */
     }
 
     body {
@@ -244,7 +243,6 @@
       50% { transform: scaleY(1); opacity: 1; }
     }
 
-    /* Refined Clean UI Overlay */
     .panel-shell {
       position: fixed;
       inset: 0;
@@ -782,11 +780,19 @@
     window.addEventListener("pointerleave", clearHover, { passive: true });
     window.addEventListener("click", onCanvasClick);
     
-    // Allow closing panel by clicking the button OR the background overlay
-    closeButton.addEventListener("click", closePanel);
-    panelShell.addEventListener("click", (e) => {
-        if (e.target === panelShell) closePanel();
+    // Fixed: Stop event propagation to prevent immediate reopening bug
+    closeButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closePanel();
     });
+    
+    panelShell.addEventListener("click", (e) => {
+        if (e.target === panelShell) {
+            e.stopPropagation();
+            closePanel();
+        }
+    });
+    
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && state.locked) closePanel();
     });
@@ -818,7 +824,7 @@
         positions[i * 3 + 1] = Math.sin(angle) * radius * 0.72 + (Math.random() - 0.5) * 7;
         positions[i * 3 + 2] = z;
 
-        color.setHSL(0.55 + Math.random() * 0.18, 0.0, 0.5 + Math.random() * 0.5); // Desaturated stars
+        color.setHSL(0.55 + Math.random() * 0.18, 0.0, 0.5 + Math.random() * 0.5); 
         colors[i * 3] = color.r;
         colors[i * 3 + 1] = color.g;
         colors[i * 3 + 2] = color.b;
@@ -840,13 +846,70 @@
       scene.add(new THREE.Points(geometry, material));
     }
     
+    // Fixed: Added Custom 3D Geometries for each Node
     function createNodeCore(index, colorStr, accentStr) {
-        // Node 5 is Earth
-        if (index === 4) { 
-            const group = new THREE.Group();
+        const group = new THREE.Group();
+        
+        if (index === 0) {
+            // The First Microsecond - Pure Energy Burst
+            const coreGeom = new THREE.OctahedronGeometry(0.7, 0);
+            const coreMat = new THREE.MeshBasicMaterial({ color: accentStr, wireframe: false });
+            const core = new THREE.Mesh(coreGeom, coreMat);
+
+            const shellGeom = new THREE.IcosahedronGeometry(1.3, 1);
+            const shellMat = new THREE.MeshBasicMaterial({ color: colorStr, wireframe: true, transparent: true, opacity: 0.4 });
+            const shell = new THREE.Mesh(shellGeom, shellMat);
+
+            group.add(core, shell);
+            group.userData = { isCustomNode: true, animType: 'energy', core: core, shell: shell };
+        }
+        else if (index === 1) {
+            // Cosmic Tug-of-War - Interlocking Collision
+            const mat1 = new THREE.MeshBasicMaterial({ color: colorStr, wireframe: true, transparent: true, opacity: 0.6 });
+            const mat2 = new THREE.MeshBasicMaterial({ color: accentStr, wireframe: true, transparent: true, opacity: 0.6 });
+
+            const mesh1 = new THREE.Mesh(new THREE.TetrahedronGeometry(1.1, 0), mat1);
+            const mesh2 = new THREE.Mesh(new THREE.TetrahedronGeometry(1.1, 0), mat2);
+
+            mesh1.position.x = -0.2;
+            mesh2.position.x = 0.2;
+
+            group.add(mesh1, mesh2);
+            group.userData = { isCustomNode: true, animType: 'clash', mesh1: mesh1, mesh2: mesh2 };
+        }
+        else if (index === 2) {
+            // Recreating the Dawn - Particle Accelerator Rings
+            const mat = new THREE.MeshBasicMaterial({ color: colorStr, wireframe: true, transparent: true, opacity: 0.5 });
+            const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.08, 8, 32), mat);
+            const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.08, 8, 32), mat);
+            const ring3 = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.08, 8, 32), mat);
+
+            ring1.rotation.x = Math.PI / 2;
+            ring2.rotation.y = Math.PI / 2;
+
+            const particleMat = new THREE.MeshBasicMaterial({ color: accentStr });
+            const particle = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), particleMat);
+            particle.position.x = 1.1;
+            ring1.add(particle);
+
+            group.add(ring1, ring2, ring3);
+            group.userData = { isCustomNode: true, animType: 'rings', ring1: ring1, ring2: ring2, ring3: ring3, particle: particle };
+        }
+        else if (index === 3) {
+            // Capturing Ghosts - Magnetic Penning Trap
+            const trapMat = new THREE.MeshBasicMaterial({ color: colorStr, wireframe: true, transparent: true, opacity: 0.3 });
+            const trap = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 1.8, 16, 4, true), trapMat);
+
+            const coreMat = new THREE.MeshBasicMaterial({ color: accentStr, transparent: true, opacity: 0.8 });
+            const core = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), coreMat);
+
+            group.add(trap, core);
+            group.userData = { isCustomNode: true, animType: 'trap', trap: trap, core: core };
+        }
+        else if (index === 4) { 
+            // Earth Node
             const texLoader = new THREE.TextureLoader();
             
-            // High-res Earth textures via Three.js public examples
             const earthGeom = new THREE.SphereGeometry(1.2, 32, 32);
             const earthMat = new THREE.MeshStandardMaterial({
                 map: texLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg'),
@@ -855,7 +918,6 @@
             });
             const earth = new THREE.Mesh(earthGeom, earthMat);
             
-            // Cloud Layer
             const cloudGeom = new THREE.SphereGeometry(1.22, 32, 32);
             const cloudMat = new THREE.MeshStandardMaterial({
                 map: texLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png'),
@@ -869,24 +931,10 @@
             
             group.add(earth);
             group.add(clouds);
-            
-            // Flags for rotation in the animation loop
-            group.userData.isEarth = true;
-            group.userData.earthMesh = earth;
-            group.userData.cloudsMesh = clouds;
-            
-            return group;
+            group.userData = { isEarth: true, earthMesh: earth, cloudsMesh: clouds };
         }
 
-        // Standard Abstract Node for Antimatter
-        const geometry = new THREE.IcosahedronGeometry(1.2, 1);
-        const material = new THREE.MeshBasicMaterial({
-            color: colorStr,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.6
-        });
-        return new THREE.Mesh(geometry, material);
+        return group;
     }
     
     function addFlightThread(pos1, pos2, colorStr) {
@@ -913,11 +961,9 @@
         const color = new THREE.Color(item.color);
         const accent = new THREE.Color(item.accent);
         
-        // Build Core Object
         const core = createNodeCore(index, color, accent);
         root.add(core);
 
-        // Invisible raycast anchor
         const labelAnchor = new THREE.Mesh(
           new THREE.SphereGeometry(0.18, 16, 16),
           new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.0 })
@@ -925,7 +971,6 @@
         labelAnchor.userData = { item, index, interactive: true, root };
         root.add(labelAnchor);
 
-        // Surrounding glow halo
         const halo = new THREE.Mesh(
           new THREE.SphereGeometry(1.45 + index * 0.08, 64, 32),
           new THREE.MeshBasicMaterial({
@@ -939,7 +984,6 @@
         );
         root.add(halo);
 
-        // Large invisible collision sphere for easier clicking
         const collision = new THREE.Mesh(
           new THREE.SphereGeometry(2.5, 32, 16),
           new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
@@ -1072,7 +1116,6 @@
     }
     
     function formatTime(seconds) {
-        // Prevent scientific notation entirely
         if (seconds <= 1e-5) return "0.000001 seconds";
         if (seconds < 1) return seconds.toFixed(6).replace(/0+$/, '').replace(/\.$/, '') + " seconds";
         if (seconds < 60) return `${Math.round(seconds)} seconds`;
@@ -1151,7 +1194,6 @@
         document.body.classList.remove('is-focused');
         panelShell.classList.remove('is-open');
         
-        // Force manual restoration to lock back into scroll track safely
         window.scrollTo(0, state.savedScrollY);
         updateScrollState(); 
     }
@@ -1202,14 +1244,35 @@
       
       nodes.forEach(nodeData => {
           if (nodeData.root !== state.activeNode?.root) {
-              // Target Earth Animation Logic
-              if (nodeData.core.userData.isEarth) {
-                  nodeData.core.userData.earthMesh.rotation.y = time * 0.05;
-                  nodeData.core.userData.cloudsMesh.rotation.y = time * 0.07;
-              } else {
-                  nodeData.core.rotation.y = time * 0.2;
-                  nodeData.core.rotation.x = time * 0.1;
+              const uData = nodeData.core.userData;
+              
+              // Animating Custom Nodes
+              if (uData.isCustomNode) {
+                  if (uData.animType === 'energy') {
+                      uData.core.rotation.y = time * 2.0;
+                      uData.core.rotation.x = time * 1.5;
+                      uData.shell.rotation.y = -time * 0.5;
+                  } else if (uData.animType === 'clash') {
+                      uData.mesh1.rotation.y = time * 1.2;
+                      uData.mesh1.rotation.x = time * 0.8;
+                      uData.mesh2.rotation.y = -time * 1.2;
+                      uData.mesh2.rotation.x = -time * 0.8;
+                  } else if (uData.animType === 'rings') {
+                      uData.ring1.rotation.z = time * 1.5;
+                      uData.ring2.rotation.x = time * 1.0;
+                      uData.ring3.rotation.y = -time * 1.0;
+                  } else if (uData.animType === 'trap') {
+                      uData.trap.rotation.y = time * 0.4;
+                      uData.trap.rotation.x = time * 0.2;
+                      uData.core.position.y = Math.sin(time * 4) * 0.2;
+                  }
+              } 
+              // Animating Earth Node
+              else if (uData.isEarth) {
+                  uData.earthMesh.rotation.y = time * 0.05;
+                  uData.cloudsMesh.rotation.y = time * 0.07;
               }
+              
               nodeData.halo.rotation.y = -time * 0.15;
           }
       });
@@ -1243,7 +1306,9 @@
               camera.lookAt(lookDir); 
           } else {
               camera.position.z = targetZ;
-              const targetLookX = -(state.pointer.x * 2);
+              
+              // Fixed: Removed the negative multiplier on state.pointer.x to fix the inverted camera axis.
+              const targetLookX = (state.pointer.x * 2);
               const targetLookY = (state.pointer.y * 1) + 0.55;
               const lookTarget = new THREE.Vector3(targetLookX, targetLookY, targetZ - 10);
               camera.lookAt(lookTarget);
