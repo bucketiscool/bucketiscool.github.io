@@ -795,12 +795,13 @@
     window.addEventListener("pointerleave", clearHover, { passive: true });
     window.addEventListener("click", onCanvasClick);
     
+    // Pass 'e' and trigger closePanel
     closeButton.addEventListener("click", closePanel);
     panelShell.addEventListener("click", (e) => {
-        if (e.target === panelShell) closePanel();
+        if (e.target === panelShell) closePanel(e);
     });
     window.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && state.locked) closePanel();
+      if (event.key === "Escape" && state.locked) closePanel(event);
     });
 
     animate();
@@ -874,8 +875,8 @@
             return group;
 
         } else if (index === 1) {
-            // Node 2: Big Bang / CMB mapped sphere
-            const geom = new THREE.IcosahedronGeometry(1.2, 16);
+            // Node 2: Big Bang / CMB mapped sphere (Increased detail)
+            const geom = new THREE.IcosahedronGeometry(1.2, 32); // Increased geometry resolution
             const posAttribute = geom.attributes.position;
             const colors = [];
             const colorObj = new THREE.Color();
@@ -886,8 +887,9 @@
                 const y = posAttribute.getY(i);
                 const z = posAttribute.getZ(i);
                 
-                let noise = Math.sin(x*5) * Math.cos(y*5) * Math.sin(z*5);
-                noise += 0.5 * Math.sin(x*9 - y*4 + z*6);
+                // Multiplied the coordinates by higher numbers so the noise map scale shrinks
+                let noise = Math.sin(x*12) * Math.cos(y*12) * Math.sin(z*12);
+                noise += 0.5 * Math.sin(x*22 - y*14 + z*18);
                 
                 const n = (noise + 1.5) / 3.0; // Normalize
                 
@@ -1162,13 +1164,7 @@
         }
     }
     
-    function clearHover() {
-        state.pointer.x = 2;
-        state.pointer.y = 2;
-        checkHover();
-    }
-    
-    function onCanvasClick() {
+    function onCanvasClick(e) {
         if (state.locked || !state.hoveredNode) return;
         const nodeData = nodes.find(n => n.root === state.hoveredNode);
         if (nodeData) {
@@ -1276,7 +1272,10 @@
         panelSections.innerHTML = sectionsHTML;
     }
     
-    function closePanel() {
+    function closePanel(e) {
+        // Prevent click from bubbling up to the window and instantly triggering onCanvasClick
+        if (e) e.stopPropagation(); 
+        
         state.locked = false;
         state.returnStart = camera.position.clone();
         state.returnT = 0;
@@ -1397,8 +1396,11 @@
               camera.lookAt(lookDir); 
           } else {
               camera.position.z = targetZ;
-              const targetLookX = -(state.pointer.x * 2);
+              
+              // Removed the negative multiplier to fix horizontal camera inversion
+              const targetLookX = (state.pointer.x * 2); 
               const targetLookY = (state.pointer.y * 1) + 0.55;
+              
               const lookTarget = new THREE.Vector3(targetLookX, targetLookY, targetZ - 10);
               camera.lookAt(lookTarget);
           }
