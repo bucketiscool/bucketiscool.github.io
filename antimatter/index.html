@@ -1,4 +1,4 @@
-nm <!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -228,6 +228,43 @@ nm <!doctype html>
       line-height: 1.48;
     }
 
+    /* New Intro Summary card placement */
+    .intro-brief {
+      position: fixed;
+      right: clamp(1rem, 5vw, 6rem);
+      top: 40%;
+      transform: translateY(-50%);
+      width: min(26rem, 85vw);
+      z-index: 5;
+      pointer-events: none;
+      text-shadow: 0 0 1.4rem rgba(0, 0, 0, 0.9);
+      transition: opacity 400ms ease, transform 400ms ease;
+    }
+
+    .intro-brief::before {
+      content: "";
+      position: absolute;
+      left: -1.1rem;
+      top: 0.32rem;
+      width: 1px;
+      height: calc(100% - 0.6rem);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.08));
+    }
+
+    .intro-brief h2 {
+      margin: 0 0 0.6rem 0;
+      font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+      line-height: 1.05;
+      font-weight: 800;
+    }
+
+    .intro-brief p {
+      margin: 0;
+      color: rgba(200, 200, 200, 0.9);
+      font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+      line-height: 1.55;
+    }
+
     .scroll-cue::after {
       content: "";
       display: block;
@@ -430,6 +467,15 @@ nm <!doctype html>
         bottom: auto;
       }
 
+      .intro-brief {
+        top: auto;
+        bottom: 22%;
+        transform: none;
+        right: 5vw;
+        left: 5vw;
+        width: auto;
+      }
+
       .brief-card {
         width: min(20rem, 78vw);
       }
@@ -478,6 +524,11 @@ nm <!doctype html>
     </div>
   </header>
 
+  <div class="intro-brief" id="intro-text">
+    <h2>What is Antimatter?</h2>
+    <p>Antimatter is a mirror reflection of subatomic regular matter. Each particle shares an identical mass with its everyday counterpart, but carries an exactly inverted electrical charge. When the two collide, they instantly annihilate—transforming matter back into pure energetic photons.</p>
+  </div>
+
   <div class="progress" aria-hidden="true"><span></span></div>
   <nav class="node-dots" aria-label="Milestone progress"></nav>
   <div class="timeline-readout" aria-live="polite">
@@ -494,7 +545,7 @@ nm <!doctype html>
       <p id="panel-subtitle"></p>
       <div id="panel-sections"></div>
       <div class="button-row">
-        <button id="close-panel" type="button">Press esc to resume flight</button>
+        <button id="close-panel" type="button">Close Panel</button>
       </div>
     </article>
   </aside>
@@ -713,6 +764,7 @@ nm <!doctype html>
     const panelSections = document.querySelector("#panel-sections");
     const closeButton = document.querySelector("#close-panel");
     const scrollCue = document.querySelector(".scroll-cue");
+    const introText = document.querySelector("#intro-text");
     const timelineTime = document.querySelector("#timeline-time");
     const timelineEpoch = document.querySelector("#timeline-epoch");
     const floatingBriefs = document.querySelector("#floating-briefs");
@@ -802,6 +854,10 @@ nm <!doctype html>
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && state.locked) closePanel();
     });
+
+    // Detect capabilities for proper close button text mapping
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    closeButton.textContent = isTouchDevice ? "Tap to resume flight" : "Press ESC to resume flight";
 
     animate();
 
@@ -1109,8 +1165,19 @@ nm <!doctype html>
         
         state.targetProgress = window.scrollY / scrollMax;
         
-        if (window.scrollY > 20 && scrollCue.style.opacity !== "0") {
-            scrollCue.style.opacity = "0";
+        // Hide the scroll cue and the new floating intro card as flight progress initializes
+        if (window.scrollY > 20) {
+            if (scrollCue.style.opacity !== "0") scrollCue.style.opacity = "0";
+            if (introText.style.opacity !== "0") {
+                introText.style.opacity = "0";
+                introText.style.transform = "translateY(-40%) scale(0.95)";
+            }
+        } else {
+            if (scrollCue.style.opacity !== "1") scrollCue.style.opacity = "0.5";
+            if (introText.style.opacity !== "1") {
+                introText.style.opacity = "1";
+                introText.style.transform = "translateY(-50%) scale(1)";
+            }
         }
     }
     
