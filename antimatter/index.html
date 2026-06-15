@@ -1,4 +1,4 @@
-<!doctype html>
+nm <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -1397,8 +1397,8 @@
               camera.lookAt(lookDir); 
           } else {
               camera.position.z = targetZ;
-              const targetLookX = -(state.pointer.x * 2);        // Added negative sign
-              const targetLookY = -(state.pointer.y * 1) + 0.55; // Added negative sign
+              const targetLookX = (state.pointer.x * 2);        // Added negative sign
+              const targetLookY = (state.pointer.y * 1) + 0.55; // Added negative sign
               const lookTarget = new THREE.Vector3(targetLookX, targetLookY, targetZ - 10);
               camera.lookAt(lookTarget);
           }
