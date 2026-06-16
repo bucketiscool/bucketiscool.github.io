@@ -545,7 +545,7 @@
       <p id="panel-subtitle"></p>
       <div id="panel-sections"></div>
       <div class="button-row">
-        <button id="close-panel" type="button">Close Panel</button>
+        <button id="close-panel" type="button">Press esc to resume flight</button>
       </div>
     </article>
   </aside>
@@ -849,7 +849,7 @@ const PROJECT_DATA = {
 
     // Detect capabilities for proper close button text mapping
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-    closeButton.textContent = isTouchDevice ? "Tap to resume flight" : "Press ESC to resume flight";
+    closeButton.textContent = isTouchDevice ? "Refresh to resume flight" : "Press ESC to resume flight";
 
     animate();
 
