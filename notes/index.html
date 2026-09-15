@@ -107,6 +107,7 @@
                 <aside class="lg:col-span-3 border-b lg:border-b-0 lg:border-r border-gray-100 pb-6 lg:pb-0 lg:pr-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Table of Contents</h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 select-none">Read Only</span>
                     </div>
                     <div id="tocContainer" class="flex flex-col gap-1 max-h-[500px] lg:max-h-[700px] overflow-y-auto pr-1">
                         <!-- Dynamically populated file links -->
@@ -160,14 +161,14 @@
                         <!-- Canvas -->
                         <canvas id="pdfCanvas" class="shadow-sm rounded-lg max-w-full transition-all duration-300"></canvas>
 
-                        <!-- Paywall Blur Overlay (Appears for older notes if unsubscribed) -->
+                        <!-- Paywall Blur Overlay (Appears for index >= 1 if unsubscribed) -->
                         <div id="paywallOverlay" class="absolute inset-0 bg-white/60 backdrop-blur-md z-20 hidden flex flex-col items-center justify-center text-center p-6">
                             <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 max-w-sm w-full">
                                 <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-4">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                                 </div>
                                 <h3 class="text-lg font-bold text-black mb-2">Archive Note Locked</h3>
-                                <p class="text-xs text-gray-500 mb-6 leading-relaxed">Only the two most recent notes per subject are free to preview. Subscribe to unlock the entire repository.</p>
+                                <p class="text-xs text-gray-500 mb-6 leading-relaxed">Only the single most recent note per subject is free to preview. Subscribe to unlock the entire repository.</p>
                                 <a id="overlayStripeBtn" href="" target="_blank" class="w-full block py-3 bg-black text-white rounded-full text-xs font-semibold hover:bg-gray-800 transition-all shadow-sm mb-3">
                                     Unlock All Notes ($5/mo)
                                 </a>
@@ -217,7 +218,7 @@
     <footer class="py-12 border-t border-gray-200/60 bg-white">
         <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-sm text-gray-400 font-medium">
-                &copy; 2026 Beckett Graham.
+                &copy; 2026 Beckett Graham. London, Ontario.
             </p>
             <div class="flex space-x-6 text-sm font-medium text-gray-400">
                 <a href="mailto:beckettgraham@icloud.com" class="hover:text-black transition-colors">Contact Email</a>
@@ -366,7 +367,8 @@
 
         function evaluatePaywall() {
             const overlay = document.getElementById('paywallOverlay');
-            if (currentNoteIndex >= 2 && !isSubscribed) {
+            // Only index 0 (the single most recent note) is free. Index 1+ requires a subscription.
+            if (currentNoteIndex >= 1 && !isSubscribed) {
                 overlay.classList.remove('hidden');
             } else {
                 overlay.classList.add('hidden');
