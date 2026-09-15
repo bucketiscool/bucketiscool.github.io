@@ -1,0 +1,79 @@
+[
+  {
+    "subject": "Statistics",
+    "notes": [
+      {
+        "title": "Study",
+        "path": "assets/Statistics/Study.pdf"
+      },
+      {
+        "title": "Week 2",
+        "path": "assets/Statistics/Week 2.pdf"
+      }
+    ]
+  },
+  {
+    "subject": "Algebra",
+    "notes": [
+      {
+        "title": "Week 2",
+        "path": "assets/Algebra/Week 2.pdf"
+      },
+      {
+        "title": "Week 1",
+        "path": "assets/Algebra/Week 1.pdf"
+      }
+    ]
+  },
+  {
+    "subject": "Calculus",
+    "notes": [
+      {
+        "title": "Study",
+        "path": "assets/Calculus/Study.pdf"
+      },
+      {
+        "title": "Week 2",
+        "path": "assets/Calculus/Week 2.pdf"
+      },
+      {
+        "title": "Week 1",
+        "path": "assets/Calculus/Week 1.pdf"
+      }
+    ]
+  },
+  {
+    "subject": "Business",
+    "notes": [
+      {
+        "title": "Study",
+        "path": "assets/Business/Study.pdf"
+      },
+      {
+        "title": "Week 2",
+        "path": "assets/Business/Week 2.pdf"
+      },
+      {
+        "title": "Week 1",
+        "path": "assets/Business/Week 1.pdf"
+      }
+    ]
+  },
+  {
+    "subject": "Physics",
+    "notes": [
+      {
+        "title": "Week 2 Lab",
+        "path": "assets/Physics/Week 2 Lab.pdf"
+      },
+      {
+        "title": "Week 2",
+        "path": "assets/Physics/Week 2.pdf"
+      },
+      {
+        "title": "Week 1",
+        "path": "assets/Physics/Week 1.pdf"
+      }
+    ]
+  }
+]
