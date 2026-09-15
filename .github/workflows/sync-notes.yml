@@ -2,12 +2,12 @@ name: Sync Goodnotes PDFs
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
-  workflow_dispatch:
+    - cron: '0 */6 * * *' # Auto-runs every 6 hours
+  workflow_dispatch: # Allows manual trigger from Actions tab
 
 jobs:
   sync-drive:
-    runs-on: ubuntu-latest
+    runs-runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
           service = build('drive', 'v3', credentials=creds)
 
           root_folder_id = os.environ['DRIVE_FOLDER_ID']
-          base_dir = 'assets/notes'
+          base_dir = 'notes/assets'
           os.makedirs(base_dir, exist_ok=True)
 
           manifest = []
@@ -48,7 +48,6 @@ jobs:
           ).execute()
           folders = folder_results.get('files', [])
 
-          # Fallback if PDFs are directly in root folder without subfolders
           if not folders:
               folders = [{'id': root_folder_id, 'name': 'General Notes'}]
 
@@ -75,7 +74,7 @@ jobs:
                   
                   pdf_list.append({
                       'title': f['name'].replace('.pdf', ''),
-                      'path': f'/assets/notes/{subject_name}/{f[\"name\"]}'
+                      'path': f'/notes/assets/{subject_name}/{f[\"name\"]}'
                   })
 
               if pdf_list:
@@ -87,12 +86,12 @@ jobs:
           with open(os.path.join(base_dir, 'manifest.json'), 'w') as json_out:
               json.dump(manifest, json_out, indent=2)
 
-          print('Manifest generated successfully!')
+          print('Manifest generated successfully in notes/assets!')
           "
 
       - name: Commit and Push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/notes/
+          git add notes/assets/
           git diff --staged --quiet || (git commit -m "Auto-update course notes & manifest" && git push)
