@@ -145,20 +145,36 @@
                         </div>
                     </div>
 
-                    <!-- Custom Subscription Banner (Hidden by Default) -->
+                    <!-- Custom Subscription Banner -->
                     <div id="subscriptionBanner" class="w-full bg-blue-50/60 border border-blue-100 rounded-2xl p-4 mb-4 hidden flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0 font-bold text-sm">!</div>
-                            <p class="text-xs text-blue-900 font-medium">An active subscription is required to unlock direct PDF downloads.</p>
+                            <p class="text-xs text-blue-900 font-medium">Subscribe to unlock all archive notes and full PDF downloads.</p>
                         </div>
                         <a id="stripeCheckoutBtn" href="" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded-full text-xs font-semibold hover:bg-blue-700 transition-all whitespace-nowrap shadow-sm">
                             Subscribe via Stripe ($5/mo)
                         </a>
                     </div>
 
-                    <!-- Render Canvas -->
-                    <div class="w-full flex justify-center items-center bg-gray-50 rounded-2xl p-4 min-h-[600px] border border-gray-100 overflow-auto">
-                        <canvas id="pdfCanvas" class="shadow-sm rounded-lg max-w-full"></canvas>
+                    <!-- Render Canvas Container with Paywall Overlay -->
+                    <div class="w-full flex justify-center items-center bg-gray-50 rounded-2xl p-4 min-h-[600px] border border-gray-100 relative overflow-hidden">
+                        <!-- Canvas -->
+                        <canvas id="pdfCanvas" class="shadow-sm rounded-lg max-w-full transition-all duration-300"></canvas>
+
+                        <!-- Paywall Blur Overlay (Appears for older notes if unsubscribed) -->
+                        <div id="paywallOverlay" class="absolute inset-0 bg-white/60 backdrop-blur-md z-20 hidden flex flex-col items-center justify-center text-center p-6">
+                            <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 max-w-sm w-full">
+                                <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-4">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-black mb-2">Archive Note Locked</h3>
+                                <p class="text-xs text-gray-500 mb-6 leading-relaxed">Only the two most recent notes per subject are free to preview. Subscribe to unlock the entire repository.</p>
+                                <a id="overlayStripeBtn" href="" target="_blank" class="w-full block py-3 bg-black text-white rounded-full text-xs font-semibold hover:bg-gray-800 transition-all shadow-sm mb-3">
+                                    Unlock All Notes ($5/mo)
+                                </a>
+                                <button onclick="openAuthModal()" class="text-xs text-gray-500 hover:text-black font-medium">Already subscribed? Log in</button>
+                            </div>
+                        </div>
                     </div>
 
                 </section>
@@ -175,17 +191,15 @@
 
             <div class="text-center mb-8">
                 <h3 class="text-2xl font-bold tracking-tight text-black mb-2">Account Access</h3>
-                <p class="text-sm text-gray-500">Sign in to download notes or create a new profile.</p>
+                <p class="text-sm text-gray-500">Sign in to sync your subscription status.</p>
             </div>
 
-            <!-- Email & Password Form -->
             <form id="authForm" class="space-y-4">
                 <div>
                     <input type="email" id="authEmailInput" required placeholder="name@domain.com" class="w-full px-4 py-3 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-black transition-colors mb-4">
                     <input type="password" id="authPasswordInput" required placeholder="Password (min 6 chars)" class="w-full px-4 py-3 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-black transition-colors">
                 </div>
                 
-                <!-- Custom Inline Feedback Box -->
                 <div id="authFeedbackBox" class="p-3 rounded-xl text-xs font-medium hidden"></div>
 
                 <div class="flex gap-3 pt-2">
@@ -220,9 +234,10 @@
 
         const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/14A6oH5v87Gr8SR8UA2VG00";
         document.getElementById('stripeCheckoutBtn').href = STRIPE_PAYMENT_LINK;
+        document.getElementById('overlayStripeBtn').href = STRIPE_PAYMENT_LINK;
 
         const SUPABASE_URL = "https://ispgvungyyjvgdchvriw.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzcGd2dW5neXlqdmdkY2h2cml3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MDQ3NTgsImV4cCI6MjEwNTA4MDc1OH0.4W4MJ6Bw-dmtVQVgMSiWe212CesrUkPF7rVvawRHyMc";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzcGd2dW5neXlqdmdkY2h2cml3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MDQ3TSIsImV4cCI6MjEwNTA4MDc1OH0.4W4MJ6Bw-dmtVQVgMSiWe212CesrUkPF7rVvawRHyMc"; // Truncated token kept functional in context
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -231,13 +246,11 @@
         let currentPageNum = 1;
         let currentPdfPath = '';
         let currentPdfTitle = '';
+        let currentNoteIndex = 0; // Tracks position in subject array
 
         let currentUser = null;
         let isSubscribed = false;
 
-        // ----------------------------------------------------
-        // 1. SUPABASE AUTHENTICATION & ACCESS CONTROL
-        // ----------------------------------------------------
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             
@@ -257,6 +270,7 @@
             }
 
             updateAuthUI();
+            evaluatePaywall();
         }
 
         supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -268,13 +282,13 @@
                 isSubscribed = false;
                 document.getElementById('subscriptionBanner').classList.add('hidden');
                 updateAuthUI();
+                evaluatePaywall();
             }
         });
 
         function openAuthModal() {
             document.getElementById('authModal').classList.remove('hidden');
-            const feedback = document.getElementById('authFeedbackBox');
-            feedback.classList.add('hidden');
+            document.getElementById('authFeedbackBox').classList.add('hidden');
         }
 
         function closeAuthModal() {
@@ -300,15 +314,11 @@
                 return;
             }
 
-            const { data, error } = await supabaseClient.auth.signUp({
-                email: email,
-                password: password,
-            });
-
+            const { error } = await supabaseClient.auth.signUp({ email, password });
             if (error) {
                 showAuthMessage(error.message);
             } else {
-                showAuthMessage("Account created successfully! You are now logged in.", false);
+                showAuthMessage("Account created successfully!", false);
                 setTimeout(() => closeAuthModal(), 1500);
             }
         }
@@ -323,11 +333,7 @@
                 return;
             }
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
-
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) {
                 showAuthMessage(error.message);
             } else {
@@ -343,7 +349,6 @@
 
         function updateAuthUI() {
             const authContainer = document.getElementById('auth-controls');
-
             if (currentUser) {
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-3">
@@ -360,14 +365,21 @@
             }
         }
 
-        // ----------------------------------------------------
-        // 2. GATED DOWNLOAD LOGIC
-        // ----------------------------------------------------
+        // Check if the current note requires a subscription (i.e., index >= 2 and user not subscribed)
+        function evaluatePaywall() {
+            const overlay = document.getElementById('paywallOverlay');
+            // Index 0 and 1 are the two most recent notes. Index 2+ are older archive notes.
+            if (currentNoteIndex >= 2 && !isSubscribed) {
+                overlay.classList.remove('hidden');
+            } else {
+                overlay.classList.add('hidden');
+            }
+        }
+
         async function handleDownloadRequest() {
             const banner = document.getElementById('subscriptionBanner');
 
             if (!currentUser) {
-                banner.classList.add('hidden');
                 openAuthModal();
                 return;
             }
@@ -378,24 +390,18 @@
             }
 
             banner.classList.add('hidden');
-
-            if (!currentPdfPath) {
-                return;
-            }
+            if (!currentPdfPath) return;
 
             try {
                 const response = await fetch(currentPdfPath);
                 const blob = await response.blob();
-                
                 const downloadUrl = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.style.display = 'none';
                 link.href = downloadUrl;
                 link.download = `${currentPdfTitle || 'Course-Note'}.pdf`;
-                
                 document.body.appendChild(link);
                 link.click();
-                
                 window.URL.revokeObjectURL(downloadUrl);
                 document.body.removeChild(link);
             } catch (err) {
@@ -403,17 +409,14 @@
             }
         }
 
-        // ----------------------------------------------------
-        // 3. MANIFEST & PDF CANVAS RENDERING ENGINE
-        // ----------------------------------------------------
         async function loadManifest() {
             try {
                 const response = await fetch('/notes/assets/manifest.json');
                 notesData = await response.json();
                 renderSubjects();
             } catch (error) {
-                console.error('Error loading notes manifest:', error);
-                document.getElementById('subjectContainer').innerHTML = `<p class="text-sm text-gray-400">No notes found or sync in progress.</p>`;
+                console.error('Error loading manifest:', error);
+                document.getElementById('subjectContainer').innerHTML = `<p class="text-sm text-gray-400">No notes found.</p>`;
             }
         }
 
@@ -456,12 +459,14 @@
                 item.onclick = () => {
                     document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
                     item.classList.add('active');
+                    currentNoteIndex = index; // Update note index tracking
                     loadPdf(note.path, note.title);
                 };
                 tocContainer.appendChild(item);
             });
 
             if (notes.length > 0) {
+                currentNoteIndex = 0;
                 loadPdf(notes[0].path, notes[0].title);
             }
         }
@@ -471,6 +476,9 @@
             currentPdfTitle = title;
             document.getElementById('activeNoteTitle').innerText = title;
             document.getElementById('subscriptionBanner').classList.add('hidden');
+
+            // Evaluate if this note should be paywalled/blurred
+            evaluatePaywall();
 
             try {
                 const loadingTask = pdfjsLib.getDocument(url);
