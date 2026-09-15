@@ -3,6 +3,10 @@
     "subject": "Statistics",
     "notes": [
       {
+        "title": "Homework",
+        "path": "assets/Statistics/Homework.pdf"
+      },
+      {
         "title": "Study",
         "path": "assets/Statistics/Study.pdf"
       },
@@ -29,6 +33,10 @@
     "subject": "Calculus",
     "notes": [
       {
+        "title": "Homework",
+        "path": "assets/Calculus/Homework.pdf"
+      },
+      {
         "title": "Study",
         "path": "assets/Calculus/Study.pdf"
       },
@@ -46,6 +54,10 @@
     "subject": "Business",
     "notes": [
       {
+        "title": "Homework",
+        "path": "assets/Business/Homework.pdf"
+      },
+      {
         "title": "Study",
         "path": "assets/Business/Study.pdf"
       },
@@ -62,6 +74,14 @@
   {
     "subject": "Physics",
     "notes": [
+      {
+        "title": "Homework",
+        "path": "assets/Physics/Homework.pdf"
+      },
+      {
+        "title": "Study",
+        "path": "assets/Physics/Study.pdf"
+      },
       {
         "title": "Week 2 Lab",
         "path": "assets/Physics/Week 2 Lab.pdf"
