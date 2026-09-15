@@ -2,8 +2,8 @@ name: Sync Goodnotes PDFs
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # Auto-runs every 6 hours
-  workflow_dispatch: # Allows manual run button in GitHub Actions tab
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
 
 jobs:
   sync-drive:
@@ -20,14 +20,13 @@ jobs:
       - name: Install Google Drive API Client
         run: pip install google-api-python-client google-auth
 
-      - name: Download PDFs from Drive
+      - name: Download PDFs and Build Manifest
         env:
           SERVICE_ACCOUNT_KEY: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
-          # Replace with your actual Goodnotes folder ID from Google Drive URL
-          DRIVE_FOLDER_ID: '1mn_i3Vu1T-AMKsbMdTReX8N8pxiG0FRi' 
+          DRIVE_FOLDER_ID: '1mn_i3Vu1T-AMKsbMdTReX8N8pxiG0FRi'
         run: |
           python -c "
-          import os, json, io
+          import os, json
           from google.oauth2.service_account import Credentials
           from googleapiclient.discovery import build
           from googleapiclient.http import MediaIoBaseDownload
@@ -36,25 +35,64 @@ jobs:
           creds = Credentials.from_service_account_info(creds_dict, scopes=['https://www.googleapis.com/auth/drive.readonly'])
           service = build('drive', 'v3', credentials=creds)
 
-          folder_id = os.environ['DRIVE_FOLDER_ID']
-          results = service.files().list(q=f\"'{folder_id}' in parents and mimeType='application/pdf' and trashed=false\", fields=\"files(id, name)\").execute()
-          items = results.get('files', [])
+          root_folder_id = os.environ['DRIVE_FOLDER_ID']
+          base_dir = 'assets/notes'
+          os.makedirs(base_dir, exist_ok=True)
 
-          os.makedirs('assets/notes', exist_ok=True)
-          for item in items:
-              request = service.files().get_media(fileId=item['id'])
-              filepath = os.path.join('assets/notes', item['name'])
-              with open(filepath, 'wb') as f:
-                  downloader = MediaIoBaseDownload(f, request)
-                  done = False
-                  while not done:
-                      status, done = downloader.next_chunk()
-              print(f'Synced: {item[\"name\"]}')
+          manifest = []
+
+          # List subfolders (Subjects)
+          folder_results = service.files().list(
+              q=f\"'{root_folder_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false\",
+              fields=\"files(id, name)\"
+          ).execute()
+          folders = folder_results.get('files', [])
+
+          # Fallback if PDFs are directly in root folder without subfolders
+          if not folders:
+              folders = [{'id': root_folder_id, 'name': 'General Notes'}]
+
+          for folder in folders:
+              subject_name = folder['name']
+              subject_dir = os.path.join(base_dir, subject_name)
+              os.makedirs(subject_dir, exist_ok=True)
+              
+              file_results = service.files().list(
+                  q=f\"'{folder['id']}' in parents and mimeType='application/pdf' and trashed=false\",
+                  fields=\"files(id, name)\"
+              ).execute()
+              files = file_results.get('files', [])
+
+              pdf_list = []
+              for f in files:
+                  filepath = os.path.join(subject_dir, f['name'])
+                  request = service.files().get_media(fileId=f['id'])
+                  with open(filepath, 'wb') as pdf_out:
+                      downloader = MediaIoBaseDownload(pdf_out, request)
+                      done = False
+                      while not done:
+                          status, done = downloader.next_chunk()
+                  
+                  pdf_list.append({
+                      'title': f['name'].replace('.pdf', ''),
+                      'path': f'/assets/notes/{subject_name}/{f[\"name\"]}'
+                  })
+
+              if pdf_list:
+                  manifest.append({
+                      'subject': subject_name,
+                      'notes': pdf_list
+                  })
+
+          with open(os.path.join(base_dir, 'manifest.json'), 'w') as json_out:
+              json.dump(manifest, json_out, indent=2)
+
+          print('Manifest generated successfully!')
           "
 
-      - name: Commit and Push Changes
+      - name: Commit and Push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/notes/
-          git diff --staged --quiet || (git commit -m "Auto-update course notes" && git push)
+          git diff --staged --quiet || (git commit -m "Auto-update course notes & manifest" && git push)
