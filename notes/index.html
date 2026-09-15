@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Notes — Beckett Graham</title>
+    <title>Course Notes | Beckett Graham</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -16,7 +17,6 @@
             overflow-x: hidden;
         }
         
-        /* Apple-style glassmorphism */
         .glass-nav { 
             background: rgba(251, 251, 253, 0.7); 
             backdrop-filter: blur(20px); 
@@ -24,14 +24,11 @@
             border-bottom: 1px solid rgba(0,0,0,0.05); 
         }
         
-        /* Bento Card Containers */
         .bento-card { 
-            border-radius: 32px; 
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 28px; 
             border: 1px solid rgba(0,0,0,0.04);
         }
 
-        /* Ambient Glow Effect */
         .glow-bg {
             position: absolute;
             top: -5%;
@@ -44,24 +41,29 @@
             pointer-events: none;
         }
 
-        /* Subject Button Active State */
         .subject-btn.active {
             background-color: #1d1d1f;
             color: #ffffff;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
+        .toc-item.active {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #000;
+            font-weight: 600;
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col justify-between">
+<body class="antialiased min-h-screen flex flex-col justify-between" oncontextmenu="return false;">
 
     <div class="glow-bg"></div>
 
     <!-- Navigation -->
     <nav class="glass-nav fixed w-full z-50 top-0 transition-all duration-300">
-      <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <a href="/" class="font-semibold text-lg tracking-tight hover:opacity-70 transition-opacity">Beckett Graham</a>
         
         <div class="flex space-x-6 md:space-x-8 text-[14px] font-medium text-gray-500">
@@ -73,67 +75,68 @@
     </nav>
 
     <!-- Header Section -->
-    <header class="pt-36 pb-12 px-6 text-center relative" data-aos="fade-up" data-aos-duration="1000">
+    <header class="pt-32 pb-8 px-6 text-center relative" data-aos="fade-up" data-aos-duration="1000">
         <span class="text-xs font-bold uppercase tracking-[0.25em] text-gray-400 block mb-3">Academic Repository</span>
-        <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600">
+        <h1 class="text-5xl md:text-6xl font-bold tracking-tighter mb-3 bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600">
             Course Notes
         </h1>
-        <p class="text-lg md:text-xl text-gray-500 max-w-xl mx-auto font-light leading-relaxed">
-            Live digitized Goodnotes export. Updated continuously directly from study sessions.
+        <p class="text-base md:text-lg text-gray-500 max-w-xl mx-auto font-light leading-relaxed">
+            Live Goodnotes exports digitized directly from study sessions.
         </p>
     </header>
 
-    <!-- Main Content Container -->
+    <!-- Main Workspace -->
     <main class="max-w-7xl mx-auto px-6 pb-20 w-full flex-grow" data-aos="fade-up" data-aos-delay="100">
         
-        <!-- Subject Selection Pills -->
-        <div class="flex items-center justify-start md:justify-center gap-3 overflow-x-auto pb-6 mb-4 no-scrollbar">
-            <button onclick="selectSubject(this, 'assets/notes/ES1050_Notes.pdf', 'Engineering Design (ES1050)', 'Latest Lecture & Design Methodology')" 
-                    class="subject-btn active px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap bg-white border border-gray-200/80 hover:bg-gray-100">
-                ES1050 — Design
-            </button>
-            <button onclick="selectSubject(this, 'assets/notes/Calculus_Notes.pdf', 'Calculus I', 'Derivatives, Integrals, & Infinite Series')" 
-                    class="subject-btn px-6 py-3 rounded-full text-sm font-medium text-gray-600 transition-all duration-300 whitespace-nowrap bg-white border border-gray-200/80 hover:bg-gray-100">
-                Calculus
-            </button>
-            <button onclick="selectSubject(this, 'assets/notes/Physics_Notes.pdf', 'Physics', 'Kinematics, Dynamics, & Wave Mechanics')" 
-                    class="subject-btn px-6 py-3 rounded-full text-sm font-medium text-gray-600 transition-all duration-300 whitespace-nowrap bg-white border border-gray-200/80 hover:bg-gray-100">
-                Physics
-            </button>
-            <button onclick="selectSubject(this, 'assets/notes/Linear_Algebra.pdf', 'Linear Algebra', 'Vectors, Matrices, & Vector Spaces')" 
-                    class="subject-btn px-6 py-3 rounded-full text-sm font-medium text-gray-600 transition-all duration-300 whitespace-nowrap bg-white border border-gray-200/80 hover:bg-gray-100">
-                Linear Algebra
-            </button>
+        <!-- Dynamic Subject Buttons -->
+        <div id="subjectContainer" class="flex items-center justify-start md:justify-center gap-3 overflow-x-auto pb-6 mb-2 no-scrollbar">
+            <!-- Dynamically populated from Google Drive Folders -->
         </div>
 
-        <!-- Bento Viewing Card -->
-        <div class="bento-card bg-white p-6 md:p-10 shadow-sm border border-gray-100 relative overflow-hidden">
+        <!-- Bento Card Layout: Sidebar + Canvas Viewer -->
+        <div class="bento-card bg-white p-6 md:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
             
-            <!-- Note Metadata Bar -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-6 border-b border-gray-100 gap-4">
-                <div>
-                    <h2 id="noteTitle" class="text-2xl md:text-3xl font-bold tracking-tight text-black">
-                        Engineering Design (ES1050)
-                    </h2>
-                    <p id="noteSubtext" class="text-gray-400 text-sm mt-1">
-                        Latest Lecture & Design Methodology
-                    </p>
-                </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
-                <!-- Read Only Indicator (No Download Trigger) -->
-                <div class="flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-full bg-gray-100 text-gray-500 select-none w-fit">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                    <span>Read Only View</span>
-                </div>
-            </div>
+                <!-- Table of Contents Sidebar -->
+                <aside class="lg:col-span-3 border-b lg:border-b-0 lg:border-r border-gray-100 pb-6 lg:pb-0 lg:pr-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Table of Contents</h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 select-none">Read Only</span>
+                    </div>
+                    <div id="tocContainer" class="flex flex-col gap-1 max-h-[500px] lg:max-h-[700px] overflow-y-auto pr-1">
+                        <!-- Dynamically populated file links -->
+                    </div>
+                </aside>
 
-            <!-- Protected PDF Viewer Window -->
-            <div class="w-full h-[650px] md:h-[800px] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 relative" oncontextmenu="return false;">
-                <iframe id="pdfViewer" 
-                        src="assets/notes/ES1050_Notes.pdf#toolbar=0&navpanes=0&scrollbar=1" 
-                        class="w-full h-full rounded-2xl border-none" 
-                        title="Course Notes Viewer">
-                </iframe>
+                <!-- Page-by-Page PDF Canvas Viewer -->
+                <section class="lg:col-span-9 flex flex-col items-center">
+                    
+                    <!-- Top Page Navigation Controls -->
+                    <div class="w-full flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
+                        <h2 id="activeNoteTitle" class="text-lg md:text-xl font-bold tracking-tight text-black truncate max-w-[250px] md:max-w-md">
+                            Select a Note
+                        </h2>
+                        
+                        <div class="flex items-center gap-3">
+                            <button onclick="prevPage()" class="p-2 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-700 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                            <span class="text-xs font-semibold text-gray-500 whitespace-nowrap">
+                                Page <span id="pageNum">0</span> of <span id="pageCount">0</span>
+                            </span>
+                            <button onclick="nextPage()" class="p-2 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-700 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Render Canvas -->
+                    <div class="w-full flex justify-center items-center bg-gray-50 rounded-2xl p-4 min-h-[600px] border border-gray-100 overflow-auto">
+                        <canvas id="pdfCanvas" class="shadow-sm rounded-lg max-w-full"></canvas>
+                    </div>
+
+                </section>
             </div>
         </div>
     </main>
@@ -153,31 +156,115 @@
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ 
-            duration: 1000, 
-            easing: 'ease-out-quart', 
-            once: true,
-            offset: 50
-        });
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        function selectSubject(element, pdfPath, title, subtext) {
-            // Remove active style from all subject buttons
-            document.querySelectorAll('.subject-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-black', 'text-white');
-                btn.classList.add('text-gray-600', 'bg-white');
+        AOS.init({ duration: 1000, easing: 'ease-out-quart', once: true });
+
+        let notesData = [];
+        let currentPdfDoc = null;
+        let currentPageNum = 1;
+
+        // Fetch manifest.json from /notes/assets/manifest.json
+        async function loadManifest() {
+            try {
+                const response = await fetch('/notes/assets/manifest.json');
+                notesData = await response.json();
+                renderSubjects();
+            } catch (error) {
+                console.error('Error loading notes manifest:', error);
+                document.getElementById('subjectContainer').innerHTML = `<p class="text-sm text-gray-400">No notes found or sync in progress.</p>`;
+            }
+        }
+
+        function renderSubjects() {
+            const container = document.getElementById('subjectContainer');
+            container.innerHTML = '';
+
+            notesData.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.className = `subject-btn px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap bg-white border border-gray-200/80 hover:bg-gray-100 ${index === 0 ? 'active' : 'text-gray-600'}`;
+                btn.innerText = item.subject;
+                btn.onclick = () => selectSubject(index, btn);
+                container.appendChild(btn);
             });
 
-            // Highlight selected button
-            element.classList.add('active');
-            element.classList.remove('text-gray-600');
-
-            // Update Metadata Header
-            document.getElementById('noteTitle').innerText = title;
-            document.getElementById('noteSubtext').innerText = subtext;
-            
-            // Reload PDF iframe with hidden toolbar parameters
-            document.getElementById('pdfViewer').src = pdfPath + '#toolbar=0&navpanes=0&scrollbar=1';
+            if (notesData.length > 0) {
+                renderTOC(0);
+            }
         }
+
+        function selectSubject(index, btnElement) {
+            document.querySelectorAll('.subject-btn').forEach(b => {
+                b.classList.remove('active');
+                b.classList.add('text-gray-600');
+            });
+            btnElement.classList.add('active');
+            btnElement.classList.remove('text-gray-600');
+            renderTOC(index);
+        }
+
+        function renderTOC(subjectIndex) {
+            const tocContainer = document.getElementById('tocContainer');
+            tocContainer.innerHTML = '';
+
+            const notes = notesData[subjectIndex].notes;
+            notes.forEach((note, index) => {
+                const item = document.createElement('button');
+                item.className = `toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100 ${index === 0 ? 'active' : ''}`;
+                item.innerText = note.title;
+                item.onclick = () => {
+                    document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    loadPdf(note.path, note.title);
+                };
+                tocContainer.appendChild(item);
+            });
+
+            if (notes.length > 0) {
+                loadPdf(notes[0].path, notes[0].title);
+            }
+        }
+
+        async function loadPdf(url, title) {
+            document.getElementById('activeNoteTitle').innerText = title;
+            try {
+                const loadingTask = pdfjsLib.getDocument(url);
+                currentPdfDoc = await loadingTask.promise;
+                document.getElementById('pageCount').innerText = currentPdfDoc.numPages;
+                currentPageNum = 1;
+                renderPage(currentPageNum);
+            } catch (err) {
+                console.error('Error loading PDF:', err);
+            }
+        }
+
+        async function renderPage(num) {
+            if (!currentPdfDoc) return;
+            const page = await currentPdfDoc.getPage(num);
+            const canvas = document.getElementById('pdfCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const viewport = page.getViewport({ scale: 1.5 });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+            document.getElementById('pageNum').innerText = num;
+        }
+
+        function prevPage() {
+            if (currentPageNum <= 1) return;
+            currentPageNum--;
+            renderPage(currentPageNum);
+        }
+
+        function nextPage() {
+            if (!currentPdfDoc || currentPageNum >= currentPdfDoc.numPages) return;
+            currentPageNum++;
+            renderPage(currentPageNum);
+        }
+
+        window.onload = loadManifest;
     </script>
 </body>
 </html>
