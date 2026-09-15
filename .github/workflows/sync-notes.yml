@@ -2,12 +2,12 @@ name: Sync Goodnotes PDFs
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # Auto-runs every 6 hours
-  workflow_dispatch: # Allows manual trigger from Actions tab
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
 
 jobs:
   sync-drive:
-    runs-runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -25,7 +25,6 @@ jobs:
           SERVICE_ACCOUNT_KEY: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
           DRIVE_FOLDER_ID: '1mn_i3Vu1T-AMKsbMdTReX8N8pxiG0FRi'
         run: |
-          python -c "
           import os, json
           from google.oauth2.service_account import Credentials
           from googleapiclient.discovery import build
@@ -41,10 +40,9 @@ jobs:
 
           manifest = []
 
-          # List subfolders (Subjects)
           folder_results = service.files().list(
-              q=f\"'{root_folder_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false\",
-              fields=\"files(id, name)\"
+              q=f"'{root_folder_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+              fields="files(id, name)"
           ).execute()
           folders = folder_results.get('files', [])
 
@@ -57,8 +55,8 @@ jobs:
               os.makedirs(subject_dir, exist_ok=True)
               
               file_results = service.files().list(
-                  q=f\"'{folder['id']}' in parents and mimeType='application/pdf' and trashed=false\",
-                  fields=\"files(id, name)\"
+                  q=f"'{folder['id']}' in parents and mimeType='application/pdf' and trashed=false",
+                  fields="files(id, name)"
               ).execute()
               files = file_results.get('files', [])
 
@@ -74,7 +72,7 @@ jobs:
                   
                   pdf_list.append({
                       'title': f['name'].replace('.pdf', ''),
-                      'path': f'/notes/assets/{subject_name}/{f[\"name\"]}'
+                      'path': f'/notes/assets/{subject_name}/{f["name"]}'
                   })
 
               if pdf_list:
@@ -87,7 +85,7 @@ jobs:
               json.dump(manifest, json_out, indent=2)
 
           print('Manifest generated successfully in notes/assets!')
-          "
+        shell: python
 
       - name: Commit and Push
         run: |
