@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Notes — Beckett Graham</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #fbfbfd; 
+            color: #1d1d1f; 
+            overflow-x: hidden;
+        }
+        
+        /* Apple-style glassmorphism */
+        .glass-nav { 
+            background: rgba(251, 251, 253, 0.7); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+        }
+        
+        /* Bento Card Containers */
+        .bento-card { 
+            border-radius: 32px; 
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        /* Ambient Glow Effect */
+        .glow-bg {
+            position: absolute;
+            top: -5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, rgba(251,251,253,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Subject Button Active State */
+        .subject-btn.active {
+            background-color: #1d1d1f;
+            color: #ffffff;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col justify-between">
+
+    <div class="glow-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full z-50 top-0 transition-all duration-300">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="/" class="font-semibold text-lg tracking-tight hover:opacity-70 transition-opacity">Beckett Graham</a>
+        
+        <div class="flex space-x-6 md:space-x-8 text-[14px] font-medium text-gray-500">
+          <a href="/portfolio/" class="hover:text-black transition-colors">Portfolio</a>
+          <a href="/games/" class="hover:text-black transition-colors">Games</a>
+          <a href="/notes/" class="text-black font-semibold">Notes</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="pt-36 pb-12 px-6 text-center relative" data-aos="fade-up" data-aos-duration="1000">
+        <span class="text-xs font-bold uppercase tracking-[0.25em] text-gray-400 block mb-3">Academic Repository</span>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600">
+            Course Notes
+        </h1>
+        <p class="text-lg md:text-xl text-gray-500 max-w-xl mx-auto font-light leading-relaxed">
+            Live digitized Goodnotes export. Updated continuously directly from study sessions.
+        </p>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-6 pb-20 w-full flex-grow" data-aos="fade-up" data-aos-delay="100">
+        
+        <!-- Subject Selection Pills -->
+        <div class="flex items-center justify-start md:justify-center gap-3 overflow-x-auto pb-6 mb-4 no-scrollbar">
+            <button onclick="selectSubject(this, 'assets/notes/ES1050_Notes.pdf', 'Engineering Design (ES1050)', 'Latest Lecture & Design Methodology')" 
+                    class="subject-btn active px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap bg-white border border-gray-200/80 hover:bg-gray-100">
+                ES1050 — Design
+            </button>
+            <button onclick="selectSubject(this, 'assets/notes/Calculus_Notes.pdf', 'Calculus I', 'Derivatives, Integrals, & Infinite Series')" 
+                    class="subject-btn px-6 py-3 rounded-full text-sm font-medium text-gray-600 transition-all duration-300 whitespace-nowrap bg-white border border-gray-200/80 hover:bg-gray-100">
+                Calculus
+            </button>
+            <button onclick="selectSubject(this, 'assets/notes/Physics_Notes.pdf', 'Physics', 'Kinematics, Dynamics, & Wave Mechanics')" 
+                    class="subject-btn px-6 py-3 rounded-full text-sm font-medium text-gray-600 transition-all duration-300 whitespace-nowrap bg-white border border-gray-200/80 hover:bg-gray-100">
+                Physics
+            </button>
+            <button onclick="selectSubject(this, 'assets/notes/Linear_Algebra.pdf', 'Linear Algebra', 'Vectors, Matrices, & Vector Spaces')" 
+                    class="subject-btn px-6 py-3 rounded-full text-sm font-medium text-gray-600 transition-all duration-300 whitespace-nowrap bg-white border border-gray-200/80 hover:bg-gray-100">
+                Linear Algebra
+            </button>
+        </div>
+
+        <!-- Bento Viewing Card -->
+        <div class="bento-card bg-white p-6 md:p-10 shadow-sm border border-gray-100 relative overflow-hidden">
+            
+            <!-- Note Metadata Bar -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-6 border-b border-gray-100 gap-4">
+                <div>
+                    <h2 id="noteTitle" class="text-2xl md:text-3xl font-bold tracking-tight text-black">
+                        Engineering Design (ES1050)
+                    </h2>
+                    <p id="noteSubtext" class="text-gray-400 text-sm mt-1">
+                        Latest Lecture & Design Methodology
+                    </p>
+                </div>
+                
+                <!-- Read Only Indicator (No Download Trigger) -->
+                <div class="flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-full bg-gray-100 text-gray-500 select-none w-fit">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <span>Read Only View</span>
+                </div>
+            </div>
+
+            <!-- Protected PDF Viewer Window -->
+            <div class="w-full h-[650px] md:h-[800px] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 relative" oncontextmenu="return false;">
+                <iframe id="pdfViewer" 
+                        src="assets/notes/ES1050_Notes.pdf#toolbar=0&navpanes=0&scrollbar=1" 
+                        class="w-full h-full rounded-2xl border-none" 
+                        title="Course Notes Viewer">
+                </iframe>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-gray-200/60 bg-white">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-sm text-gray-400 font-medium">
+                &copy; 2026 Beckett Graham. Hamilton, Ontario.
+            </p>
+            <div class="flex space-x-6 text-sm font-medium text-gray-400">
+                <a href="mailto:beckettgraham@icloud.com" class="hover:text-black transition-colors">Contact Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ 
+            duration: 1000, 
+            easing: 'ease-out-quart', 
+            once: true,
+            offset: 50
+        });
+
+        function selectSubject(element, pdfPath, title, subtext) {
+            // Remove active style from all subject buttons
+            document.querySelectorAll('.subject-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-black', 'text-white');
+                btn.classList.add('text-gray-600', 'bg-white');
+            });
+
+            // Highlight selected button
+            element.classList.add('active');
+            element.classList.remove('text-gray-600');
+
+            // Update Metadata Header
+            document.getElementById('noteTitle').innerText = title;
+            document.getElementById('noteSubtext').innerText = subtext;
+            
+            // Reload PDF iframe with hidden toolbar parameters
+            document.getElementById('pdfViewer').src = pdfPath + '#toolbar=0&navpanes=0&scrollbar=1';
+        }
+    </script>
+</body>
+</html>
