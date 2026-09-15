@@ -72,7 +72,7 @@ jobs:
                   
                   pdf_list.append({
                       'title': f['name'].replace('.pdf', ''),
-                      'path': f'/notes/assets/{subject_name}/{f["name"]}'
+                      'path': f'assets/{subject_name}/{f["name"]}'
                   })
 
               if pdf_list:
