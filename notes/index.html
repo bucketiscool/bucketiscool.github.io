@@ -155,7 +155,7 @@
         </div>
     </main>
 
-    <!-- Google & Email Authentication Modal -->
+    <!-- Email & Password Authentication Modal -->
     <div id="authModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-gray-100 relative">
             <button onclick="closeAuthModal()" class="absolute top-6 right-6 text-gray-400 hover:text-black transition-colors">
@@ -163,35 +163,27 @@
             </button>
 
             <div class="text-center mb-8">
-                <h3 class="text-2xl font-bold tracking-tight text-black mb-2">Sign In</h3>
+                <h3 class="text-2xl font-bold tracking-tight text-black mb-2">Sign In / Sign Up</h3>
                 <p class="text-sm text-gray-500">Access and download academic course materials.</p>
             </div>
 
-            <!-- Google OAuth Button -->
-            <button onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-full py-3 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm mb-6">
-                <svg class="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                Continue with Google
-            </button>
-
-            <div class="relative flex py-2 items-center mb-6">
-                <div class="flex-grow border-t border-gray-200"></div>
-                <span class="flex-shrink mx-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Or email link</span>
-                <div class="flex-grow border-t border-gray-200"></div>
-            </div>
-
-            <!-- Email Magic Link Form -->
-            <form onsubmit="handleEmailLogin(event)" class="space-y-4">
+            <!-- Email & Password Form -->
+            <form id="authForm" class="space-y-4">
                 <div>
-                    <input type="email" id="authEmailInput" required placeholder="name@domain.com" class="w-full px-4 py-3 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-black transition-colors">
+                    <input type="email" id="authEmailInput" required placeholder="name@domain.com" class="w-full px-4 py-3 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-black transition-colors mb-4">
+                    <input type="password" id="authPasswordInput" required placeholder="Password (min 6 chars)" class="w-full px-4 py-3 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-black transition-colors">
                 </div>
-                <button type="submit" class="w-full bg-black text-white py-3 rounded-full text-sm font-semibold hover:bg-gray-800 transition-all">
-                    Send Magic Link
-                </button>
+                
+                <p id="authErrorMessage" class="text-red-500 text-xs text-center hidden"></p>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="handleSignIn(event)" class="w-full bg-black text-white py-3 rounded-full text-sm font-semibold hover:bg-gray-800 transition-all">
+                        Sign In
+                    </button>
+                    <button type="button" onclick="handleSignUp(event)" class="w-full bg-white text-black border border-gray-200 py-3 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all">
+                        Sign Up
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -256,6 +248,7 @@
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                 checkAuth();
+                closeAuthModal(); // Close modal automatically on sign in/up
             } else if (event === 'SIGNED_OUT') {
                 currentUser = null;
                 isSubscribed = false;
@@ -265,43 +258,64 @@
 
         function openAuthModal() {
             document.getElementById('authModal').classList.remove('hidden');
+            document.getElementById('authErrorMessage').classList.add('hidden');
         }
 
         function closeAuthModal() {
             document.getElementById('authModal').classList.add('hidden');
+            // Clear inputs on close
+            document.getElementById('authEmailInput').value = '';
+            document.getElementById('authPasswordInput').value = '';
         }
 
-        async function loginWithGoogle() {
-            const redirectUrl = window.location.origin + window.location.pathname;
-            const { error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: redirectUrl
-                }
+        // --- NEW SIGN UP FUNCTION ---
+        async function handleSignUp(event) {
+            event.preventDefault();
+            const email = document.getElementById('authEmailInput').value;
+            const password = document.getElementById('authPasswordInput').value;
+            const errorMsg = document.getElementById('authErrorMessage');
+            
+            if (!email || !password) {
+                errorMsg.textContent = "Please enter both email and password.";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
             });
+
             if (error) {
-                alert("Google Sign-In Error: " + error.message);
+                errorMsg.textContent = error.message;
+                errorMsg.classList.remove('hidden');
+            } else {
+                // If email confirmation is off in Supabase, they are now signed in.
+                alert("Account created successfully!");
             }
         }
 
-        async function handleEmailLogin(event) {
+        // --- NEW SIGN IN FUNCTION ---
+        async function handleSignIn(event) {
             event.preventDefault();
             const email = document.getElementById('authEmailInput').value;
+            const password = document.getElementById('authPasswordInput').value;
+            const errorMsg = document.getElementById('authErrorMessage');
             
-            if (!email) return;
+            if (!email || !password) {
+                errorMsg.textContent = "Please enter both email and password.";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
 
-            const redirectUrl = window.location.origin + window.location.pathname;
-            const { error } = await supabaseClient.auth.signInWithOtp({ 
-                email,
-                options: {
-                    emailRedirectTo: redirectUrl
-                }
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password,
             });
+
             if (error) {
-                alert("Login Error: " + error.message);
-            } else {
-                alert("Check your inbox for your login link!");
-                closeAuthModal();
+                errorMsg.textContent = error.message;
+                errorMsg.classList.remove('hidden');
             }
         }
 
