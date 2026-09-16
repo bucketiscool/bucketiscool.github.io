@@ -24,6 +24,14 @@
     "subject": "Algebra",
     "notes": [
       {
+        "title": "Homework",
+        "path": "assets/Algebra/Homework.pdf"
+      },
+      {
+        "title": "Study",
+        "path": "assets/Algebra/Study.pdf"
+      },
+      {
         "title": "Week 2",
         "path": "assets/Algebra/Week 2.pdf"
       },
