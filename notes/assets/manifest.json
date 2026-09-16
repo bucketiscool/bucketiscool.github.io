@@ -3,16 +3,20 @@
     "subject": "Statistics",
     "notes": [
       {
-        "title": "Homework",
-        "path": "assets/Statistics/Homework.pdf"
+        "title": "Week 1",
+        "path": "assets/Statistics/Week 1.pdf"
+      },
+      {
+        "title": "Week 2",
+        "path": "assets/Statistics/Week 2.pdf"
       },
       {
         "title": "Study",
         "path": "assets/Statistics/Study.pdf"
       },
       {
-        "title": "Week 2",
-        "path": "assets/Statistics/Week 2.pdf"
+        "title": "Homework",
+        "path": "assets/Statistics/Homework.pdf"
       }
     ]
   },
@@ -37,16 +41,16 @@
         "path": "assets/Calculus/Homework.pdf"
       },
       {
+        "title": "Week 1",
+        "path": "assets/Calculus/Week 1.pdf"
+      },
+      {
         "title": "Study",
         "path": "assets/Calculus/Study.pdf"
       },
       {
         "title": "Week 2",
         "path": "assets/Calculus/Week 2.pdf"
-      },
-      {
-        "title": "Week 1",
-        "path": "assets/Calculus/Week 1.pdf"
       }
     ]
   },
@@ -58,16 +62,16 @@
         "path": "assets/Business/Homework.pdf"
       },
       {
-        "title": "Study",
-        "path": "assets/Business/Study.pdf"
+        "title": "Week 1",
+        "path": "assets/Business/Week 1.pdf"
       },
       {
         "title": "Week 2",
         "path": "assets/Business/Week 2.pdf"
       },
       {
-        "title": "Week 1",
-        "path": "assets/Business/Week 1.pdf"
+        "title": "Study",
+        "path": "assets/Business/Study.pdf"
       }
     ]
   },
@@ -75,24 +79,24 @@
     "subject": "Physics",
     "notes": [
       {
-        "title": "Homework",
-        "path": "assets/Physics/Homework.pdf"
+        "title": "Week 1",
+        "path": "assets/Physics/Week 1.pdf"
       },
       {
         "title": "Study",
         "path": "assets/Physics/Study.pdf"
       },
       {
-        "title": "Week 2 Lab",
-        "path": "assets/Physics/Week 2 Lab.pdf"
+        "title": "Homework",
+        "path": "assets/Physics/Homework.pdf"
       },
       {
         "title": "Week 2",
         "path": "assets/Physics/Week 2.pdf"
       },
       {
-        "title": "Week 1",
-        "path": "assets/Physics/Week 1.pdf"
+        "title": "Week 2 Lab",
+        "path": "assets/Physics/Week 2 Lab.pdf"
       }
     ]
   }
