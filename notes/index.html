@@ -164,8 +164,8 @@
                         </div>
 
                         <!-- Unlocked Feature Content View (Shown if is_subscribed is true) -->
-                        <div id="featureContentUnlocked" class="hidden flex flex-col items-center justify-center p-12 text-center w-full min-h-[600px] bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                            <div id="featureInnerDynamicContent">
+                        <div id="featureContentUnlocked" class="hidden flex flex-col items-center justify-center p-6 md:p-12 w-full min-h-[600px] bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                            <div id="featureInnerDynamicContent" class="w-full">
                                 <!-- Dynamic feature payload injected here -->
                             </div>
                         </div>
@@ -264,7 +264,6 @@
 
             updateAuthUI();
             
-            // Re-render current feature/subject state if premium tab is active
             const activeSubjectBtn = document.querySelector('.subject-btn.active');
             if (activeSubjectBtn && activeSubjectBtn.dataset.isPremium === 'true') {
                 const activeTocItem = document.querySelector('.toc-item.active');
@@ -394,13 +393,11 @@
                 const response = await fetch('/notes/assets/manifest.json');
                 notesData = await response.json();
                 
-                // Append Premium Tab to subjects
                 notesData.push({
                     subject: "Premium",
                     isPremiumTab: true,
                     notes: [
-                        { title: "Interactive Flashcards", type: "feature", featureKey: "flashcards" },
-                        { title: "AI Test Banks (Coming Soon)", type: "feature", featureKey: "coming_soon" }
+                        { title: "Interactive Flashcards", type: "feature", featureKey: "flashcards" }
                     ]
                 });
 
@@ -448,16 +445,7 @@
             const subjectObj = notesData[subjectIndex];
             const isPremium = subjectObj.isPremiumTab;
 
-            // Update Sidebar Header / Badge
             document.getElementById('sidebarHeading').innerText = isPremium ? 'Features' : 'Table of Contents';
-            const badge = document.getElementById('sidebarBadge');
-            if (isPremium) {
-                badge.innerText = 'Subscriber Only';
-                badge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 select-none';
-            } else {
-                badge.innerText = 'Free Access';
-                badge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 select-none';
-            }
 
             let entries = [...subjectObj.notes];
 
@@ -505,8 +493,7 @@
             }
         }
 
-        function renderFeatureView(featureKey) {
-            // Hide PDF viewer, show Feature viewer
+        async function renderFeatureView(featureKey) {
             document.getElementById('pdfViewerContainer').classList.add('hidden');
             document.getElementById('pdfViewerContainer').classList.remove('flex');
             
@@ -530,13 +517,55 @@
                 unlockedView.classList.add('flex');
 
                 if (featureKey === 'flashcards') {
+                    const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
+                    
                     innerDynamic.innerHTML = `
-                        <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-3">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <div class="w-full max-w-2xl mx-auto text-left">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-black">Interactive Flashcards Hub</h4>
+                                    <p class="text-xs text-gray-500">Study active decks and course material.</p>
+                                </div>
+                            </div>
+
+                            <!-- ADMIN PERMANENT FLASHCARD CREATION PANEL (ONLY VISIBLE TO BECKETT) -->
+                            ${isBeckett ? `
+                                <div class="mb-8 p-6 bg-white rounded-2xl border border-blue-100 shadow-sm">
+                                    <h5 class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-3">Admin Panel: Add Permanent Flashcards</h5>
+                                    
+                                    <!-- Manual Entry Form -->
+                                    <form id="manualFlashcardForm" onsubmit="submitManualFlashcard(event)" class="space-y-3 mb-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <input type="text" id="fcQuestion" required placeholder="Question / Term" class="px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
+                                            <input type="text" id="fcAnswer" required placeholder="Answer / Definition" class="px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
+                                        </div>
+                                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-all">Add Card Permanently</button>
+                                    </form>
+
+                                    <div class="relative flex py-2 items-center">
+                                        <div class="flex-grow border-t border-gray-100"></div>
+                                        <span class="flex-shrink mx-4 text-gray-400 text-[10px] uppercase">Or Drop Sheet / CSV</span>
+                                        <div class="flex-grow border-t border-gray-100"></div>
+                                    </div>
+
+                                    <!-- Drag & Drop Google Sheet / CSV File -->
+                                    <div id="dropZone" class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-black transition-colors" ondragover="event.preventDefault()" ondrop="handleFileDrop(event)">
+                                        <p class="text-xs text-gray-500">Drag & drop a <span class="font-semibold text-black">Google Sheet (.csv)</span> export here, or click to browse</p>
+                                        <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileSelect(event)">
+                                    </div>
+                                </div>
+                            ` : ''}
+
+                            <!-- Flashcards Viewer List -->
+                            <div id="flashcardsListContainer" class="space-y-3">
+                                <p class="text-xs text-gray-400 text-center py-6">Loading flashcards...</p>
+                            </div>
                         </div>
-                        <h4 class="text-base font-bold text-black mb-1">Flashcards Hub</h4>
-                        <p class="text-xs text-gray-400 max-w-xs">Ready for custom flashcard decks and spaced-repetition modules.</p>
                     `;
+                    loadFlashcards();
                 } else {
                     innerDynamic.innerHTML = `
                         <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-3">
@@ -549,8 +578,100 @@
             }
         }
 
+        async function loadFlashcards() {
+            const container = document.getElementById('flashcardsListContainer');
+            if (!container) return;
+
+            const { data, error } = await supabaseClient
+                .from('flashcards')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">No flashcards added yet.</p>`;
+                return;
+            }
+
+            container.innerHTML = data.map((card, idx) => `
+                <div class="p-4 bg-white border border-gray-100 rounded-xl shadow-xs flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] font-semibold text-blue-600 uppercase tracking-wider">Card #${idx + 1}</span>
+                        <h6 class="text-xs font-bold text-black mt-0.5">${escapeHtml(card.question)}</h6>
+                        <p class="text-xs text-gray-500 mt-1">${escapeHtml(card.answer)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function submitManualFlashcard(e) {
+            e.preventDefault();
+            const question = document.getElementById('fcQuestion').value;
+            const answer = document.getElementById('fcAnswer').value;
+
+            const { error } = await supabaseClient
+                .from('flashcards')
+                .insert([{ question, answer }]);
+
+            if (error) {
+                alert("Error saving flashcard: " + error.message);
+            } else {
+                document.getElementById('fcQuestion').value = '';
+                document.getElementById('fcAnswer').value = '';
+                loadFlashcards();
+            }
+        }
+
+        function handleFileDrop(e) {
+            e.preventDefault();
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                processCSVFile(e.dataTransfer.files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            if (e.target.files && e.target.files.length > 0) {
+                processCSVFile(e.target.files[0]);
+            }
+        }
+
+        function processCSVFile(file) {
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                const cardsToInsert = [];
+
+                for (let line of lines) {
+                    const parts = line.split(',');
+                    if (parts.length >= 2) {
+                        const q = parts[0].trim().replace(/^["']|["']$/g, '');
+                        const a = parts[1].trim().replace(/^["']|["']$/g, '');
+                        if (q && a && q.toLowerCase() !== 'question') {
+                            cardsToInsert.push({ question: q, answer: a });
+                        }
+                    }
+                }
+
+                if (cardsToInsert.length > 0) {
+                    const { error } = await supabaseClient.from('flashcards').insert(cardsToInsert);
+                    if (error) {
+                        alert("Error importing cards: " + error.message);
+                    } else {
+                        alert(`Successfully imported ${cardsToInsert.length} permanent flashcards!`);
+                        loadFlashcards();
+                    }
+                } else {
+                    alert("Could not parse valid questions and answers from file. Ensure it's a CSV with format: Question,Answer");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
         async function loadPdf(url, title) {
-            // Hide feature viewer, show PDF viewer
             document.getElementById('featureViewerContainer').classList.add('hidden');
             document.getElementById('featureViewerContainer').classList.remove('flex');
 
