@@ -87,6 +87,10 @@
     "subject": "Physics",
     "notes": [
       {
+        "title": "Week 2",
+        "path": "assets/Physics/Week 2.pdf"
+      },
+      {
         "title": "Week 1",
         "path": "assets/Physics/Week 1.pdf"
       },
@@ -97,10 +101,6 @@
       {
         "title": "Homework",
         "path": "assets/Physics/Homework.pdf"
-      },
-      {
-        "title": "Week 2",
-        "path": "assets/Physics/Week 2.pdf"
       },
       {
         "title": "Week 2 Lab",
