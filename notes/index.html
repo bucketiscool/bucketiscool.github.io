@@ -72,6 +72,9 @@
           <a href="/portfolio/" class="hover:text-black transition-colors">Portfolio</a>
           <a href="/games/" class="hover:text-black transition-colors">Games</a>
           <a href="/notes/" class="text-black font-semibold">Notes</a>
+          <button onclick="openPremiumModal()" class="px-3 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity">
+              ✨ Premium Hub
+          </button>
           
           <!-- Auth Controls Anchor -->
           <div id="auth-controls" class="pl-2 border-l border-gray-200"></div>
@@ -92,6 +95,20 @@
     <!-- Main Workspace -->
     <main class="max-w-7xl mx-auto px-6 pb-20 w-full flex-grow" data-aos="fade-up" data-aos-delay="100">
         
+        <!-- Subtle Premium Ad Banner Above Notes -->
+        <div class="mb-6 bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm">💡</div>
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-blue-200">Unlock Supercharged Study Tools</h4>
+                    <p class="text-xs text-gray-300">Get AI-generated flashcards, practice test banks, and custom spaced-repetition loops.</p>
+                </div>
+            </div>
+            <button onclick="openPremiumModal()" class="px-4 py-2 bg-white text-black rounded-full text-xs font-semibold hover:bg-gray-100 transition-all whitespace-nowrap shadow-sm">
+                Explore Premium ($5/mo)
+            </button>
+        </div>
+
         <!-- Dynamic Subject Buttons -->
         <div id="subjectContainer" class="flex items-center justify-start md:justify-center gap-3 overflow-x-auto pb-6 mb-2 no-scrollbar">
             <!-- Dynamically populated from Google Drive Folders -->
@@ -106,9 +123,19 @@
                 <aside class="lg:col-span-3 border-b lg:border-b-0 lg:border-r border-gray-100 pb-6 lg:pb-0 lg:pr-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Table of Contents</h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 select-none">Free Access</span>
                     </div>
                     <div id="tocContainer" class="flex flex-col gap-1 max-h-[500px] lg:max-h-[700px] overflow-y-auto pr-1">
                         <!-- Dynamically populated file links -->
+                    </div>
+                    
+                    <!-- Sidebar Ad Card -->
+                    <div class="mt-6 p-4 rounded-2xl bg-gray-50 border border-gray-100 text-center">
+                        <p class="text-xs font-bold text-black mb-1">Struggling with midterms?</p>
+                        <p class="text-[11px] text-gray-500 mb-3">Jump into Premium flashcards to drill core engineering concepts.</p>
+                        <button onclick="openPremiumModal()" class="w-full py-2 bg-black text-white rounded-full text-xs font-semibold hover:bg-gray-800 transition-all">
+                            Try Flashcards
+                        </button>
                     </div>
                 </aside>
 
@@ -122,7 +149,7 @@
                         </h2>
                         
                         <div class="flex items-center gap-4">
-                            <!-- Download Button for Current File -->
+                            <!-- Download Button for Current File (Now fully open) -->
                             <button onclick="handleDownloadRequest()" class="px-4 py-2 bg-black text-white text-xs font-semibold rounded-full hover:bg-gray-800 transition-all flex items-center gap-2 shadow-sm">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                 Download PDF
@@ -143,7 +170,7 @@
                         </div>
                     </div>
 
-                    <!-- Render Canvas Container -->
+                    <!-- Render Canvas Container (No blur overlay) -->
                     <div class="w-full flex justify-center items-center bg-gray-50 rounded-2xl p-4 min-h-[600px] border border-gray-100 relative overflow-hidden">
                         <!-- Canvas -->
                         <canvas id="pdfCanvas" class="shadow-sm rounded-lg max-w-full transition-all duration-300"></canvas>
@@ -154,6 +181,49 @@
         </div>
     </main>
 
+    <!-- Separate Premium Modal Window (With Flashcards Tab & Paywall Logic) -->
+    <div id="premiumModal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-4xl w-full p-8 shadow-2xl border border-gray-100 relative flex flex-col max-h-[90vh]">
+            <button onclick="closePremiumModal()" class="absolute top-6 right-6 text-gray-400 hover:text-black transition-colors z-10">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-6 border-b border-gray-100 mb-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-[0.2em] text-blue-600">Subscriber Portal</span>
+                    <h2 class="text-2xl font-bold text-black tracking-tight">Premium Study Hub</h2>
+                </div>
+                <!-- Tabs -->
+                <div class="flex bg-gray-100 p-1 rounded-2xl gap-1">
+                    <button class="px-4 py-1.5 bg-white text-black rounded-xl text-xs font-semibold shadow-sm">Flashcards</button>
+                </div>
+            </div>
+
+            <!-- Custom Subscription Paywall Banner Inside Modal (Active if unsubscribed) -->
+            <div id="modalPaywallSection" class="hidden flex-col items-center justify-center text-center p-8 my-auto">
+                <div class="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-600 mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-black mb-2">Unlock Premium Features</h3>
+                <p class="text-xs text-gray-500 max-w-md mx-auto mb-6 leading-relaxed">Gain immediate access to interactive flashcards, AI review tools, and advanced study systems.</p>
+                <a id="modalStripeBtn" href="" target="_blank" class="px-8 py-3 bg-black text-white rounded-full text-xs font-semibold hover:bg-gray-800 transition-all shadow-sm mb-3">
+                    Subscribe via Stripe ($5/mo)
+                </a>
+                <button onclick="openAuthModal()" class="text-xs text-gray-500 hover:text-black font-medium">Already subscribed? Log in</button>
+            </div>
+
+            <!-- Flashcards Tab Content (Visible when subscribed) -->
+            <div id="flashcardsContentContainer" class="flex-grow overflow-y-auto hidden flex flex-col items-center justify-center p-12 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <h4 class="text-base font-bold text-black mb-1">Flashcards Hub</h4>
+                <p class="text-xs text-gray-400 max-w-xs">Ready for custom flashcard sets. Content modules will appear here soon.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Authentication Modal -->
     <div id="authModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-gray-100 relative">
@@ -163,7 +233,7 @@
 
             <div class="text-center mb-8">
                 <h3 class="text-2xl font-bold tracking-tight text-black mb-2">Account Access</h3>
-                <p class="text-sm text-gray-500">Sign in or register your account.</p>
+                <p class="text-sm text-gray-500">Sign in to sync your subscription status.</p>
             </div>
 
             <form id="authForm" class="space-y-4">
@@ -204,8 +274,11 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         AOS.init({ duration: 1000, easing: 'ease-out-quart', once: true });
 
+        const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/14A6oH5v87Gr8SR8UA2VG00";
+        document.getElementById('modalStripeBtn').href = STRIPE_PAYMENT_LINK;
+
         const SUPABASE_URL = "https://ispgvungyyjvgdchvriw.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzcGd2dW5neXlqdmdkY2h2cml3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MDQ3NTgsImV4cCI6MjEwNTA4MDc1OH0.4W4MJ6Bw-dmtVQVgMSiWe212CesrUkPF7rVvawRHyMc";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzcGd2dW5neXlqdmdkY2h2cml3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MDQ3NSIsImV4cCI6MjEwNTA4MDc1OH0.4W4MJ6Bw-dmtVQVgMSiWe212CesrUkPF7rVvawRHyMc";
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -216,15 +289,28 @@
         let currentPdfTitle = '';
 
         let currentUser = null;
+        let isSubscribed = false;
 
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
+            
             if (session) {
                 currentUser = session.user;
+                
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('is_subscribed')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                isSubscribed = profile?.is_subscribed || false;
             } else {
                 currentUser = null;
+                isSubscribed = false;
             }
+
             updateAuthUI();
+            updatePremiumModalState();
         }
 
         supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -233,7 +319,9 @@
                 closeAuthModal();
             } else if (event === 'SIGNED_OUT') {
                 currentUser = null;
+                isSubscribed = false;
                 updateAuthUI();
+                updatePremiumModalState();
             }
         });
 
@@ -246,6 +334,32 @@
             document.getElementById('authModal').classList.add('hidden');
             document.getElementById('authEmailInput').value = '';
             document.getElementById('authPasswordInput').value = '';
+        }
+
+        function openPremiumModal() {
+            document.getElementById('premiumModal').classList.remove('hidden');
+            updatePremiumModalState();
+        }
+
+        function closePremiumModal() {
+            document.getElementById('premiumModal').classList.add('hidden');
+        }
+
+        function updatePremiumModalState() {
+            const paywallSection = document.getElementById('modalPaywallSection');
+            const flashcardsContainer = document.getElementById('flashcardsContentContainer');
+
+            if (isSubscribed) {
+                paywallSection.classList.add('hidden');
+                paywallSection.classList.remove('flex');
+                flashcardsContainer.classList.remove('hidden');
+                flashcardsContainer.classList.add('flex');
+            } else {
+                paywallSection.classList.remove('hidden');
+                paywallSection.classList.add('flex');
+                flashcardsContainer.classList.add('hidden');
+                flashcardsContainer.classList.remove('flex');
+            }
         }
 
         function showAuthMessage(message, isError = true) {
