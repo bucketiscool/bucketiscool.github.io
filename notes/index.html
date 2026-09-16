@@ -92,12 +92,12 @@
     <!-- Main Workspace -->
     <main class="max-w-7xl mx-auto px-6 pb-20 w-full flex-grow" data-aos="fade-up" data-aos-delay="100">
         
-        <!-- Dynamic Subject Buttons (Includes Premium Tab) -->
+        <!-- Dynamic Subject Buttons -->
         <div id="subjectContainer" class="flex items-center justify-start md:justify-center gap-3 overflow-x-auto pb-6 mb-2 no-scrollbar">
             <!-- Dynamically populated -->
         </div>
 
-        <!-- Bento Card Layout: Sidebar + Viewer Window -->
+        <!-- Bento Card Layout -->
         <div class="bento-card bg-white p-6 md:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -108,11 +108,11 @@
                         <h3 id="sidebarHeading" class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Table of Contents</h3>
                     </div>
                     <div id="tocContainer" class="flex flex-col gap-1 max-h-[500px] lg:max-h-[700px] overflow-y-auto pr-1">
-                        <!-- Dynamically populated file or feature links -->
+                        <!-- Dynamically populated -->
                     </div>
                 </aside>
 
-                <!-- Main Viewer Window (Swaps between PDF Viewer and Feature Hub) -->
+                <!-- Main Viewer Window -->
                 <section class="lg:col-span-9 flex flex-col items-center">
                     
                     <!-- PDF Viewer Container -->
@@ -147,10 +147,10 @@
                         </div>
                     </div>
 
-                    <!-- Feature Viewer Container (Appears when Premium Tab items are selected) -->
+                    <!-- Feature Viewer Container -->
                     <div id="featureViewerContainer" class="w-full flex-col items-center justify-center min-h-[650px] hidden">
                         
-                        <!-- Paywall View (Shown if not subscribed) -->
+                        <!-- Paywall View -->
                         <div id="featurePaywallView" class="hidden flex flex-col items-center justify-center text-center p-12 w-full my-auto">
                             <div class="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-600 mx-auto mb-4">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
@@ -163,7 +163,7 @@
                             <button onclick="openAuthModal()" class="text-xs text-gray-500 hover:text-black font-medium">Already subscribed? Log in</button>
                         </div>
 
-                        <!-- Unlocked Feature Content View (Shown if is_subscribed is true) -->
+                        <!-- Unlocked Feature Content View -->
                         <div id="featureContentUnlocked" class="hidden flex flex-col items-center justify-center p-6 md:p-12 w-full min-h-[600px] bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                             <div id="featureInnerDynamicContent" class="w-full">
                                 <!-- Dynamic feature payload injected here -->
@@ -268,7 +268,7 @@
             if (activeSubjectBtn && activeSubjectBtn.dataset.isPremium === 'true') {
                 const activeTocItem = document.querySelector('.toc-item.active');
                 if (activeTocItem) {
-                    renderFeatureView(activeTocItem.dataset.featureKey);
+                    renderFeatureView(activeTocItem.dataset.featureKey, activeTocItem.dataset.filterSubject);
                 }
             }
         }
@@ -284,7 +284,7 @@
                 const activeSubjectBtn = document.querySelector('.subject-btn.active');
                 if (activeSubjectBtn && activeSubjectBtn.dataset.isPremium === 'true') {
                     const activeTocItem = document.querySelector('.toc-item.active');
-                    if (activeTocItem) renderFeatureView(activeTocItem.dataset.featureKey);
+                    if (activeTocItem) renderFeatureView(activeTocItem.dataset.featureKey, activeTocItem.dataset.filterSubject);
                 }
             }
         });
@@ -445,11 +445,45 @@
             const subjectObj = notesData[subjectIndex];
             const isPremium = subjectObj.isPremiumTab;
 
-            document.getElementById('sidebarHeading').innerText = isPremium ? 'Features' : 'Table of Contents';
+            document.getElementById('sidebarHeading').innerText = isPremium ? 'Flashcard Subsections' : 'Table of Contents';
 
-            let entries = [...subjectObj.notes];
+            if (isPremium) {
+                // Build TOC items for Flashcards (All + each course subject as subsection)
+                const featureKey = "flashcards";
+                
+                // "All Flashcards" item
+                const allItem = document.createElement('button');
+                allItem.className = 'toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100 active';
+                allItem.innerText = "All Flashcards";
+                allItem.dataset.featureKey = featureKey;
+                allItem.dataset.filterSubject = "";
+                allItem.onclick = () => {
+                    document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
+                    allItem.classList.add('active');
+                    renderFeatureView(featureKey, "");
+                };
+                tocContainer.appendChild(allItem);
 
-            if (!isPremium) {
+                // Add each course subject as a subsection
+                notesData.forEach(item => {
+                    if (!item.isPremiumTab) {
+                        const subItem = document.createElement('button');
+                        subItem.className = 'toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100';
+                        subItem.innerText = `↳ ${item.subject}`;
+                        subItem.dataset.featureKey = featureKey;
+                        subItem.dataset.filterSubject = item.subject;
+                        subItem.onclick = () => {
+                            document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
+                            subItem.classList.add('active');
+                            renderFeatureView(featureKey, item.subject);
+                        };
+                        tocContainer.appendChild(subItem);
+                    }
+                });
+
+                renderFeatureView(featureKey, "");
+            } else {
+                let entries = [...subjectObj.notes];
                 entries.sort((a, b) => {
                     const specialKeywords = ['homework', 'study', 'lab'];
                     const aLower = a.title.toLowerCase();
@@ -460,40 +494,26 @@
                     if (!aIsSpecial && bIsSpecial) return -1;
                     return b.title.localeCompare(a.title, undefined, { numeric: true, sensitivity: 'base' });
                 });
-            }
 
-            entries.forEach((entry, index) => {
-                const item = document.createElement('button');
-                item.className = `toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100 ${index === 0 ? 'active' : ''}`;
-                item.innerText = entry.title;
-                
-                if (isPremium) {
-                    item.dataset.featureKey = entry.featureKey;
-                    item.onclick = () => {
-                        document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
-                        item.classList.add('active');
-                        renderFeatureView(entry.featureKey);
-                    };
-                } else {
+                entries.forEach((entry, index) => {
+                    const item = document.createElement('button');
+                    item.className = `toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100 ${index === 0 ? 'active' : ''}`;
+                    item.innerText = entry.title;
                     item.onclick = () => {
                         document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
                         item.classList.add('active');
                         loadPdf(entry.path, entry.title);
                     };
-                }
-                tocContainer.appendChild(item);
-            });
+                    tocContainer.appendChild(item);
+                });
 
-            if (entries.length > 0) {
-                if (isPremium) {
-                    renderFeatureView(entries[0].featureKey);
-                } else {
+                if (entries.length > 0) {
                     loadPdf(entries[0].path, entries[0].title);
                 }
             }
         }
 
-        async function renderFeatureView(featureKey) {
+        async function renderFeatureView(featureKey, subjectFilter = "") {
             document.getElementById('pdfViewerContainer').classList.add('hidden');
             document.getElementById('pdfViewerContainer').classList.remove('flex');
             
@@ -519,40 +539,52 @@
                 if (featureKey === 'flashcards') {
                     const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
                     
+                    // Generate subject options for the dropdown
+                    let subjectOptionsHtml = '';
+                    notesData.forEach(item => {
+                        if (!item.isPremiumTab) {
+                            subjectOptionsHtml += `<option value="${item.subject}">${item.subject}</option>`;
+                        }
+                    });
+
                     innerDynamic.innerHTML = `
                         <div class="w-full max-w-2xl mx-auto text-left">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-bold text-black">Interactive Flashcards Hub</h4>
-                                    <p class="text-xs text-gray-500">Study active decks and course material.</p>
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-black">Interactive Flashcards Hub ${subjectFilter ? `<span class="text-xs font-normal text-gray-400">(${subjectFilter})</span>` : ''}</h4>
+                                        <p class="text-xs text-gray-500">Study active decks and course material.</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- ADMIN PERMANENT FLASHCARD CREATION PANEL (ONLY VISIBLE TO BECKETT) -->
+                            <!-- ADMIN PANEL -->
                             ${isBeckett ? `
                                 <div class="mb-8 p-6 bg-white rounded-2xl border border-blue-100 shadow-sm">
                                     <h5 class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-3">Admin Panel: Add Permanent Flashcards</h5>
                                     
-                                    <!-- Manual Entry Form -->
                                     <form id="manualFlashcardForm" onsubmit="submitManualFlashcard(event)" class="space-y-3 mb-4">
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                             <input type="text" id="fcQuestion" required placeholder="Question / Term" class="px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
                                             <input type="text" id="fcAnswer" required placeholder="Answer / Definition" class="px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
+                                            <select id="fcSubject" required class="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black">
+                                                <option value="" disabled selected>Select Subject</option>
+                                                ${subjectOptionsHtml}
+                                            </select>
                                         </div>
                                         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-all">Add Card Permanently</button>
                                     </form>
 
                                     <div class="relative flex py-2 items-center">
                                         <div class="flex-grow border-t border-gray-100"></div>
-                                        <span class="flex-shrink mx-4 text-gray-400 text-[10px] uppercase">Or Drop Sheet / CSV</span>
+                                        <span class="flex-shrink mx-4 text-gray-400 text-[10px] uppercase">Or Drop Sheet / CSV (Col 3: Subject)</span>
                                         <div class="flex-grow border-t border-gray-100"></div>
                                     </div>
 
-                                    <!-- Drag & Drop Google Sheet / CSV File -->
-                                    <div id="dropZone" class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-black transition-colors" ondragover="event.preventDefault()" ondrop="handleFileDrop(event)">
+                                    <div id="dropZone" class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-black transition-colors" ondragover="event.preventDefault()" ondrop="handleFileDrop(event)" onclick="document.getElementById('csvFileInput').click()">
                                         <p class="text-xs text-gray-500">Drag & drop a <span class="font-semibold text-black">Google Sheet (.csv)</span> export here, or click to browse</p>
                                         <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileSelect(event)">
                                     </div>
@@ -565,7 +597,7 @@
                             </div>
                         </div>
                     `;
-                    loadFlashcards();
+                    loadFlashcards(subjectFilter);
                 } else {
                     innerDynamic.innerHTML = `
                         <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-3">
@@ -578,25 +610,30 @@
             }
         }
 
-        async function loadFlashcards() {
+        async function loadFlashcards(subjectFilter = "") {
             const container = document.getElementById('flashcardsListContainer');
             if (!container) return;
 
-            const { data, error } = await supabaseClient
-                .from('flashcards')
-                .select('*')
-                .order('created_at', { ascending: false });
+            let query = supabaseClient.from('flashcards').select('*').order('created_at', { ascending: false });
+            if (subjectFilter) {
+                query = query.eq('subject', subjectFilter);
+            }
+
+            const { data, error } = await query;
 
             if (error || !data || data.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">No flashcards added yet.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">No flashcards found ${subjectFilter ? `for ${subjectFilter}` : ''}.</p>`;
                 return;
             }
 
             container.innerHTML = data.map((card, idx) => `
                 <div class="p-4 bg-white border border-gray-100 rounded-xl shadow-xs flex justify-between items-center">
                     <div>
-                        <span class="text-[10px] font-semibold text-blue-600 uppercase tracking-wider">Card #${idx + 1}</span>
-                        <h6 class="text-xs font-bold text-black mt-0.5">${escapeHtml(card.question)}</h6>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider">${card.subject || 'General'}</span>
+                            <span class="text-[10px] text-gray-400">Card #${idx + 1}</span>
+                        </div>
+                        <h6 class="text-xs font-bold text-black">${escapeHtml(card.question)}</h6>
                         <p class="text-xs text-gray-500 mt-1">${escapeHtml(card.answer)}</p>
                     </div>
                 </div>
@@ -607,16 +644,18 @@
             e.preventDefault();
             const question = document.getElementById('fcQuestion').value;
             const answer = document.getElementById('fcAnswer').value;
+            const subject = document.getElementById('fcSubject').value;
 
             const { error } = await supabaseClient
                 .from('flashcards')
-                .insert([{ question, answer }]);
+                .insert([{ question, answer, subject }]);
 
             if (error) {
                 alert("Error saving flashcard: " + error.message);
             } else {
                 document.getElementById('fcQuestion').value = '';
                 document.getElementById('fcAnswer').value = '';
+                document.getElementById('fcSubject').selectedIndex = 0;
                 loadFlashcards();
             }
         }
@@ -643,11 +682,12 @@
 
                 for (let line of lines) {
                     const parts = line.split(',');
-                    if (parts.length >= 2) {
+                    if (parts.length >= 3) {
                         const q = parts[0].trim().replace(/^["']|["']$/g, '');
                         const a = parts[1].trim().replace(/^["']|["']$/g, '');
-                        if (q && a && q.toLowerCase() !== 'question') {
-                            cardsToInsert.push({ question: q, answer: a });
+                        const s = parts[2].trim().replace(/^["']|["']$/g, '');
+                        if (q && a && s && q.toLowerCase() !== 'question') {
+                            cardsToInsert.push({ question: q, answer: a, subject: s });
                         }
                     }
                 }
@@ -661,7 +701,7 @@
                         loadFlashcards();
                     }
                 } else {
-                    alert("Could not parse valid questions and answers from file. Ensure it's a CSV with format: Question,Answer");
+                    alert("Could not parse valid records. Ensure your CSV has 3 columns: Question, Answer, Subject");
                 }
             };
             reader.readAsText(file);
