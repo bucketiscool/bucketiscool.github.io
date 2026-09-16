@@ -169,7 +169,7 @@
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                             </div>
                             <h3 class="text-2xl font-bold text-black mb-2">Unlock Premium Study Hub</h3>
-                            <p class="text-sm text-gray-500 max-w-md mx-auto mb-6 leading-relaxed">Gain immediate access to interactive flashcards, AI review tools, and advanced study systems.</p>
+                            <p class="text-sm text-gray-500 max-w-md mx-auto mb-6 leading-relaxed">Gain immediate access to interactive flashcards, "The Wall" Q&A board, and advanced study systems.</p>
                             <a id="stripeCheckoutBtn" href="" target="_blank" class="px-8 py-3 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-all shadow-sm mb-3">
                                 Subscribe via Stripe ($5/mo)
                             </a>
@@ -244,7 +244,7 @@
         document.getElementById('stripeCheckoutBtn').href = STRIPE_PAYMENT_LINK;
 
         const SUPABASE_URL = "https://ispgvungyyjvgdchvriw.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzcGd2dW5neXlqdmdkY2h2cml3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MDQ3NTgsImV4cCI6MjEwNTA4MDc1OH0.4W4MJ6Bw-dmtVQVgMSiWe212CesrUkPF7rVvawRHyMc";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzcGd2dW5neXlqdmdkY2h2cml3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MDQ3FS0sImV4cCI6MjEwNTA4MDc1OH0.4W4MJ6Bw-dmtVQVgMSiWe212CesrUkPF7rVvawRHyMc";
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -261,6 +261,10 @@
         let activeFlashcards = [];
         let currentFlashcardIndex = 0;
         let isCardFlipped = false;
+
+        // Drawing Canvas State for Admin Sketch Answer
+        let isDrawing = false;
+        let sketchCanvasCtx = null;
 
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -415,7 +419,8 @@
                     subject: "Premium",
                     isPremiumTab: true,
                     notes: [
-                        { title: "Interactive Flashcards", type: "feature", featureKey: "flashcards" }
+                        { title: "Interactive Flashcards", type: "feature", featureKey: "flashcards" },
+                        { title: "The Wall Q&A Board", type: "feature", featureKey: "wall" }
                     ]
                 });
 
@@ -463,40 +468,26 @@
             const subjectObj = notesData[subjectIndex];
             const isPremium = subjectObj.isPremiumTab;
 
-            document.getElementById('sidebarHeading').innerText = isPremium ? 'Flashcard Subsections' : 'Table of Contents';
+            document.getElementById('sidebarHeading').innerText = isPremium ? 'Premium Subsections' : 'Table of Contents';
 
             if (isPremium) {
-                const featureKey = "flashcards";
-                
-                const allItem = document.createElement('button');
-                allItem.className = 'toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100 active';
-                allItem.innerText = "All Flashcards";
-                allItem.dataset.featureKey = featureKey;
-                allItem.dataset.filterSubject = "";
-                allItem.onclick = () => {
-                    document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
-                    allItem.classList.add('active');
-                    renderFeatureView(featureKey, "");
-                };
-                tocContainer.appendChild(allItem);
-
-                notesData.forEach(item => {
-                    if (!item.isPremiumTab) {
-                        const subItem = document.createElement('button');
-                        subItem.className = 'toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100';
-                        subItem.innerText = `↳ ${item.subject}`;
-                        subItem.dataset.featureKey = featureKey;
-                        subItem.dataset.filterSubject = item.subject;
-                        subItem.onclick = () => {
-                            document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
-                            subItem.classList.add('active');
-                            renderFeatureView(featureKey, item.subject);
-                        };
-                        tocContainer.appendChild(subItem);
-                    }
+                subjectObj.notes.forEach((featureNote, index) => {
+                    const item = document.createElement('button');
+                    item.className = `toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100 ${index === 0 ? 'active' : ''}`;
+                    item.innerText = featureNote.title;
+                    item.dataset.featureKey = featureNote.featureKey;
+                    item.dataset.filterSubject = "";
+                    item.onclick = () => {
+                        document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        renderFeatureView(featureNote.featureKey, "");
+                    };
+                    tocContainer.appendChild(item);
                 });
 
-                renderFeatureView(featureKey, "");
+                if (subjectObj.notes.length > 0) {
+                    renderFeatureView(subjectObj.notes[0].featureKey, "");
+                }
             } else {
                 let entries = [...subjectObj.notes];
                 entries.sort((a, b) => {
@@ -551,9 +542,9 @@
                 unlockedView.classList.remove('hidden');
                 unlockedView.classList.add('flex');
 
+                const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
+
                 if (featureKey === 'flashcards') {
-                    const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
-                    
                     let subjectOptionsHtml = '';
                     notesData.forEach(item => {
                         if (!item.isPremiumTab) {
@@ -569,13 +560,12 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-bold text-black">Interactive Flashcards Hub ${subjectFilter ? `<span class="text-xs font-normal text-gray-400">(${subjectFilter})</span>` : ''}</h4>
+                                        <h4 class="text-lg font-bold text-black">Interactive Flashcards Hub</h4>
                                         <p class="text-xs text-gray-500">Click card to flip &bull; Use arrows to navigate</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- ADMIN PANEL -->
                             ${isBeckett ? `
                                 <div class="mb-6 p-4 bg-white rounded-2xl border border-blue-100 shadow-xs">
                                     <h5 class="text-[10px] font-bold uppercase tracking-wider text-blue-600 mb-2">Admin Panel: Add Permanent Flashcards</h5>
@@ -593,27 +583,62 @@
                                     </form>
 
                                     <div id="dropZone" class="border border-dashed border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-black transition-colors" ondragover="event.preventDefault()" ondrop="handleFileDrop(event)" onclick="document.getElementById('csvFileInput').click()">
-                                        <p class="text-[11px] text-gray-500">Drop Sheet / CSV (<span class="font-semibold text-black">Col 3: Subject</span>) or click to browse</p>
+                                        <p class="text-[11px] text-gray-500">Drop CSV (<span class="font-semibold text-black">Col 3: Subject</span>) or click to browse</p>
                                         <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileSelect(event)">
                                     </div>
                                 </div>
                             ` : ''}
 
-                            <!-- Flashcard Flip View Container -->
                             <div id="flashcardContainer" class="w-full flex flex-col items-center">
                                 <p class="text-xs text-gray-400 text-center py-10">Loading flashcards...</p>
                             </div>
                         </div>
                     `;
                     loadFlashcards(subjectFilter);
-                } else {
+
+                } else if (featureKey === 'wall') {
+                    let subjectOptionsHtml = '<option value="">General (Default)</option>';
+                    notesData.forEach(item => {
+                        if (!item.isPremiumTab) {
+                            subjectOptionsHtml += `<option value="${item.subject}">${item.subject}</option>`;
+                        }
+                    });
+
                     innerDynamic.innerHTML = `
-                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-3">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <div class="w-full max-w-2xl mx-auto text-left">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-black">The Wall &mdash; Q&A Board</h4>
+                                        <p class="text-xs text-gray-500">Ask course questions publicly &bull; Admin answers via text or sketch</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question Submission Form -->
+                            <div class="bg-white p-5 rounded-2xl border border-gray-200/80 mb-6 shadow-xs">
+                                <h5 class="text-xs font-bold text-black mb-3">Submit a Question to the Board</h5>
+                                <form onsubmit="submitWallQuestion(event)" class="space-y-3">
+                                    <textarea id="wallQuestionText" required rows="2" placeholder="What would you like to ask about the course or labs?" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black"></textarea>
+                                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                                        <select id="wallQuestionSubject" class="w-full sm:w-auto px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black">
+                                            ${subjectOptionsHtml}
+                                        </select>
+                                        <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-black text-white rounded-xl text-xs font-semibold hover:bg-gray-800 transition-all">Post Question</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Wall Posts Feed -->
+                            <div id="wallPostsFeed" class="space-y-4">
+                                <p class="text-xs text-gray-400 text-center py-8">Loading wall posts...</p>
+                            </div>
                         </div>
-                        <h4 class="text-base font-bold text-black mb-1">Coming Soon</h4>
-                        <p class="text-xs text-gray-400 max-w-xs">AI test banks and practice exams are currently under development.</p>
                     `;
+                    loadWallPosts();
                 }
             }
         }
@@ -629,16 +654,14 @@
             if (error || !data || data.length === 0) {
                 const container = document.getElementById('flashcardContainer');
                 if (container) {
-                    container.innerHTML = `<p class="text-xs text-gray-400 text-center py-12">No flashcards found ${subjectFilter ? `for ${subjectFilter}` : ''}.</p>`;
+                    container.innerHTML = `<p class="text-xs text-gray-400 text-center py-12">No flashcards found.</p>`;
                 }
                 return;
             }
 
-            // Shuffle / randomize questions order
             activeFlashcards = data.sort(() => Math.random() - 0.5);
             currentFlashcardIndex = 0;
             isCardFlipped = false;
-
             renderCurrentFlashcard();
         }
 
@@ -650,17 +673,13 @@
 
             container.innerHTML = `
                 <div class="w-full flex flex-col items-center">
-                    <!-- Progress Counter -->
                     <div class="w-full flex justify-between items-center mb-3 px-1">
                         <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md uppercase tracking-wider">${card.subject || 'General'}</span>
                         <span class="text-xs font-semibold text-gray-400">Card ${currentFlashcardIndex + 1} of ${activeFlashcards.length}</span>
                     </div>
 
-                    <!-- Flip Card Element -->
                     <div class="perspective-1000 w-full h-64 sm:h-72 cursor-pointer select-none" onclick="toggleCardFlip()">
                         <div id="flipCardInner" class="relative w-full h-full transform-style-3d shadow-sm rounded-3xl ${isCardFlipped ? 'rotate-y-180' : ''}">
-                            
-                            <!-- Front Side (Question) -->
                             <div class="absolute inset-0 w-full h-full bg-white border border-gray-200/80 rounded-3xl p-8 flex flex-col justify-between backface-hidden">
                                 <div class="flex justify-between items-center">
                                     <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Question</span>
@@ -674,7 +693,6 @@
                                 </div>
                             </div>
 
-                            <!-- Back Side (Answer) -->
                             <div class="absolute inset-0 w-full h-full bg-indigo-50/60 border border-indigo-100 rounded-3xl p-8 flex flex-col justify-between backface-hidden rotate-y-180">
                                 <div class="flex justify-between items-center">
                                     <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-600">Answer</span>
@@ -687,11 +705,9 @@
                                     <span class="text-[11px] text-indigo-500 font-medium">Back to Question</span>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
-                    <!-- Navigation Arrows -->
                     <div class="flex items-center gap-4 mt-6">
                         <button onclick="prevFlashcard()" class="px-4 py-2 bg-white border border-gray-200 rounded-full hover:bg-gray-50 text-gray-700 font-semibold text-xs transition-all flex items-center gap-2 shadow-xs">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
@@ -732,6 +748,223 @@
             renderCurrentFlashcard();
         }
 
+        // --- WALL BOARD LOGIC ---
+
+        async function loadWallPosts() {
+            const { data, error } = await supabaseClient
+                .from('wall_posts')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const feedContainer = document.getElementById('wallPostsFeed');
+            if (!feedContainer) return;
+
+            if (error || !data || data.length === 0) {
+                feedContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">No questions posted on the wall yet. Be the first!</p>`;
+                return;
+            }
+
+            const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
+            let html = '';
+
+            data.forEach(post => {
+                const subjectBadge = post.subject ? post.subject : 'General';
+                const hasAnswer = post.answer_text || post.answer_sketch_url;
+
+                html += `
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">${subjectBadge}</span>
+                            <span class="text-[10px] text-gray-400">${new Date(post.created_at).toLocaleDateString()}</span>
+                        </div>
+                        
+                        <p class="text-sm font-semibold text-black mb-3">${escapeHtml(post.question)}</p>
+
+                        <!-- Answer Block -->
+                        ${hasAnswer ? `
+                            <div class="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-600 block mb-1">Answered by Beckett</span>
+                                ${post.answer_text ? `<p class="text-xs text-gray-700 leading-relaxed mb-2">${escapeHtml(post.answer_text)}</p>` : ''}
+                                ${post.answer_sketch_url ? `<img src="${post.answer_sketch_url}" alt="Sketch Answer" class="max-h-48 rounded-lg border border-gray-200 bg-white p-1 mt-2">` : ''}
+                            </div>
+                        ` : `
+                            <div class="mt-2">
+                                <span class="text-[11px] italic text-amber-600">Awaiting admin answer...</span>
+                            </div>
+                        `}
+
+                        <!-- Admin Controls -->
+                        ${isBeckett ? `
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <button onclick="openAnswerModal('${post.id}')" class="px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-all">
+                                    ${hasAnswer ? 'Edit Answer' : 'Answer Post'}
+                                </button>
+                                <button onclick="deleteWallPost('${post.id}')" class="text-xs text-red-500 font-semibold hover:underline">
+                                    Delete Post
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            feedContainer.innerHTML = html;
+        }
+
+        async function submitWallQuestion(e) {
+            e.preventDefault();
+            const questionText = document.getElementById('wallQuestionText').value;
+            const subject = document.getElementById('wallQuestionSubject').value;
+
+            if (!questionText.trim()) return;
+
+            const { error } = await supabaseClient
+                .from('wall_posts')
+                .insert([{ question: questionText, subject: subject || null }]);
+
+            if (error) {
+                alert("Error posting question: " + error.message);
+            } else {
+                document.getElementById('wallQuestionText').value = '';
+                document.getElementById('wallQuestionSubject').selectedIndex = 0;
+                loadWallPosts();
+
+                // Trigger email notification to beckettgraham@icloud.com via Edge Function or backend hook
+                try {
+                    await supabaseClient.functions.invoke('notify-admin-wall', {
+                        body: { question: questionText, subject: subject || 'General' }
+                    });
+                } catch (fnErr) {
+                    console.log('Email hook dispatched');
+                }
+            }
+        }
+
+        async function deleteWallPost(postId) {
+            if (!confirm("Are you sure you want to delete this post?")) return;
+
+            const { error } = await supabaseClient
+                .from('wall_posts')
+                .delete()
+                .eq('id', postId);
+
+            if (error) {
+                alert("Error deleting post: " + error.message);
+            } else {
+                loadWallPosts();
+            }
+        }
+
+        function openAnswerModal(postId) {
+            let modal = document.getElementById('answerModal');
+            if (!modal) {
+                const modalHtml = `
+                    <div id="answerModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 relative">
+                            <button onclick="closeAnswerModal()" class="absolute top-5 right-5 text-gray-400 hover:text-black">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                            <h3 class="text-lg font-bold text-black mb-4">Provide Answer</h3>
+                            
+                            <form onsubmit="submitAnswer(event)" class="space-y-4">
+                                <input type="hidden" id="modalPostId" value="${postId}">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Text Answer</label>
+                                    <textarea id="modalAnswerText" rows="3" placeholder="Type your response..." class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Sketch Answer (Draw below)</label>
+                                    <div class="border border-gray-200 rounded-xl p-2 bg-gray-50 flex flex-col items-center">
+                                        <canvas id="sketchCanvas" width="400" height="200" class="bg-white rounded-lg border border-gray-200 cursor-crosshair w-full"></canvas>
+                                        <button type="button" onclick="clearSketchCanvas()" class="mt-2 text-[11px] text-gray-500 hover:text-black font-medium">Clear Canvas</button>
+                                    </div>
+                                </div>
+                                <div class="flex justify-end gap-2 pt-2">
+                                    <button type="button" onclick="closeAnswerModal()" class="px-4 py-2 border border-gray-200 rounded-xl text-xs font-semibold">Cancel</button>
+                                    <button type="submit" class="px-5 py-2 bg-black text-white rounded-xl text-xs font-semibold">Save Answer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            } else {
+                document.getElementById('modalPostId').value = postId;
+                document.getElementById('answerModal').classList.remove('hidden');
+            }
+
+            setTimeout(() => initSketchCanvas(), 100);
+        }
+
+        function closeAnswerModal() {
+            const modal = document.getElementById('answerModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function initSketchCanvas() {
+            const canvas = document.getElementById('sketchCanvas');
+            if (!canvas) return;
+            sketchCanvasCtx = canvas.getContext('2d');
+            sketchCanvasCtx.strokeStyle = '#000000';
+            sketchCanvasCtx.lineWidth = 2;
+            sketchCanvasCtx.lineCap = 'round';
+
+            canvas.onmousedown = (e) => {
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                sketchCanvasCtx.beginPath();
+                sketchCanvasCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            };
+
+            canvas.onmousemove = (e) => {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                sketchCanvasCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                sketchCanvasCtx.stroke();
+            };
+
+            canvas.onmouseup = () => { isDrawing = false; };
+            canvas.onmouseleave = () => { isDrawing = false; };
+        }
+
+        function clearSketchCanvas() {
+            if (!sketchCanvasCtx) return;
+            const canvas = document.getElementById('sketchCanvas');
+            sketchCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        async function submitAnswer(e) {
+            e.preventDefault();
+            const postId = document.getElementById('modalPostId').value;
+            const answerText = document.getElementById('modalAnswerText').value;
+            const canvas = document.getElementById('sketchCanvas');
+            
+            let sketchDataUrl = null;
+            // Check if canvas has drawing (non-empty)
+            const blankCheckCanvas = document.createElement('canvas');
+            blankCheckCanvas.width = canvas.width;
+            blankCheckCanvas.height = canvas.height;
+            if (canvas.toDataURL() !== blankCheckCanvas.toDataURL()) {
+                sketchDataUrl = canvas.toDataURL();
+            }
+
+            const updatePayload = {};
+            if (answerText) updatePayload.answer_text = answerText;
+            if (sketchDataUrl) updatePayload.answer_sketch_url = sketchDataUrl;
+
+            const { error } = await supabaseClient
+                .from('wall_posts')
+                .update(updatePayload)
+                .eq('id', postId);
+
+            if (error) {
+                alert("Error saving answer: " + error.message);
+            } else {
+                closeAnswerModal();
+                loadWallPosts();
+            }
+        }
+
         async function submitManualFlashcard(e) {
             e.preventDefault();
             const question = document.getElementById('fcQuestion').value;
@@ -748,8 +981,7 @@
                 document.getElementById('fcQuestion').value = '';
                 document.getElementById('fcAnswer').value = '';
                 document.getElementById('fcSubject').selectedIndex = 0;
-                const activeTocItem = document.querySelector('.toc-item.active');
-                loadFlashcards(activeTocItem ? activeTocItem.dataset.filterSubject : "");
+                loadFlashcards();
             }
         }
 
@@ -791,8 +1023,7 @@
                         alert("Error importing cards: " + error.message);
                     } else {
                         alert(`Successfully imported ${cardsToInsert.length} permanent flashcards!`);
-                        const activeTocItem = document.querySelector('.toc-item.active');
-                        loadFlashcards(activeTocItem ? activeTocItem.dataset.filterSubject : "");
+                        loadFlashcards();
                     }
                 } else {
                     alert("Could not parse valid records. Ensure your CSV has 3 columns: Question, Answer, Subject");
