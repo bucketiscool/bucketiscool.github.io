@@ -23,7 +23,7 @@ jobs:
       - name: Install Google Drive API Client
         run: pip install google-api-python-client google-auth
 
-      - name: Download PDFs and Build Manifest
+      - name: Download Files and Build Manifests
         env:
           SERVICE_ACCOUNT_KEY: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
           DRIVE_FOLDER_ID: '1mn_i3Vu1T-AMKsbMdTReX8N8pxiG0FRi'
@@ -39,10 +39,14 @@ jobs:
 
           root_folder_id = os.environ['DRIVE_FOLDER_ID']
           base_dir = 'notes/assets'
+          video_base_dir = 'notes/videos'
           os.makedirs(base_dir, exist_ok=True)
+          os.makedirs(video_base_dir, exist_ok=True)
 
           manifest = []
+          video_manifest = []
 
+          # 1. Fetch all folders in root
           folder_results = service.files().list(
               q=f"'{root_folder_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
               fields="files(id, name)"
@@ -52,8 +56,16 @@ jobs:
           if not folders:
               folders = [{'id': root_folder_id, 'name': 'General Notes'}]
 
+          video_lessons_folder_id = None
+
+          # 2. Process standard course subject folders (ignoring "Video Lessons")
           for folder in folders:
               subject_name = folder['name']
+              
+              if subject_name == 'Video Lessons':
+                  video_lessons_folder_id = folder['id']
+                  continue
+
               subject_dir = os.path.join(base_dir, subject_name)
               os.makedirs(subject_dir, exist_ok=True)
               
@@ -87,12 +99,55 @@ jobs:
           with open(os.path.join(base_dir, 'manifest.json'), 'w') as json_out:
               json.dump(manifest, json_out, indent=2)
 
-          print('Manifest generated successfully in notes/assets!')
+          # 3. Process Video Lessons folder structure if it exists
+          if video_lessons_folder_id:
+              v_topic_results = service.files().list(
+                  q=f"'{video_lessons_folder_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+                  fields="files(id, name)"
+              ).execute()
+              topic_folders = v_topic_results.get('files', [])
+
+              for t_folder in topic_folders:
+                  topic_name = t_folder['name']
+                  topic_dir = os.path.join(video_base_dir, topic_name)
+                  os.makedirs(topic_dir, exist_ok=True)
+
+                  vid_results = service.files().list(
+                      q=f"'{t_folder['id']}' in parents and mimeType='video/mp4' and trashed=false",
+                      fields="files(id, name)"
+                  ).execute()
+                  videos = vid_results.get('files', [])
+
+                  vid_list = []
+                  for v in videos:
+                      v_filepath = os.path.join(topic_dir, v['name'])
+                      v_request = service.files().get_media(fileId=v['id'])
+                      with open(v_filepath, 'wb') as vid_out:
+                          v_downloader = MediaIoBaseDownload(vid_out, v_request)
+                          v_done = False
+                          while not v_done:
+                              status, v_done = v_downloader.next_chunk()
+
+                      vid_list.append({
+                          'title': v['name'].replace('.mp4', ''),
+                          'path': f'videos/{topic_name}/{v["name"]}'
+                      })
+
+                  if vid_list:
+                      video_manifest.append({
+                          'subject': topic_name,
+                          'videos': vid_list
+                      })
+
+          with open(os.path.join('notes', 'video-manifest.json'), 'w') as json_out:
+              json.dump(video_manifest, json_out, indent=2)
+
+          print('Manifests and assets generated successfully!')
         shell: python
 
       - name: Commit and Push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add notes/assets/
-          git diff --staged --quiet || (git commit -m "Auto-update course notes & manifest" && git push)
+          git add notes/
+          git diff --staged --quiet || (git commit -m "Auto-update course assets, videos & manifests" && git push)
