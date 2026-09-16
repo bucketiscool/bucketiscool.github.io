@@ -55,6 +55,22 @@
             font-weight: 600;
         }
 
+        /* 3D Flip Card Styles */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -73,7 +89,6 @@
           <a href="/games/" class="hover:text-black transition-colors">Games</a>
           <a href="/notes/" class="text-black font-semibold">Notes</a>
           
-          <!-- Auth Controls Anchor -->
           <div id="auth-controls" class="pl-2 border-l border-gray-200"></div>
         </div>
       </div>
@@ -92,12 +107,10 @@
     <!-- Main Workspace -->
     <main class="max-w-7xl mx-auto px-6 pb-20 w-full flex-grow" data-aos="fade-up" data-aos-delay="100">
         
-        <!-- Dynamic Subject Buttons -->
         <div id="subjectContainer" class="flex items-center justify-start md:justify-center gap-3 overflow-x-auto pb-6 mb-2 no-scrollbar">
             <!-- Dynamically populated -->
         </div>
 
-        <!-- Bento Card Layout -->
         <div class="bento-card bg-white p-6 md:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -243,6 +256,11 @@
 
         let currentUser = null;
         let isSubscribed = false;
+
+        // Flashcards Session State
+        let activeFlashcards = [];
+        let currentFlashcardIndex = 0;
+        let isCardFlipped = false;
 
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -448,10 +466,8 @@
             document.getElementById('sidebarHeading').innerText = isPremium ? 'Flashcard Subsections' : 'Table of Contents';
 
             if (isPremium) {
-                // Build TOC items for Flashcards (All + each course subject as subsection)
                 const featureKey = "flashcards";
                 
-                // "All Flashcards" item
                 const allItem = document.createElement('button');
                 allItem.className = 'toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100 active';
                 allItem.innerText = "All Flashcards";
@@ -464,7 +480,6 @@
                 };
                 tocContainer.appendChild(allItem);
 
-                // Add each course subject as a subsection
                 notesData.forEach(item => {
                     if (!item.isPremiumTab) {
                         const subItem = document.createElement('button');
@@ -539,7 +554,6 @@
                 if (featureKey === 'flashcards') {
                     const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
                     
-                    // Generate subject options for the dropdown
                     let subjectOptionsHtml = '';
                     notesData.forEach(item => {
                         if (!item.isPremiumTab) {
@@ -548,26 +562,26 @@
                     });
 
                     innerDynamic.innerHTML = `
-                        <div class="w-full max-w-2xl mx-auto text-left">
-                            <div class="flex items-center justify-between mb-6">
+                        <div class="w-full max-w-xl mx-auto text-left">
+                            <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                                     </div>
                                     <div>
                                         <h4 class="text-lg font-bold text-black">Interactive Flashcards Hub ${subjectFilter ? `<span class="text-xs font-normal text-gray-400">(${subjectFilter})</span>` : ''}</h4>
-                                        <p class="text-xs text-gray-500">Study active decks and course material.</p>
+                                        <p class="text-xs text-gray-500">Click card to flip &bull; Use arrows to navigate</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- ADMIN PANEL -->
                             ${isBeckett ? `
-                                <div class="mb-8 p-6 bg-white rounded-2xl border border-blue-100 shadow-sm">
-                                    <h5 class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-3">Admin Panel: Add Permanent Flashcards</h5>
+                                <div class="mb-6 p-4 bg-white rounded-2xl border border-blue-100 shadow-xs">
+                                    <h5 class="text-[10px] font-bold uppercase tracking-wider text-blue-600 mb-2">Admin Panel: Add Permanent Flashcards</h5>
                                     
-                                    <form id="manualFlashcardForm" onsubmit="submitManualFlashcard(event)" class="space-y-3 mb-4">
-                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <form id="manualFlashcardForm" onsubmit="submitManualFlashcard(event)" class="space-y-2 mb-3">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                                             <input type="text" id="fcQuestion" required placeholder="Question / Term" class="px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
                                             <input type="text" id="fcAnswer" required placeholder="Answer / Definition" class="px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
                                             <select id="fcSubject" required class="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black">
@@ -575,32 +589,26 @@
                                                 ${subjectOptionsHtml}
                                             </select>
                                         </div>
-                                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-all">Add Card Permanently</button>
+                                        <button type="submit" class="px-4 py-1.5 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-all">Add Card</button>
                                     </form>
 
-                                    <div class="relative flex py-2 items-center">
-                                        <div class="flex-grow border-t border-gray-100"></div>
-                                        <span class="flex-shrink mx-4 text-gray-400 text-[10px] uppercase">Or Drop Sheet / CSV (Col 3: Subject)</span>
-                                        <div class="flex-grow border-t border-gray-100"></div>
-                                    </div>
-
-                                    <div id="dropZone" class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-black transition-colors" ondragover="event.preventDefault()" ondrop="handleFileDrop(event)" onclick="document.getElementById('csvFileInput').click()">
-                                        <p class="text-xs text-gray-500">Drag & drop a <span class="font-semibold text-black">Google Sheet (.csv)</span> export here, or click to browse</p>
+                                    <div id="dropZone" class="border border-dashed border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-black transition-colors" ondragover="event.preventDefault()" ondrop="handleFileDrop(event)" onclick="document.getElementById('csvFileInput').click()">
+                                        <p class="text-[11px] text-gray-500">Drop Sheet / CSV (<span class="font-semibold text-black">Col 3: Subject</span>) or click to browse</p>
                                         <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileSelect(event)">
                                     </div>
                                 </div>
                             ` : ''}
 
-                            <!-- Flashcards Viewer List -->
-                            <div id="flashcardsListContainer" class="space-y-3">
-                                <p class="text-xs text-gray-400 text-center py-6">Loading flashcards...</p>
+                            <!-- Flashcard Flip View Container -->
+                            <div id="flashcardContainer" class="w-full flex flex-col items-center">
+                                <p class="text-xs text-gray-400 text-center py-10">Loading flashcards...</p>
                             </div>
                         </div>
                     `;
                     loadFlashcards(subjectFilter);
                 } else {
                     innerDynamic.innerHTML = `
-                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-3">
+                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-3">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
                         <h4 class="text-base font-bold text-black mb-1">Coming Soon</h4>
@@ -611,10 +619,7 @@
         }
 
         async function loadFlashcards(subjectFilter = "") {
-            const container = document.getElementById('flashcardsListContainer');
-            if (!container) return;
-
-            let query = supabaseClient.from('flashcards').select('*').order('created_at', { ascending: false });
+            let query = supabaseClient.from('flashcards').select('*');
             if (subjectFilter) {
                 query = query.eq('subject', subjectFilter);
             }
@@ -622,22 +627,109 @@
             const { data, error } = await query;
 
             if (error || !data || data.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">No flashcards found ${subjectFilter ? `for ${subjectFilter}` : ''}.</p>`;
+                const container = document.getElementById('flashcardContainer');
+                if (container) {
+                    container.innerHTML = `<p class="text-xs text-gray-400 text-center py-12">No flashcards found ${subjectFilter ? `for ${subjectFilter}` : ''}.</p>`;
+                }
                 return;
             }
 
-            container.innerHTML = data.map((card, idx) => `
-                <div class="p-4 bg-white border border-gray-100 rounded-xl shadow-xs flex justify-between items-center">
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider">${card.subject || 'General'}</span>
-                            <span class="text-[10px] text-gray-400">Card #${idx + 1}</span>
+            // Shuffle / randomize questions order
+            activeFlashcards = data.sort(() => Math.random() - 0.5);
+            currentFlashcardIndex = 0;
+            isCardFlipped = false;
+
+            renderCurrentFlashcard();
+        }
+
+        function renderCurrentFlashcard() {
+            const container = document.getElementById('flashcardContainer');
+            if (!container || activeFlashcards.length === 0) return;
+
+            const card = activeFlashcards[currentFlashcardIndex];
+
+            container.innerHTML = `
+                <div class="w-full flex flex-col items-center">
+                    <!-- Progress Counter -->
+                    <div class="w-full flex justify-between items-center mb-3 px-1">
+                        <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md uppercase tracking-wider">${card.subject || 'General'}</span>
+                        <span class="text-xs font-semibold text-gray-400">Card ${currentFlashcardIndex + 1} of ${activeFlashcards.length}</span>
+                    </div>
+
+                    <!-- Flip Card Element -->
+                    <div class="perspective-1000 w-full h-64 sm:h-72 cursor-pointer select-none" onclick="toggleCardFlip()">
+                        <div id="flipCardInner" class="relative w-full h-full transform-style-3d shadow-sm rounded-3xl ${isCardFlipped ? 'rotate-y-180' : ''}">
+                            
+                            <!-- Front Side (Question) -->
+                            <div class="absolute inset-0 w-full h-full bg-white border border-gray-200/80 rounded-3xl p-8 flex flex-col justify-between backface-hidden">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Question</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">Click to flip ↻</span>
+                                </div>
+                                <div class="my-auto text-center">
+                                    <h3 class="text-lg sm:text-xl font-semibold text-black leading-relaxed">${escapeHtml(card.question)}</h3>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-[11px] text-indigo-600 font-medium">Reveal Answer</span>
+                                </div>
+                            </div>
+
+                            <!-- Back Side (Answer) -->
+                            <div class="absolute inset-0 w-full h-full bg-indigo-50/60 border border-indigo-100 rounded-3xl p-8 flex flex-col justify-between backface-hidden rotate-y-180">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-600">Answer</span>
+                                    <span class="text-[10px] text-indigo-400 font-medium">Click to flip ↻</span>
+                                </div>
+                                <div class="my-auto text-center">
+                                    <p class="text-lg sm:text-xl font-semibold text-indigo-950 leading-relaxed">${escapeHtml(card.answer)}</p>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-[11px] text-indigo-500 font-medium">Back to Question</span>
+                                </div>
+                            </div>
+
                         </div>
-                        <h6 class="text-xs font-bold text-black">${escapeHtml(card.question)}</h6>
-                        <p class="text-xs text-gray-500 mt-1">${escapeHtml(card.answer)}</p>
+                    </div>
+
+                    <!-- Navigation Arrows -->
+                    <div class="flex items-center gap-4 mt-6">
+                        <button onclick="prevFlashcard()" class="px-4 py-2 bg-white border border-gray-200 rounded-full hover:bg-gray-50 text-gray-700 font-semibold text-xs transition-all flex items-center gap-2 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            Previous
+                        </button>
+                        <button onclick="nextFlashcard()" class="px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800 font-semibold text-xs transition-all flex items-center gap-2 shadow-xs">
+                            Next
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
                     </div>
                 </div>
-            `).join('');
+            `;
+        }
+
+        function toggleCardFlip() {
+            isCardFlipped = !isCardFlipped;
+            const inner = document.getElementById('flipCardInner');
+            if (inner) {
+                if (isCardFlipped) {
+                    inner.classList.add('rotate-y-180');
+                } else {
+                    inner.classList.remove('rotate-y-180');
+                }
+            }
+        }
+
+        function nextFlashcard() {
+            if (activeFlashcards.length === 0) return;
+            currentFlashcardIndex = (currentFlashcardIndex + 1) % activeFlashcards.length;
+            isCardFlipped = false;
+            renderCurrentFlashcard();
+        }
+
+        function prevFlashcard() {
+            if (activeFlashcards.length === 0) return;
+            currentFlashcardIndex = (currentFlashcardIndex - 1 + activeFlashcards.length) % activeFlashcards.length;
+            isCardFlipped = false;
+            renderCurrentFlashcard();
         }
 
         async function submitManualFlashcard(e) {
@@ -656,7 +748,8 @@
                 document.getElementById('fcQuestion').value = '';
                 document.getElementById('fcAnswer').value = '';
                 document.getElementById('fcSubject').selectedIndex = 0;
-                loadFlashcards();
+                const activeTocItem = document.querySelector('.toc-item.active');
+                loadFlashcards(activeTocItem ? activeTocItem.dataset.filterSubject : "");
             }
         }
 
@@ -698,7 +791,8 @@
                         alert("Error importing cards: " + error.message);
                     } else {
                         alert(`Successfully imported ${cardsToInsert.length} permanent flashcards!`);
-                        loadFlashcards();
+                        const activeTocItem = document.querySelector('.toc-item.active');
+                        loadFlashcards(activeTocItem ? activeTocItem.dataset.filterSubject : "");
                     }
                 } else {
                     alert("Could not parse valid records. Ensure your CSV has 3 columns: Question, Answer, Subject");
