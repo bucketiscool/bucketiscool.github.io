@@ -749,17 +749,6 @@
             }
         }
 
-        // --- JAVA SYNTAX HIGHLIGHTER ---
-        function highlightJavaCode(code) {
-            if (!code) return '';
-            const escaped = escapeHtml(code);
-            const keywords = /\b(public|private|protected|class|static|void|int|double|float|boolean|String|char|return|if|else|for|while|do|switch|case|break|new|try|catch|finally|import|package|true|false|null)\b/g;
-            return escaped
-                .replace(keywords, '<span class="text-black font-bold">$1</span>')
-                .replace(/(\/\/.+)/g, '<span class="text-gray-400 italic">$1</span>')
-                .replace(/(".*?")/g, '<span class="text-gray-600">$1</span>');
-        }
-
         // --- CODE SAMPLES LOGIC ---
         let allCodeSamples = [];
 
