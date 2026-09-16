@@ -652,7 +652,7 @@
                                     </div>
                                     <div>
                                         <h4 class="text-lg font-bold text-black">Java Code Samples</h4>
-                                        <p class="text-xs text-gray-500">Organized by difficulty &bull; Fully syntax highlighted</p>
+                                        <p class="text-xs text-gray-500">Organized by difficulty</p>
                                     </div>
                                 </div>
 
@@ -806,7 +806,7 @@
                         
                         <div class="relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 p-4 font-mono text-xs text-gray-200 mb-3">
                             <button onclick="copyCodeSnippet(this)" data-code="${encodeURIComponent(sample.code)}" class="absolute top-3 right-3 px-2.5 py-1 bg-gray-800 text-gray-300 hover:text-white rounded-lg text-[10px] font-semibold transition-colors">Copy</button>
-                            <pre class="overflow-x-auto whitespace-pre">${highlightJavaCode(sample.code)}</pre>
+                            <pre class="overflow-x-auto whitespace-pre">${escapeHtml(sample.code)}</pre>
                         </div>
 
                         ${isBeckett ? `
@@ -988,7 +988,6 @@
                 userAnswer = inputField.value.trim();
             }
 
-            // Fetch correct answer
             const { data: qData, error: qErr } = await supabaseClient
                 .from('coding_questions')
                 .select('correct_answer')
