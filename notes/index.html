@@ -20,15 +20,15 @@
         }
         
         .glass-nav { 
-            background: rgba(251, 251, 253, 0.7); 
+            background: rgba(251, 251, 253, 0.85); 
             backdrop-filter: blur(20px); 
             -webkit-backdrop-filter: blur(20px); 
-            border-bottom: 1px solid rgba(0,0,0,0.05); 
+            border-bottom: 1px solid rgba(0,0,0,0.06); 
         }
         
         .bento-card { 
             border-radius: 28px; 
-            border: 1px solid rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.06);
         }
 
         .glow-bg {
@@ -38,7 +38,7 @@
             transform: translateX(-50%);
             width: 800px;
             height: 800px;
-            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, rgba(251,251,253,0) 70%);
+            background: radial-gradient(circle, rgba(0,0,0,0.03) 0%, rgba(251,251,253,0) 70%);
             z-index: -1;
             pointer-events: none;
         }
@@ -50,7 +50,7 @@
         }
 
         .toc-item.active {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: rgba(0, 0, 0, 0.06);
             color: #000;
             font-weight: 600;
         }
@@ -75,7 +75,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col justify-between" oncontextmenu="return false;">
+<body class="antialiased min-h-screen flex flex-col justify-between">
 
     <div class="glow-bg"></div>
 
@@ -165,11 +165,11 @@
                         
                         <!-- Paywall View -->
                         <div id="featurePaywallView" class="hidden flex flex-col items-center justify-center text-center p-12 w-full my-auto">
-                            <div class="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-600 mx-auto mb-4">
+                            <div class="w-16 h-16 bg-gray-100 rounded-3xl flex items-center justify-center text-black mx-auto mb-4">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                             </div>
                             <h3 class="text-2xl font-bold text-black mb-2">Unlock Premium Study Hub</h3>
-                            <p class="text-sm text-gray-500 max-w-md mx-auto mb-6 leading-relaxed">Gain immediate access to interactive flashcards, "The Wall" Q&A board, and advanced study systems.</p>
+                            <p class="text-sm text-gray-500 max-w-md mx-auto mb-6 leading-relaxed">Gain immediate access to interactive flashcards, The Wall Q&A board, Java Code Samples, and Coding Questions.</p>
                             <a id="stripeCheckoutBtn" href="" target="_blank" class="px-8 py-3 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-all shadow-sm mb-3">
                                 Subscribe via Stripe ($5/mo)
                             </a>
@@ -325,7 +325,7 @@
         function showAuthMessage(message, isError = true) {
             const feedback = document.getElementById('authFeedbackBox');
             feedback.textContent = message;
-            feedback.className = `p-3 rounded-xl text-xs font-medium ${isError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`;
+            feedback.className = `p-3 rounded-xl text-xs font-medium ${isError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-gray-100 text-black border border-gray-200'}`;
             feedback.classList.remove('hidden');
         }
 
@@ -378,7 +378,7 @@
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-3">
                         <span class="text-xs text-gray-500 max-w-[120px] truncate" title="${currentUser.email}">${currentUser.email}</span>
-                        <button onclick="handleLogout()" class="text-xs text-red-500 font-semibold hover:underline">Log Out</button>
+                        <button onclick="handleLogout()" class="text-xs text-black font-semibold hover:underline">Log Out</button>
                     </div>
                 `;
             } else {
@@ -420,7 +420,9 @@
                     isPremiumTab: true,
                     notes: [
                         { title: "Interactive Flashcards", type: "feature", featureKey: "flashcards" },
-                        { title: "The Wall", type: "feature", featureKey: "wall" }
+                        { title: "The Wall", type: "feature", featureKey: "wall" },
+                        { title: "Code Samples", type: "feature", featureKey: "code_samples" },
+                        { title: "Coding Questions", type: "feature", featureKey: "coding_questions" }
                     ]
                 });
 
@@ -556,7 +558,7 @@
                         <div class="w-full max-w-xl mx-auto text-left">
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center text-black">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                                     </div>
                                     <div>
@@ -567,8 +569,8 @@
                             </div>
 
                             ${isBeckett ? `
-                                <div class="mb-6 p-4 bg-white rounded-2xl border border-blue-100 shadow-xs">
-                                    <h5 class="text-[10px] font-bold uppercase tracking-wider text-blue-600 mb-2">Admin Panel: Add Permanent Flashcards</h5>
+                                <div class="mb-6 p-4 bg-white rounded-2xl border border-gray-200 shadow-xs">
+                                    <h5 class="text-[10px] font-bold uppercase tracking-wider text-black mb-2">Admin Panel: Add Permanent Flashcards</h5>
                                     
                                     <form id="manualFlashcardForm" onsubmit="submitManualFlashcard(event)" class="space-y-2 mb-3">
                                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -579,7 +581,7 @@
                                                 ${subjectOptionsHtml}
                                             </select>
                                         </div>
-                                        <button type="submit" class="px-4 py-1.5 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-all">Add Card</button>
+                                        <button type="submit" class="px-4 py-1.5 bg-black text-white rounded-xl text-xs font-semibold hover:bg-gray-800 transition-all">Add Card</button>
                                     </form>
 
                                     <div id="dropZone" class="border border-dashed border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-black transition-colors" ondragover="event.preventDefault()" ondrop="handleFileDrop(event)" onclick="document.getElementById('csvFileInput').click()">
@@ -608,7 +610,7 @@
                         <div class="w-full max-w-2xl mx-auto text-left">
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center text-black">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
                                     </div>
                                     <div>
@@ -639,10 +641,392 @@
                         </div>
                     `;
                     loadWallPosts();
+
+                } else if (featureKey === 'code_samples') {
+                    innerDynamic.innerHTML = `
+                        <div class="w-full max-w-3xl mx-auto text-left">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center text-black">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-black">Java Code Samples</h4>
+                                        <p class="text-xs text-gray-500">Organized by difficulty &bull; Fully syntax highlighted</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <button onclick="filterCodeSamples('All')" class="px-3 py-1 bg-black text-white rounded-full text-xs font-semibold code-filter-btn" data-difficulty="All">All</button>
+                                    <button onclick="filterCodeSamples('Easy')" class="px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-semibold code-filter-btn" data-difficulty="Easy">Easy</button>
+                                    <button onclick="filterCodeSamples('Medium')" class="px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-semibold code-filter-btn" data-difficulty="Medium">Medium</button>
+                                    <button onclick="filterCodeSamples('Hard')" class="px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-semibold code-filter-btn" data-difficulty="Hard">Hard</button>
+                                </div>
+                            </div>
+
+                            ${isBeckett ? `
+                                <div class="mb-6 p-5 bg-white rounded-2xl border border-gray-200 shadow-xs">
+                                    <h5 class="text-xs font-bold text-black mb-3">Admin: Add Java Code Sample</h5>
+                                    <form onsubmit="submitCodeSample(event)" class="space-y-3">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <input type="text" id="csTitle" required placeholder="Sample Title (e.g., Bubble Sort)" class="px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
+                                            <select id="csDifficulty" required class="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black">
+                                                <option value="" disabled selected>Select Difficulty</option>
+                                                <option value="Easy">Easy</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="Hard">Hard</option>
+                                            </select>
+                                        </div>
+                                        <textarea id="csDescription" rows="2" placeholder="Short description or explanation..." class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black"></textarea>
+                                        <textarea id="csCode" required rows="6" placeholder="Paste Java code here..." class="w-full px-3 py-2 font-mono bg-gray-900 text-gray-100 border border-gray-800 rounded-xl text-xs focus:outline-none"></textarea>
+                                        <button type="submit" class="px-5 py-2 bg-black text-white rounded-xl text-xs font-semibold hover:bg-gray-800 transition-all">Publish Code Sample</button>
+                                    </form>
+                                </div>
+                            ` : ''}
+
+                            <div id="codeSamplesFeed" class="space-y-6">
+                                <p class="text-xs text-gray-400 text-center py-8">Loading code samples...</p>
+                            </div>
+                        </div>
+                    `;
+                    loadCodeSamples('All');
+
+                } else if (featureKey === 'coding_questions') {
+                    innerDynamic.innerHTML = `
+                        <div class="w-full max-w-2xl mx-auto text-left">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center text-black">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-black">Coding Questions & Practice</h4>
+                                        <p class="text-xs text-gray-500">Test your knowledge with multiple choice and short answers</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            ${isBeckett ? `
+                                <div class="mb-6 p-5 bg-white rounded-2xl border border-gray-200 shadow-xs">
+                                    <h5 class="text-xs font-bold text-black mb-3">Admin: Create Coding Question</h5>
+                                    <form onsubmit="submitCodingQuestion(event)" class="space-y-3">
+                                        <textarea id="cqQuestion" required rows="2" placeholder="Question prompt (e.g., What is wrong with this code? or Write a print statement)" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black"></textarea>
+                                        
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <select id="cqType" required onchange="toggleQuestionOptions(this.value)" class="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black">
+                                                <option value="multiple_choice">Multiple Choice</option>
+                                                <option value="short_answer">Short Answer</option>
+                                            </select>
+                                            <select id="cqDifficulty" required class="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black">
+                                                <option value="" disabled selected>Select Difficulty</option>
+                                                <option value="Easy">Easy</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="Hard">Hard</option>
+                                            </select>
+                                        </div>
+
+                                        <div id="mcOptionsContainer" class="space-y-2">
+                                            <label class="block text-[11px] font-semibold text-gray-600">Options (Comma separated for Multiple Choice)</label>
+                                            <input type="text" id="cqOptions" placeholder="Option A, Option B, Option C, Option D" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
+                                        </div>
+
+                                        <div>
+                                            <input type="text" id="cqCorrectAnswer" required placeholder="Exact Correct Answer" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
+                                        </div>
+
+                                        <button type="submit" class="px-5 py-2 bg-black text-white rounded-xl text-xs font-semibold hover:bg-gray-800 transition-all">Publish Question</button>
+                                    </form>
+                                </div>
+                            ` : ''}
+
+                            <div id="codingQuestionsFeed" class="space-y-6">
+                                <p class="text-xs text-gray-400 text-center py-8">Loading coding questions...</p>
+                            </div>
+                        </div>
+                    `;
+                    loadCodingQuestions();
                 }
             }
         }
 
+        // --- JAVA SYNTAX HIGHLIGHTER ---
+        function highlightJavaCode(code) {
+            if (!code) return '';
+            const escaped = escapeHtml(code);
+            const keywords = /\b(public|private|protected|class|static|void|int|double|float|boolean|String|char|return|if|else|for|while|do|switch|case|break|new|try|catch|finally|import|package|true|false|null)\b/g;
+            return escaped
+                .replace(keywords, '<span class="text-black font-bold">$1</span>')
+                .replace(/(\/\/.+)/g, '<span class="text-gray-400 italic">$1</span>')
+                .replace(/(".*?")/g, '<span class="text-gray-600">$1</span>');
+        }
+
+        // --- CODE SAMPLES LOGIC ---
+        let allCodeSamples = [];
+
+        async function loadCodeSamples(difficultyFilter) {
+            const { data, error } = await supabaseClient
+                .from('code_samples')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const feedContainer = document.getElementById('codeSamplesFeed');
+            if (!feedContainer) return;
+
+            if (error || !data || data.length === 0) {
+                feedContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">No code samples posted yet.</p>`;
+                return;
+            }
+
+            allCodeSamples = data;
+            renderCodeSamplesList(difficultyFilter);
+        }
+
+        function filterCodeSamples(difficulty) {
+            document.querySelectorAll('.code-filter-btn').forEach(btn => {
+                if (btn.dataset.difficulty === difficulty) {
+                    btn.className = "px-3 py-1 bg-black text-white rounded-full text-xs font-semibold code-filter-btn";
+                } else {
+                    btn.className = "px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-semibold code-filter-btn";
+                }
+            });
+            renderCodeSamplesList(difficulty);
+        }
+
+        function renderCodeSamplesList(difficulty) {
+            const feedContainer = document.getElementById('codeSamplesFeed');
+            if (!feedContainer) return;
+
+            const filtered = difficulty === 'All' ? allCodeSamples : allCodeSamples.filter(s => s.difficulty === difficulty);
+
+            if (filtered.length === 0) {
+                feedContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">No samples found for difficulty: ${difficulty}</p>`;
+                return;
+            }
+
+            const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
+            let html = '';
+
+            filtered.forEach(sample => {
+                html += `
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <h5 class="text-sm font-bold text-black">${escapeHtml(sample.title)}</h5>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-black bg-gray-100 px-2.5 py-1 rounded-md">${sample.difficulty}</span>
+                        </div>
+                        ${sample.description ? `<p class="text-xs text-gray-600 mb-3">${escapeHtml(sample.description)}</p>` : ''}
+                        
+                        <div class="relative rounded-xl overflow-hidden bg-gray-900 border border-gray-800 p-4 font-mono text-xs text-gray-200 mb-3">
+                            <button onclick="copyCodeSnippet(this)" data-code="${encodeURIComponent(sample.code)}" class="absolute top-3 right-3 px-2.5 py-1 bg-gray-800 text-gray-300 hover:text-white rounded-lg text-[10px] font-semibold transition-colors">Copy</button>
+                            <pre class="overflow-x-auto whitespace-pre">${highlightJavaCode(sample.code)}</pre>
+                        </div>
+
+                        ${isBeckett ? `
+                            <div class="flex justify-end pt-2 border-t border-gray-100">
+                                <button onclick="deleteCodeSample('${sample.id}')" class="text-xs text-red-500 font-semibold hover:underline">Delete Sample</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            feedContainer.innerHTML = html;
+        }
+
+        async function submitCodeSample(e) {
+            e.preventDefault();
+            const title = document.getElementById('csTitle').value;
+            const difficulty = document.getElementById('csDifficulty').value;
+            const description = document.getElementById('csDescription').value;
+            const code = document.getElementById('csCode').value;
+
+            const { error } = await supabaseClient
+                .from('code_samples')
+                .insert([{ title, difficulty, description, code }]);
+
+            if (error) {
+                alert("Error saving code sample: " + error.message);
+            } else {
+                document.getElementById('csTitle').value = '';
+                document.getElementById('csDifficulty').selectedIndex = 0;
+                document.getElementById('csDescription').value = '';
+                document.getElementById('csCode').value = '';
+                loadCodeSamples('All');
+            }
+        }
+
+        async function deleteCodeSample(id) {
+            if (!confirm("Delete this code sample?")) return;
+            const { error } = await supabaseClient.from('code_samples').delete().eq('id', id);
+            if (error) alert("Error: " + error.message);
+            else loadCodeSamples('All');
+        }
+
+        function copyCodeSnippet(btn) {
+            const rawCode = decodeURIComponent(btn.dataset.code);
+            navigator.clipboard.writeText(rawCode).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = originalText; }, 1500);
+            });
+        }
+
+        // --- CODING QUESTIONS LOGIC ---
+        function toggleQuestionOptions(type) {
+            const container = document.getElementById('mcOptionsContainer');
+            if (type === 'short_answer') {
+                container.classList.add('hidden');
+            } else {
+                container.classList.remove('hidden');
+            }
+        }
+
+        async function loadCodingQuestions() {
+            const { data, error } = await supabaseClient
+                .from('coding_questions')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const feedContainer = document.getElementById('codingQuestionsFeed');
+            if (!feedContainer) return;
+
+            if (error || !data || data.length === 0) {
+                feedContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">No coding questions available yet.</p>`;
+                return;
+            }
+
+            const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
+            let html = '';
+
+            data.forEach(q => {
+                const isMC = q.question_type === 'multiple_choice';
+                let optionsHtml = '';
+                if (isMC && q.options) {
+                    q.options.forEach(opt => {
+                        optionsHtml += `
+                            <label class="flex items-center gap-2 p-2 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer text-xs">
+                                <input type="radio" name="q_${q.id}" value="${escapeHtml(opt)}" class="accent-black">
+                                <span>${escapeHtml(opt)}</span>
+                            </label>
+                        `;
+                    });
+                } else {
+                    optionsHtml = `
+                        <input type="text" id="answer_${q.id}" placeholder="Type your answer here..." class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
+                    `;
+                }
+
+                html += `
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-black bg-gray-100 px-2.5 py-1 rounded-md">${q.difficulty} &bull; ${isMC ? 'Multiple Choice' : 'Short Answer'}</span>
+                            <span class="text-[10px] text-gray-400">${new Date(q.created_at).toLocaleDateString()}</span>
+                        </div>
+                        
+                        <p class="text-sm font-semibold text-black mb-3">${escapeHtml(q.question)}</p>
+
+                        <div class="space-y-2 mb-3">
+                            ${optionsHtml}
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                            <button onclick="submitAnswerForQuestion('${q.id}', '${q.question_type}')" class="px-4 py-2 bg-black text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition-all">Submit Answer</button>
+                            <span id="feedback_${q.id}" class="text-xs font-semibold"></span>
+                            
+                            ${isBeckett ? `<button onclick="deleteCodingQuestion('${q.id}')" class="text-xs text-red-500 font-semibold hover:underline">Delete</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            feedContainer.innerHTML = html;
+        }
+
+        async function submitCodingQuestion(e) {
+            e.preventDefault();
+            const question = document.getElementById('cqQuestion').value;
+            const question_type = document.getElementById('cqType').value;
+            const difficulty = document.getElementById('cqDifficulty').value;
+            const correctAnswer = document.getElementById('cqCorrectAnswer').value;
+            
+            let options = null;
+            if (question_type === 'multiple_choice') {
+                const rawOpts = document.getElementById('cqOptions').value;
+                options = rawOpts.split(',').map(o => o.trim()).filter(o => o.length > 0);
+            }
+
+            const { error } = await supabaseClient
+                .from('coding_questions')
+                .insert([{ question, question_type, options, correct_answer: correctAnswer, difficulty }]);
+
+            if (error) {
+                alert("Error saving question: " + error.message);
+            } else {
+                document.getElementById('cqQuestion').value = '';
+                document.getElementById('cqCorrectAnswer').value = '';
+                if (document.getElementById('cqOptions')) document.getElementById('cqOptions').value = '';
+                loadCodingQuestions();
+            }
+        }
+
+        async function deleteCodingQuestion(id) {
+            if (!confirm("Delete this question?")) return;
+            const { error } = await supabaseClient.from('coding_questions').delete().eq('id', id);
+            if (error) alert("Error: " + error.message);
+            else loadCodingQuestions();
+        }
+
+        async function submitAnswerForQuestion(questionId, type) {
+            if (!currentUser) {
+                openAuthModal();
+                showAuthMessage("Please log in to submit answers.");
+                return;
+            }
+
+            let userAnswer = '';
+            if (type === 'multiple_choice') {
+                const selected = document.querySelector(`input[name="q_${questionId}"]:checked`);
+                if (!selected) {
+                    alert("Please select an option.");
+                    return;
+                }
+                userAnswer = selected.value;
+            } else {
+                const inputField = document.getElementById(`answer_${questionId}`);
+                if (!inputField || !inputField.value.trim()) {
+                    alert("Please type an answer.");
+                    return;
+                }
+                userAnswer = inputField.value.trim();
+            }
+
+            // Fetch correct answer
+            const { data: qData, error: qErr } = await supabaseClient
+                .from('coding_questions')
+                .select('correct_answer')
+                .eq('id', questionId)
+                .single();
+
+            if (qErr || !qData) {
+                alert("Error verifying question.");
+                return;
+            }
+
+            const isCorrect = userAnswer.toLowerCase() === qData.correct_answer.toLowerCase();
+            const feedbackEl = document.getElementById(`feedback_${questionId}`);
+            if (feedbackEl) {
+                feedbackEl.textContent = isCorrect ? "Correct!" : `Incorrect. Correct answer: ${qData.correct_answer}`;
+                feedbackEl.className = `text-xs font-semibold ${isCorrect ? 'text-emerald-700' : 'text-red-600'}`;
+            }
+
+            await supabaseClient.from('coding_submissions').insert([{
+                question_id: questionId,
+                user_id: currentUser.id,
+                user_answer: userAnswer,
+                is_correct: isCorrect
+            }]);
+        }
+
+        // --- FLASHCARDS & WALL LOGIC ---
         async function loadFlashcards(subjectFilter = "") {
             let query = supabaseClient.from('flashcards').select('*');
             if (subjectFilter) {
@@ -674,7 +1058,7 @@
             container.innerHTML = `
                 <div class="w-full flex flex-col items-center">
                     <div class="w-full flex justify-between items-center mb-3 px-1">
-                        <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md uppercase tracking-wider">${card.subject || 'General'}</span>
+                        <span class="text-[10px] font-bold text-black bg-gray-100 px-2.5 py-1 rounded-md uppercase tracking-wider">${card.subject || 'General'}</span>
                         <span class="text-xs font-semibold text-gray-400">Card ${currentFlashcardIndex + 1} of ${activeFlashcards.length}</span>
                     </div>
 
@@ -689,20 +1073,20 @@
                                     <h3 class="text-lg sm:text-xl font-semibold text-black leading-relaxed">${escapeHtml(card.question)}</h3>
                                 </div>
                                 <div class="text-center">
-                                    <span class="text-[11px] text-indigo-600 font-medium">Reveal Answer</span>
+                                    <span class="text-[11px] text-gray-500 font-medium">Reveal Answer</span>
                                 </div>
                             </div>
 
-                            <div class="absolute inset-0 w-full h-full bg-indigo-50/60 border border-indigo-100 rounded-3xl p-8 flex flex-col justify-between backface-hidden rotate-y-180">
+                            <div class="absolute inset-0 w-full h-full bg-gray-50 border border-gray-200 rounded-3xl p-8 flex flex-col justify-between backface-hidden rotate-y-180">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-600">Answer</span>
-                                    <span class="text-[10px] text-indigo-400 font-medium">Click to flip ↻</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-black">Answer</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">Click to flip ↻</span>
                                 </div>
                                 <div class="my-auto text-center">
-                                    <p class="text-lg sm:text-xl font-semibold text-indigo-950 leading-relaxed">${escapeHtml(card.answer)}</p>
+                                    <p class="text-lg sm:text-xl font-semibold text-black leading-relaxed">${escapeHtml(card.answer)}</p>
                                 </div>
                                 <div class="text-center">
-                                    <span class="text-[11px] text-indigo-500 font-medium">Back to Question</span>
+                                    <span class="text-[11px] text-gray-500 font-medium">Back to Question</span>
                                 </div>
                             </div>
                         </div>
@@ -748,8 +1132,6 @@
             renderCurrentFlashcard();
         }
 
-        // --- WALL BOARD LOGIC ---
-
         async function loadWallPosts() {
             const { data, error } = await supabaseClient
                 .from('wall_posts')
@@ -772,31 +1154,29 @@
                 const hasAnswer = post.answer_text || post.answer_sketch_url;
 
                 html += `
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs relative">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">${subjectBadge}</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-black bg-gray-100 px-2 py-0.5 rounded-md">${subjectBadge}</span>
                             <span class="text-[10px] text-gray-400">${new Date(post.created_at).toLocaleDateString()}</span>
                         </div>
                         
                         <p class="text-sm font-semibold text-black mb-3">${escapeHtml(post.question)}</p>
 
-                        <!-- Answer Block -->
                         ${hasAnswer ? `
-                            <div class="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-600 block mb-1">Answered by Beckett</span>
+                            <div class="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-black block mb-1">Answered by Beckett</span>
                                 ${post.answer_text ? `<p class="text-xs text-gray-700 leading-relaxed mb-2">${escapeHtml(post.answer_text)}</p>` : ''}
                                 ${post.answer_sketch_url ? `<img src="${post.answer_sketch_url}" alt="Sketch Answer" class="max-h-48 rounded-lg border border-gray-200 bg-white p-1 mt-2">` : ''}
                             </div>
                         ` : `
                             <div class="mt-2">
-                                <span class="text-[11px] italic text-amber-600">Awaiting admin answer...</span>
+                                <span class="text-[11px] italic text-gray-500">Awaiting admin answer...</span>
                             </div>
                         `}
 
-                        <!-- Admin Controls -->
                         ${isBeckett ? `
                             <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-                                <button onclick="openAnswerModal('${post.id}')" class="px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-all">
+                                <button onclick="openAnswerModal('${post.id}')" class="px-3 py-1.5 bg-black text-white text-xs font-semibold rounded-lg hover:bg-gray-800 transition-all">
                                     ${hasAnswer ? 'Edit Answer' : 'Answer Post'}
                                 </button>
                                 <button onclick="deleteWallPost('${post.id}')" class="text-xs text-red-500 font-semibold hover:underline">
@@ -828,31 +1208,14 @@
                 document.getElementById('wallQuestionText').value = '';
                 document.getElementById('wallQuestionSubject').selectedIndex = 0;
                 loadWallPosts();
-
-                // Trigger email notification to beckettgraham@icloud.com via Edge Function or backend hook
-                try {
-                    await supabaseClient.functions.invoke('notify-admin-wall', {
-                        body: { question: questionText, subject: subject || 'General' }
-                    });
-                } catch (fnErr) {
-                    console.log('Email hook dispatched');
-                }
             }
         }
 
         async function deleteWallPost(postId) {
             if (!confirm("Are you sure you want to delete this post?")) return;
-
-            const { error } = await supabaseClient
-                .from('wall_posts')
-                .delete()
-                .eq('id', postId);
-
-            if (error) {
-                alert("Error deleting post: " + error.message);
-            } else {
-                loadWallPosts();
-            }
+            const { error } = await supabaseClient.from('wall_posts').delete().eq('id', postId);
+            if (error) alert("Error: " + error.message);
+            else loadWallPosts();
         }
 
         function openAnswerModal(postId) {
@@ -940,7 +1303,6 @@
             const canvas = document.getElementById('sketchCanvas');
             
             let sketchDataUrl = null;
-            // Check if canvas has drawing (non-empty)
             const blankCheckCanvas = document.createElement('canvas');
             blankCheckCanvas.width = canvas.width;
             blankCheckCanvas.height = canvas.height;
