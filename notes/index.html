@@ -452,7 +452,7 @@
 
             let notes = [...notesData[subjectIndex].notes];
 
-            // Custom sort: Push Homework, Study, and Lab entries to the bottom
+            // Custom sort: Push special files to the bottom, sort weeks newest-first at the top
             notes.sort((a, b) => {
                 const specialKeywords = ['homework', 'study', 'lab'];
                 const aLower = a.title.toLowerCase();
@@ -461,11 +461,33 @@
                 const aIsSpecial = specialKeywords.some(keyword => aLower.includes(keyword));
                 const bIsSpecial = specialKeywords.some(keyword => bLower.includes(keyword));
 
+                // 1. Push special items to the bottom
                 if (aIsSpecial && !bIsSpecial) return 1;
                 if (!aIsSpecial && bIsSpecial) return -1;
-                return 0;
+
+                // 2. If neither is special (or both are special), sort them descending (newest week first)
+                // This compares strings/numbers backwards so "Week 2" comes before "Week 1"
+                return b.title.localeCompare(a.title, undefined, { numeric: true, sensitivity: 'base' });
             });
 
+            notes.forEach((note, index) => {
+                const item = document.createElement('button');
+                item.className = `toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100 ${index === 0 ? 'active' : ''}`;
+                item.innerText = note.title;
+                item.onclick = () => {
+                    document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    currentNoteIndex = index;
+                    loadPdf(note.path, note.title);
+                };
+                tocContainer.appendChild(item);
+            });
+
+            if (notes.length > 0) {
+                currentNoteIndex = 0;
+                loadPdf(notes[0].path, notes[0].title);
+            }
+        }
             notes.forEach((note, index) => {
                 const item = document.createElement('button');
                 item.className = `toc-item text-left p-3 rounded-xl text-sm transition-colors duration-200 text-gray-600 hover:bg-gray-100 ${index === 0 ? 'active' : ''}`;
