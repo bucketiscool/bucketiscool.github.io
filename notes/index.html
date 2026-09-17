@@ -904,39 +904,25 @@
                 return;
             }
 
-            // Optional: Sort the *filtered display array* so the active video floats to index 0 visually, 
-            // without permanently mutating the main `allVideoItems` array.
-            const displayList = [...filtered].sort((a, b) => {
-                if (a.id === activeVideoId) return -1;
-                if (b.id === activeVideoId) return 1;
-                return 0; // keeps original order for the rest
-            });
-
             const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
             let html = '';
 
-            displayList.forEach(vid => {
+            filtered.forEach(vid => {
                 const subjectBadge = vid.subject ? vid.subject : 'General';
                 const ytId = getYouTubeId(vid.video_url);
                 const thumbnailUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80';
-                
-                const isActive = vid.id === activeVideoId;
 
                 html += `
-                    <div id="vidCard-${vid.id}" class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${isActive ? 'col-span-full order-first' : ''}">
+                    <div id="vidCard-${vid.id}" class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md">
                         <div>
                             <!-- Media Frame Slot -->
-                            <div id="vidMedia-${vid.id}" class="relative w-full aspect-video bg-black ${isActive ? '' : 'cursor-pointer group'}" ${isActive ? '' : `onclick="playVideoInline('${vid.id}', '${ytId}')"`}>
-                                ${isActive && ytId ? `
-                                    <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                ` : `
-                                    <img src="${thumbnailUrl}" alt="${escapeHtml(vid.title)}" class="w-full h-full object-cover group-hover:opacity-80 transition-opacity">
-                                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <div class="w-12 h-12 bg-black/70 group-hover:bg-black backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all transform group-hover:scale-110 shadow-lg">
-                                            <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                        </div>
+                            <div id="vidMedia-${vid.id}" class="relative w-full aspect-video bg-black cursor-pointer group" onclick="playVideoInline('${vid.id}', '${ytId}')">
+                                <img src="${thumbnailUrl}" alt="${escapeHtml(vid.title)}" class="w-full h-full object-cover group-hover:opacity-80 transition-opacity">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-12 h-12 bg-black/70 group-hover:bg-black backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all transform group-hover:scale-110 shadow-lg">
+                                        <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                     </div>
-                                `}
+                                </div>
                             </div>
 
                             <div class="p-4">
@@ -960,6 +946,7 @@
 
             feedContainer.innerHTML = html;
         }
+
 
         async function submitVideo(e) {
             e.preventDefault();
