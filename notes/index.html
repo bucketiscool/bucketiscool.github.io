@@ -842,17 +842,8 @@
         }
 
         function playVideoInline(id, ytId) {
-            // Toggle or set the active video ID
             activeVideoId = id;
-
-            // Find the video and move it to the front of the array
-            const index = allVideoItems.findIndex(vid => vid.id === id);
-            if (index > -1) {
-                const [clickedVid] = allVideoItems.splice(index, 1);
-                allVideoItems.unshift(clickedVid);
-            }
-
-            // Re-render the grid to apply layout and iframe changes
+            // Just re-render to apply the active layout style (no array mutation needed)
             filterAndRenderVideos();
         }
 
@@ -876,10 +867,18 @@
                 return;
             }
 
+            // Optional: Sort the *filtered display array* so the active video floats to index 0 visually, 
+            // without permanently mutating the main `allVideoItems` array.
+            const displayList = [...filtered].sort((a, b) => {
+                if (a.id === activeVideoId) return -1;
+                if (b.id === activeVideoId) return 1;
+                return 0; // keeps original order for the rest
+            });
+
             const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
             let html = '';
 
-            filtered.forEach(vid => {
+            displayList.forEach(vid => {
                 const subjectBadge = vid.subject ? vid.subject : 'General';
                 const ytId = getYouTubeId(vid.video_url);
                 const thumbnailUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80';
@@ -887,7 +886,7 @@
                 const isActive = vid.id === activeVideoId;
 
                 html += `
-                    <div id="vidCard-${vid.id}" class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${isActive ? 'col-span-full' : ''}">
+                    <div id="vidCard-${vid.id}" class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${isActive ? 'col-span-full order-first' : ''}">
                         <div>
                             <!-- Media Frame Slot -->
                             <div id="vidMedia-${vid.id}" class="relative w-full aspect-video bg-black ${isActive ? '' : 'cursor-pointer group'}" ${isActive ? '' : `onclick="playVideoInline('${vid.id}', '${ytId}')"`}>
