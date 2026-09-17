@@ -822,12 +822,15 @@
         }
 
         // --- VIDEO LIBRARY LOGIC (YOUTUBE EMBED & GRID) ---
-        // Safe helper for HTML escaping
+// Top-level variable declaration
+let allVideos = [];
+
+// Safe helper for HTML escaping
 function safeEscape(str) {
     return String(str || '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
+        .replace(/$/g, '&gt;')
         .replace(/"/g, '&quot;');
 }
 
@@ -857,7 +860,7 @@ async function loadVideos() {
         return;
     }
 
-    window.allVideos = data || [];
+    allVideos = data || [];
     filterAndRenderVideos();
 }
 
@@ -868,7 +871,7 @@ function filterAndRenderVideos() {
     const subjectFilter = document.getElementById('videoSubjectFilter')?.value || 'ALL';
     const searchQuery = (document.getElementById('videoSearchInput')?.value || '').toLowerCase().trim();
 
-    const videoList = typeof allVideos !== 'undefined' ? allVideos : [];
+    const videoList = Array.isArray(allVideos) ? allVideos : [];
     const filtered = videoList.filter(vid => {
         const matchSubject = subjectFilter === 'ALL' || (vid.subject && vid.subject === subjectFilter);
         const matchSearch = !searchQuery || 
@@ -932,18 +935,11 @@ function filterAndRenderVideos() {
 }
 
 function expandVideo(id) {
-    // String comparison ensures matching regardless of numeric vs string ID types
     const vid = allVideos.find(v => String(v.id) === String(id));
-    if (!vid) {
-        console.warn('Video not found with ID:', id);
-        return;
-    }
+    if (!vid) return;
 
     const playerContainer = document.getElementById('activeVideoPlayerContainer');
-    if (!playerContainer) {
-        console.warn('Element #activeVideoPlayerContainer not found in DOM.');
-        return;
-    }
+    if (!playerContainer) return;
 
     const embedUrl = getYouTubeEmbedUrl(vid.video_url);
 
