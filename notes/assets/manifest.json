@@ -12,12 +12,12 @@
     "subject": "Statistics",
     "notes": [
       {
-        "title": "Week 1",
-        "path": "assets/Statistics/Week 1.pdf"
-      },
-      {
         "title": "Week 2",
         "path": "assets/Statistics/Week 2.pdf"
+      },
+      {
+        "title": "Week 1",
+        "path": "assets/Statistics/Week 1.pdf"
       },
       {
         "title": "Study",
@@ -54,6 +54,10 @@
     "subject": "Calculus",
     "notes": [
       {
+        "title": "Study",
+        "path": "assets/Calculus/Study.pdf"
+      },
+      {
         "title": "Week 2",
         "path": "assets/Calculus/Week 2.pdf"
       },
@@ -64,10 +68,6 @@
       {
         "title": "Week 1",
         "path": "assets/Calculus/Week 1.pdf"
-      },
-      {
-        "title": "Study",
-        "path": "assets/Calculus/Study.pdf"
       }
     ]
   },
