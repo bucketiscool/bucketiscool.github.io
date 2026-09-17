@@ -177,7 +177,7 @@
                         </div>
 
                         <!-- Unlocked Feature Content View -->
-                        <div id="featureContentUnlocked" class="hidden flex flex-col items-center justify-center p-6 md:p-12 w-full min-h-[600px] bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                        <div id="featureContentUnlocked" class="hidden flex flex-col items-center justify-center p-6 md:p-8 w-full min-h-[600px] bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                             <div id="featureInnerDynamicContent" class="w-full">
                                 <!-- Dynamic feature payload injected here -->
                             </div>
@@ -226,7 +226,7 @@
     <footer class="py-12 border-t border-gray-200/60 bg-white">
         <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-sm text-gray-400 font-medium">
-                &copy; 2026 Beckett Graham. Ontario.
+                &copy; 2026 Beckett Graham. London, Ontario.
             </p>
             <div class="flex space-x-6 text-sm font-medium text-gray-400">
                 <a href="mailto:beckettgraham@icloud.com" class="hover:text-black transition-colors">Contact Email</a>
@@ -265,6 +265,9 @@
         // Drawing Canvas State for Admin Sketch Answer
         let isDrawing = false;
         let sketchCanvasCtx = null;
+
+        // Video Library State
+        let allVideos = [];
 
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -550,7 +553,7 @@
                     let subjectOptionsHtml = '';
                     notesData.forEach(item => {
                         if (!item.isPremiumTab) {
-                            subjectOptionsHtml += `<option value="${item.subject}">${item.subject}</option>`;
+                            subjectOptionsHtml += `<option value="${escapeHtml(item.subject)}">${escapeHtml(item.subject)}</option>`;
                         }
                     });
 
@@ -602,7 +605,7 @@
                     let subjectOptionsHtml = '<option value="">General (Default)</option>';
                     notesData.forEach(item => {
                         if (!item.isPremiumTab) {
-                            subjectOptionsHtml += `<option value="${item.subject}">${item.subject}</option>`;
+                            subjectOptionsHtml += `<option value="${escapeHtml(item.subject)}">${escapeHtml(item.subject)}</option>`;
                         }
                     });
 
@@ -747,35 +750,52 @@
                     loadCodingQuestions();
 
                 } else if (featureKey === 'video_library') {
-                    let subjectOptionsHtml = '<option value="">General Video</option>';
+                    let subjectSelectOptions = '<option value="ALL">All Subjects</option>';
+                    let adminSubjectSelectOptions = '<option value="">General Video</option>';
+                    
                     notesData.forEach(item => {
                         if (!item.isPremiumTab) {
-                            subjectOptionsHtml += `<option value="${item.subject}">${item.subject}</option>`;
+                            subjectSelectOptions += `<option value="${escapeHtml(item.subject)}">${escapeHtml(item.subject)}</option>`;
+                            adminSubjectSelectOptions += `<option value="${escapeHtml(item.subject)}">${escapeHtml(item.subject)}</option>`;
                         }
                     });
 
                     innerDynamic.innerHTML = `
-                        <div class="w-full max-w-3xl mx-auto text-left">
-                            <div class="flex items-center justify-between mb-6">
+                        <div class="w-full max-w-4xl mx-auto text-left">
+                            
+                            <!-- Video Library Top Bar: Title, Subject Filter Dropdown, and Search -->
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-200/80">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center text-black">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center text-black shadow-xs">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-bold text-black">Video Walkthroughs & Lectures</h4>
+                                        <h4 class="text-lg font-bold text-black tracking-tight">Video Walkthroughs & Lectures</h4>
                                         <p class="text-xs text-gray-500">Stream recorded lab breakdowns and study sessions</p>
+                                    </div>
+                                </div>
+
+                                <!-- Filter & Search Bar Controls -->
+                                <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                                    <select id="videoSubjectFilter" onchange="filterAndRenderVideos()" class="w-full sm:w-auto px-3.5 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black font-medium transition-colors cursor-pointer shadow-xs">
+                                        ${subjectSelectOptions}
+                                    </select>
+
+                                    <div class="relative w-full sm:w-56">
+                                        <input type="text" id="videoSearchInput" oninput="filterAndRenderVideos()" placeholder="Search videos..." class="w-full pl-9 pr-3.5 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black transition-colors shadow-xs">
+                                        <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                     </div>
                                 </div>
                             </div>
 
                             ${isBeckett ? `
-                                <div class="mb-6 p-5 bg-white rounded-2xl border border-gray-200 shadow-xs">
+                                <div class="mb-8 p-5 bg-white rounded-2xl border border-gray-200 shadow-xs">
                                     <h5 class="text-xs font-bold text-black mb-3">Admin: Upload YouTube Walkthrough</h5>
                                     <form onsubmit="submitVideo(event)" class="space-y-3">
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <input type="text" id="vidTitle" required placeholder="Video Title (e.g., Lab 2 Walkthrough)" class="px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
                                             <select id="vidSubject" class="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black">
-                                                ${subjectOptionsHtml}
+                                                ${adminSubjectSelectOptions}
                                             </select>
                                         </div>
                                         <textarea id="vidDescription" rows="2" placeholder="Brief description of what is covered..." class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black"></textarea>
@@ -785,7 +805,13 @@
                                 </div>
                             ` : ''}
 
-                            <div id="videoLibraryFeed" class="space-y-6">
+                            <!-- Active Expanded Video View (opens when thumbnail clicked) -->
+                            <div id="activeVideoPlayerContainer" class="hidden mb-8 bg-white p-4 sm:p-6 rounded-2xl border border-gray-200 shadow-sm transition-all duration-300">
+                                <!-- Dynamically expanded video content -->
+                            </div>
+
+                            <!-- YouTube Grid View Feed -->
+                            <div id="videoLibraryFeed">
                                 <p class="text-xs text-gray-400 text-center py-8">Loading videos...</p>
                             </div>
                         </div>
@@ -795,17 +821,16 @@
             }
         }
 
-        // --- VIDEO LIBRARY LOGIC (YOUTUBE EMBED) ---
+        // --- VIDEO LIBRARY LOGIC (YOUTUBE EMBED & GRID) ---
+        function getYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
         function getYouTubeEmbedUrl(url) {
-            if (!url) return '';
-            let videoId = '';
-            if (url.includes('youtu.be/')) {
-                videoId = url.split('youtu.be/')[1]?.split('?')[0];
-            } else if (url.includes('watch?v=')) {
-                videoId = url.split('watch?v=')[1]?.split('&')[0];
-            } else if (url.includes('embed/')) {
-                return url;
-            }
+            const videoId = getYouTubeId(url);
             return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
         }
 
@@ -818,42 +843,126 @@
             const feedContainer = document.getElementById('videoLibraryFeed');
             if (!feedContainer) return;
 
-            if (error || !data || data.length === 0) {
-                feedContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">No videos available in the library yet.</p>`;
+            if (error) {
+                feedContainer.innerHTML = `<p class="text-xs text-red-500 text-center py-8">Error loading videos: ${escapeHtml(error.message)}</p>`;
+                return;
+            }
+
+            allVideos = data || [];
+            filterAndRenderVideos();
+        }
+
+        function filterAndRenderVideos() {
+            const feedContainer = document.getElementById('videoLibraryFeed');
+            if (!feedContainer) return;
+
+            const subjectFilter = document.getElementById('videoSubjectFilter')?.value || 'ALL';
+            const searchQuery = (document.getElementById('videoSearchInput')?.value || '').toLowerCase().trim();
+
+            const filtered = allVideos.filter(vid => {
+                const matchSubject = subjectFilter === 'ALL' || (vid.subject && vid.subject === subjectFilter);
+                const matchSearch = !searchQuery || 
+                    (vid.title && vid.title.toLowerCase().includes(searchQuery)) || 
+                    (vid.description && vid.description.toLowerCase().includes(searchQuery));
+                return matchSubject && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                feedContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-12">No videos found matching your search criteria.</p>`;
                 return;
             }
 
             const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
-            let html = '';
+            let html = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">';
 
-            data.forEach(vid => {
-                const subjectBadge = vid.subject ? vid.subject : 'General';
-                const embedUrl = getYouTubeEmbedUrl(vid.video_url);
+            filtered.forEach(vid => {
+                const subjectBadge = vid.subject || 'General';
+                const ytId = getYouTubeId(vid.video_url);
+                const thumbUrl = ytId 
+                    ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
+                    : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60';
+                
+                const avatarInitial = subjectBadge.charAt(0).toUpperCase();
 
                 html += `
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-black bg-gray-100 px-2.5 py-1 rounded-md">${subjectBadge}</span>
-                            <span class="text-[10px] text-gray-400">${new Date(vid.created_at).toLocaleDateString()}</span>
+                    <div onclick="expandVideo('${vid.id}')" class="group cursor-pointer flex flex-col bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
+                        <div class="relative aspect-video w-full bg-gray-900 overflow-hidden">
+                            <img src="${thumbUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${escapeHtml(vid.title)}">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors flex items-center justify-center">
+                                <div class="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-white group-hover:scale-110 transition-transform shadow-lg">
+                                    <svg class="w-5 h-5 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <span class="absolute bottom-2.5 right-2.5 bg-black/80 backdrop-blur-md text-white text-[10px] font-semibold px-2 py-0.5 rounded-md tracking-wide">
+                                ${escapeHtml(subjectBadge)}
+                            </span>
                         </div>
                         
-                        <h5 class="text-sm font-bold text-black mb-2">${escapeHtml(vid.title)}</h5>
-                        ${vid.description ? `<p class="text-xs text-gray-600 mb-3">${escapeHtml(vid.description)}</p>` : ''}
-
-                        <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-gray-800 mb-3">
-                            <iframe src="${embedUrl}" class="absolute top-0 left-0 w-full h-full border-0" allowfullscreen></iframe>
-                        </div>
-
-                        ${isBeckett ? `
-                            <div class="flex justify-end pt-2 border-t border-gray-100">
-                                <button onclick="deleteVideo('${vid.id}')" class="text-xs text-red-500 font-semibold hover:underline">Delete Video</button>
+                        <div class="p-4 flex gap-3 items-start flex-grow">
+                            <div class="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-black font-bold text-xs flex-shrink-0">
+                                ${avatarInitial}
                             </div>
-                        ` : ''}
+                            <div class="flex-grow min-w-0">
+                                <h5 class="text-xs sm:text-sm font-bold text-black group-hover:text-gray-600 transition-colors leading-snug" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    ${escapeHtml(vid.title)}
+                                </h5>
+                                <p class="text-[11px] text-gray-400 mt-1 flex items-center gap-1">
+                                    <span>Beckett Graham</span>
+                                    <span>&bull;</span>
+                                    <span>${new Date(vid.created_at).toLocaleDateString()}</span>
+                                </p>
+                            </div>
+                            ${isBeckett ? `
+                                <button onclick="event.stopPropagation(); deleteVideo('${vid.id}')" title="Delete Video" class="text-gray-300 hover:text-red-500 transition-colors p-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
             });
 
+            html += '</div>';
             feedContainer.innerHTML = html;
+        }
+
+        function expandVideo(id) {
+            const vid = allVideos.find(v => v.id === id);
+            if (!vid) return;
+
+            const playerContainer = document.getElementById('activeVideoPlayerContainer');
+            if (!playerContainer) return;
+
+            const embedUrl = getYouTubeEmbedUrl(vid.video_url);
+
+            playerContainer.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-black bg-gray-100 px-2.5 py-1 rounded-md">
+                        ${escapeHtml(vid.subject || 'General')}
+                    </span>
+                    <button onclick="closeExpandedVideo()" class="text-xs font-semibold text-gray-600 hover:text-black flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Close Player
+                    </button>
+                </div>
+                <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-gray-800 mb-4">
+                    <iframe src="${embedUrl}?autoplay=1" class="absolute top-0 left-0 w-full h-full border-0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <h3 class="text-base sm:text-lg font-bold text-black mb-1">${escapeHtml(vid.title)}</h3>
+                <p class="text-xs text-gray-400 mb-3">Published on ${new Date(vid.created_at).toLocaleDateString()}</p>
+                ${vid.description ? `<div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-xs text-gray-700 leading-relaxed">${escapeHtml(vid.description)}</div>` : ''}
+            `;
+
+            playerContainer.classList.remove('hidden');
+            playerContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function closeExpandedVideo() {
+            const playerContainer = document.getElementById('activeVideoPlayerContainer');
+            if (playerContainer) {
+                playerContainer.classList.add('hidden');
+                playerContainer.innerHTML = '';
+            }
         }
 
         async function submitVideo(e) {
@@ -881,7 +990,10 @@
             if (!confirm("Delete this video?")) return;
             const { error } = await supabaseClient.from('video_library').delete().eq('id', id);
             if (error) alert("Error: " + error.message);
-            else loadVideos();
+            else {
+                closeExpandedVideo();
+                loadVideos();
+            }
         }
 
         // --- CODE SAMPLES LOGIC ---
@@ -1181,7 +1293,7 @@
             container.innerHTML = `
                 <div class="w-full flex flex-col items-center">
                     <div class="w-full flex justify-between items-center mb-3 px-1">
-                        <span class="text-[10px] font-bold text-black bg-gray-100 px-2.5 py-1 rounded-md uppercase tracking-wider">${card.subject || 'General'}</span>
+                        <span class="text-[10px] font-bold text-black bg-gray-100 px-2.5 py-1 rounded-md uppercase tracking-wider">${escapeHtml(card.subject || 'General')}</span>
                         <span class="text-xs font-semibold text-gray-400">Card ${currentFlashcardIndex + 1} of ${activeFlashcards.length}</span>
                     </div>
 
@@ -1279,7 +1391,7 @@
                 html += `
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-black bg-gray-100 px-2 py-0.5 rounded-md">${subjectBadge}</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-black bg-gray-100 px-2 py-0.5 rounded-md">${escapeHtml(subjectBadge)}</span>
                             <span class="text-[10px] text-gray-400">${new Date(post.created_at).toLocaleDateString()}</span>
                         </div>
                         
@@ -1518,6 +1630,7 @@
         }
 
         function escapeHtml(str) {
+            if (!str) return '';
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
