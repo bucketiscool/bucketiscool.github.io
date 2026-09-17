@@ -1,5 +1,14 @@
 [
   {
+    "subject": "Programing",
+    "notes": [
+      {
+        "title": "Study",
+        "path": "assets/Programing/Study.pdf"
+      }
+    ]
+  },
+  {
     "subject": "Statistics",
     "notes": [
       {
@@ -24,16 +33,16 @@
     "subject": "Algebra",
     "notes": [
       {
+        "title": "Week 2",
+        "path": "assets/Algebra/Week 2.pdf"
+      },
+      {
         "title": "Homework",
         "path": "assets/Algebra/Homework.pdf"
       },
       {
         "title": "Study",
         "path": "assets/Algebra/Study.pdf"
-      },
-      {
-        "title": "Week 2",
-        "path": "assets/Algebra/Week 2.pdf"
       },
       {
         "title": "Week 1",
@@ -45,6 +54,10 @@
     "subject": "Calculus",
     "notes": [
       {
+        "title": "Week 2",
+        "path": "assets/Calculus/Week 2.pdf"
+      },
+      {
         "title": "Homework",
         "path": "assets/Calculus/Homework.pdf"
       },
@@ -55,10 +68,6 @@
       {
         "title": "Study",
         "path": "assets/Calculus/Study.pdf"
-      },
-      {
-        "title": "Week 2",
-        "path": "assets/Calculus/Week 2.pdf"
       }
     ]
   },
@@ -66,16 +75,16 @@
     "subject": "Business",
     "notes": [
       {
+        "title": "Week 2",
+        "path": "assets/Business/Week 2.pdf"
+      },
+      {
         "title": "Homework",
         "path": "assets/Business/Homework.pdf"
       },
       {
         "title": "Week 1",
         "path": "assets/Business/Week 1.pdf"
-      },
-      {
-        "title": "Week 2",
-        "path": "assets/Business/Week 2.pdf"
       },
       {
         "title": "Study",
