@@ -842,6 +842,35 @@
         }
 
         function playVideoInline(id, ytId) {
+            const feedContainer = document.getElementById('videoLibraryFeed');
+            if (!feedContainer) return;
+
+            // 1. Hide all other cards in the grid container
+            const allCards = feedContainer.querySelectorAll('[id^="vidCard-"]');
+            allCards.forEach(c => {
+                if (c.id !== `vidCard-${id}`) {
+                    c.style.display = 'none';
+                }
+            });
+
+            // 2. Insert a "Back to Library" button at the top of the feed container if it doesn't already exist
+            let backBtnContainer = document.getElementById('backToGridBtnContainer');
+            if (!backBtnContainer) {
+                backBtnContainer = document.createElement('div');
+                backBtnContainer.id = 'backToGridBtnContainer';
+                backBtnContainer.className = 'col-span-full mb-4';
+                backBtnContainer.innerHTML = `
+                    <button onclick="filterAndRenderVideos()" class="inline-flex items-center gap-2 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-xl transition-all shadow-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        Back to Video Library
+                    </button>
+                `;
+                feedContainer.insertBefore(backBtnContainer, feedContainer.firstChild);
+            } else {
+                backBtnContainer.style.display = 'block';
+            }
+
+            // 3. Expand the clicked card and load the iframe (your original working logic)
             const card = document.getElementById(`vidCard-${id}`);
             const mediaContainer = document.getElementById(`vidMedia-${id}`);
 
