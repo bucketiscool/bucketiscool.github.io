@@ -253,6 +253,7 @@
         let currentPageNum = 1;
         let currentPdfPath = '';
         let currentPdfTitle = '';
+        let activeVideoId = null;
 
         let currentUser = null;
         let isSubscribed = false;
@@ -867,18 +868,25 @@
                 const subjectBadge = vid.subject ? vid.subject : 'General';
                 const ytId = getYouTubeId(vid.video_url);
                 const thumbnailUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80';
+                
+                // Check if this specific video is the active one playing
+                const isActive = vid.id === activeVideoId;
 
                 html += `
-                    <div id="vidCard-${vid.id}" class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md">
+                    <div id="vidCard-${vid.id}" class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${isActive ? 'col-span-full' : ''}">
                         <div>
                             <!-- Media Frame Slot -->
-                            <div id="vidMedia-${vid.id}" class="relative w-full aspect-video bg-black cursor-pointer group" onclick="playVideoInline('${vid.id}', '${ytId}')">
-                                <img src="${thumbnailUrl}" alt="${escapeHtml(vid.title)}" class="w-full h-full object-cover group-hover:opacity-80 transition-opacity">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="w-12 h-12 bg-black/70 group-hover:bg-black backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all transform group-hover:scale-110 shadow-lg">
-                                        <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <div id="vidMedia-${vid.id}" class="relative w-full aspect-video bg-black ${isActive ? '' : 'cursor-pointer group'}" ${isActive ? '' : `onclick="playVideoInline('${vid.id}', '${ytId}')"`}>
+                                ${isActive && ytId ? `
+                                    <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                ` : `
+                                    <img src="${thumbnailUrl}" alt="${escapeHtml(vid.title)}" class="w-full h-full object-cover group-hover:opacity-80 transition-opacity">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="w-12 h-12 bg-black/70 group-hover:bg-black backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all transform group-hover:scale-110 shadow-lg">
+                                            <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
                                     </div>
-                                </div>
+                                `}
                             </div>
 
                             <div class="p-4">
@@ -904,33 +912,18 @@
         }
 
         function playVideoInline(id, ytId) {
-            // 1. Find the index of the clicked video in allVideoItems
+            // Set the active video ID
+            activeVideoId = id;
+
+            // Move the clicked video to the front of the array
             const index = allVideoItems.findIndex(vid => vid.id === id);
-            
             if (index > -1) {
-                // 2. Remove the video from its current position and place it at the beginning (index 0)
                 const [clickedVid] = allVideoItems.splice(index, 1);
                 allVideoItems.unshift(clickedVid);
-                
-                // 3. Re-render the grid so the layout updates with the new order
-                filterAndRenderVideos();
             }
 
-            // 4. Target the newly rendered card and media container to expand and play
-            const card = document.getElementById(`vidCard-${id}`);
-            const mediaContainer = document.getElementById(`vidMedia-${id}`);
-
-            if (card) {
-                card.classList.remove('lg:col-span-1', 'md:col-span-1');
-                card.classList.add('col-span-full');
-            }
-
-            if (mediaContainer && ytId) {
-                mediaContainer.innerHTML = `
-                    <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                `;
-                mediaContainer.onclick = null; // Unbind click event
-            }
+            // Re-render the grid (this updates the layout, collapses old videos, and expands the new one)
+            filterAndRenderVideos();
         }
 
         async function submitVideo(e) {
