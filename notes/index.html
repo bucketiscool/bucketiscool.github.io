@@ -226,7 +226,7 @@
     <footer class="py-12 border-t border-gray-200/60 bg-white">
         <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-sm text-gray-400 font-medium">
-                &copy; 2026 Beckett Graham. Ontario.
+                &copy; 2026 Beckett Graham. London, Ontario.
             </p>
             <div class="flex space-x-6 text-sm font-medium text-gray-400">
                 <a href="mailto:beckettgraham@icloud.com" class="hover:text-black transition-colors">Contact Email</a>
@@ -261,6 +261,9 @@
         let activeFlashcards = [];
         let currentFlashcardIndex = 0;
         let isCardFlipped = false;
+
+        // Video Library State
+        let allVideoItems = [];
 
         // Drawing Canvas State for Admin Sketch Answer
         let isDrawing = false;
@@ -747,23 +750,34 @@
                     loadCodingQuestions();
 
                 } else if (featureKey === 'video_library') {
-                    let subjectOptionsHtml = '<option value="">General Video</option>';
+                    let subjectDropdownOptions = '<option value="ALL">All Subjects</option>';
                     notesData.forEach(item => {
                         if (!item.isPremiumTab) {
-                            subjectOptionsHtml += `<option value="${item.subject}">${item.subject}</option>`;
+                            subjectDropdownOptions += `<option value="${item.subject}">${item.subject}</option>`;
                         }
                     });
 
                     innerDynamic.innerHTML = `
-                        <div class="w-full max-w-3xl mx-auto text-left">
-                            <div class="flex items-center justify-between mb-6">
+                        <div class="w-full max-w-5xl mx-auto text-left">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center text-black">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center text-black flex-shrink-0">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-bold text-black">Video Walkthroughs & Lectures</h4>
-                                        <p class="text-xs text-gray-500">Stream recorded lab breakdowns and study sessions</p>
+                                        <h4 class="text-lg font-bold text-black">Video Walkthroughs & Lessons</h4>
+                                        <p class="text-xs text-gray-500">Stream recorded lab breakdowns, lectures, and study sessions</p>
+                                    </div>
+                                </div>
+
+                                <!-- Filter Controls (Dropdown & Search) -->
+                                <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                                    <select id="videoSubjectFilter" onchange="filterAndRenderVideos()" class="w-full sm:w-auto px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black shadow-xs">
+                                        ${subjectDropdownOptions}
+                                    </select>
+                                    <div class="relative w-full sm:w-48">
+                                        <input type="text" id="videoSearchInput" oninput="filterAndRenderVideos()" placeholder="Search videos..." class="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black shadow-xs">
+                                        <svg class="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                     </div>
                                 </div>
                             </div>
@@ -775,7 +789,8 @@
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <input type="text" id="vidTitle" required placeholder="Video Title (e.g., Lab 2 Walkthrough)" class="px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black">
                                             <select id="vidSubject" class="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-black">
-                                                ${subjectOptionsHtml}
+                                                <option value="">General Video</option>
+                                                ${subjectDropdownOptions.replace('<option value="ALL">All Subjects</option>', '')}
                                             </select>
                                         </div>
                                         <textarea id="vidDescription" rows="2" placeholder="Brief description of what is covered..." class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-black"></textarea>
@@ -785,8 +800,8 @@
                                 </div>
                             ` : ''}
 
-                            <div id="videoLibraryFeed" class="space-y-6">
-                                <p class="text-xs text-gray-400 text-center py-8">Loading videos...</p>
+                            <div id="videoLibraryFeed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <p class="text-xs text-gray-400 text-center py-8 col-span-full">Loading videos...</p>
                             </div>
                         </div>
                     `;
@@ -796,7 +811,7 @@
         }
 
         // --- VIDEO LIBRARY LOGIC (YOUTUBE EMBED) ---
-        function getYouTubeEmbedUrl(url) {
+        function getYouTubeId(url) {
             if (!url) return '';
             let videoId = '';
             if (url.includes('youtu.be/')) {
@@ -804,9 +819,9 @@
             } else if (url.includes('watch?v=')) {
                 videoId = url.split('watch?v=')[1]?.split('&')[0];
             } else if (url.includes('embed/')) {
-                return url;
+                videoId = url.split('embed/')[1]?.split('?')[0];
             }
-            return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+            return videoId || '';
         }
 
         async function loadVideos() {
@@ -815,38 +830,70 @@
                 .select('*')
                 .order('created_at', { ascending: false });
 
+            if (error || !data) {
+                const feed = document.getElementById('videoLibraryFeed');
+                if (feed) feed.innerHTML = `<p class="text-xs text-gray-400 text-center py-8 col-span-full">Failed to load video library.</p>`;
+                return;
+            }
+
+            allVideoItems = data;
+            filterAndRenderVideos();
+        }
+
+        function filterAndRenderVideos() {
             const feedContainer = document.getElementById('videoLibraryFeed');
             if (!feedContainer) return;
 
-            if (error || !data || data.length === 0) {
-                feedContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">No videos available in the library yet.</p>`;
+            const selectedSubject = document.getElementById('videoSubjectFilter')?.value || 'ALL';
+            const searchQuery = document.getElementById('videoSearchInput')?.value.toLowerCase().trim() || '';
+
+            const filtered = allVideoItems.filter(vid => {
+                const matchesSubject = selectedSubject === 'ALL' || (vid.subject || 'General') === selectedSubject;
+                const matchesSearch = !searchQuery || 
+                    vid.title.toLowerCase().includes(searchQuery) || 
+                    (vid.description && vid.description.toLowerCase().includes(searchQuery));
+                return matchesSubject && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                feedContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-12 col-span-full">No video lessons match your criteria.</p>`;
                 return;
             }
 
             const isBeckett = currentUser && currentUser.email === 'beckettgraham@icloud.com';
             let html = '';
 
-            data.forEach(vid => {
+            filtered.forEach(vid => {
                 const subjectBadge = vid.subject ? vid.subject : 'General';
-                const embedUrl = getYouTubeEmbedUrl(vid.video_url);
+                const ytId = getYouTubeId(vid.video_url);
+                const thumbnailUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80';
 
                 html += `
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-black bg-gray-100 px-2.5 py-1 rounded-md">${subjectBadge}</span>
-                            <span class="text-[10px] text-gray-400">${new Date(vid.created_at).toLocaleDateString()}</span>
-                        </div>
-                        
-                        <h5 class="text-sm font-bold text-black mb-2">${escapeHtml(vid.title)}</h5>
-                        ${vid.description ? `<p class="text-xs text-gray-600 mb-3">${escapeHtml(vid.description)}</p>` : ''}
+                    <div id="vidCard-${vid.id}" class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md">
+                        <div>
+                            <!-- Media Frame Slot -->
+                            <div id="vidMedia-${vid.id}" class="relative w-full aspect-video bg-black cursor-pointer group" onclick="playVideoInline('${vid.id}', '${ytId}')">
+                                <img src="${thumbnailUrl}" alt="${escapeHtml(vid.title)}" class="w-full h-full object-cover group-hover:opacity-80 transition-opacity">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-12 h-12 bg-black/70 group-hover:bg-black backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all transform group-hover:scale-110 shadow-lg">
+                                        <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-gray-800 mb-3">
-                            <iframe src="${embedUrl}" class="absolute top-0 left-0 w-full h-full border-0" allowfullscreen></iframe>
+                            <div class="p-4">
+                                <div class="flex items-center justify-between gap-2 mb-2">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-black bg-gray-100 px-2.5 py-0.5 rounded-md">${escapeHtml(subjectBadge)}</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">${new Date(vid.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <h5 class="text-sm font-bold text-black mb-1 line-clamp-2">${escapeHtml(vid.title)}</h5>
+                                ${vid.description ? `<p class="text-xs text-gray-500 line-clamp-2">${escapeHtml(vid.description)}</p>` : ''}
+                            </div>
                         </div>
 
                         ${isBeckett ? `
-                            <div class="flex justify-end pt-2 border-t border-gray-100">
-                                <button onclick="deleteVideo('${vid.id}')" class="text-xs text-red-500 font-semibold hover:underline">Delete Video</button>
+                            <div class="px-4 pb-3 pt-1 flex justify-end border-t border-gray-50">
+                                <button onclick="deleteVideo('${vid.id}')" class="text-xs text-red-500 font-semibold hover:underline">Delete</button>
                             </div>
                         ` : ''}
                     </div>
@@ -854,6 +901,23 @@
             });
 
             feedContainer.innerHTML = html;
+        }
+
+        function playVideoInline(id, ytId) {
+            const card = document.getElementById(`vidCard-${id}`);
+            const mediaContainer = document.getElementById(`vidMedia-${id}`);
+
+            if (card) {
+                card.classList.remove('lg:col-span-1', 'md:col-span-1');
+                card.classList.add('col-span-full');
+            }
+
+            if (mediaContainer && ytId) {
+                mediaContainer.innerHTML = `
+                    <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                `;
+                mediaContainer.onclick = null; // Unbind click event
+            }
         }
 
         async function submitVideo(e) {
