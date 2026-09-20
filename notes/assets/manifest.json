@@ -54,16 +54,16 @@
     "subject": "Calculus",
     "notes": [
       {
+        "title": "Homework",
+        "path": "assets/Calculus/Homework.pdf"
+      },
+      {
         "title": "Week 2",
         "path": "assets/Calculus/Week 2.pdf"
       },
       {
         "title": "Study",
         "path": "assets/Calculus/Study.pdf"
-      },
-      {
-        "title": "Homework",
-        "path": "assets/Calculus/Homework.pdf"
       },
       {
         "title": "Week 1",
