@@ -33,6 +33,10 @@
     "subject": "Algebra",
     "notes": [
       {
+        "title": "Week 3",
+        "path": "assets/Algebra/Week 3.pdf"
+      },
+      {
         "title": "Week 2",
         "path": "assets/Algebra/Week 2.pdf"
       },
@@ -54,6 +58,10 @@
     "subject": "Calculus",
     "notes": [
       {
+        "title": "Week 3",
+        "path": "assets/Calculus/Week 3.pdf"
+      },
+      {
         "title": "Homework",
         "path": "assets/Calculus/Homework.pdf"
       },
@@ -74,6 +82,10 @@
   {
     "subject": "Business",
     "notes": [
+      {
+        "title": "Week 3",
+        "path": "assets/Business/Week 3.pdf"
+      },
       {
         "title": "Week 2",
         "path": "assets/Business/Week 2.pdf"
