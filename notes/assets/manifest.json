@@ -12,6 +12,10 @@
     "subject": "Statistics",
     "notes": [
       {
+        "title": "Week 3",
+        "path": "assets/Statistics/Week 3.pdf"
+      },
+      {
         "title": "Week 2",
         "path": "assets/Statistics/Week 2.pdf"
       },
@@ -107,6 +111,10 @@
   {
     "subject": "Physics",
     "notes": [
+      {
+        "title": "Lab Week 3",
+        "path": "assets/Physics/Lab Week 3.pdf"
+      },
       {
         "title": "Week 3",
         "path": "assets/Physics/Week 3.pdf"
