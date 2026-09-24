@@ -495,17 +495,22 @@
                     renderFeatureView(subjectObj.notes[0].featureKey, "");
                 }
             } else {
-                let entries = [...subjectObj.notes];
-                entries.sort((a, b) => {
-                    const specialKeywords = ['homework', 'study', 'lab'];
-                    const aLower = a.title.toLowerCase();
-                    const bLower = b.title.toLowerCase();
-                    const aIsSpecial = specialKeywords.some(kw => aLower.includes(kw));
-                    const bIsSpecial = specialKeywords.some(kw => bLower.includes(kw));
-                    if (aIsSpecial && !bIsSpecial) return 1;
-                    if (!aIsSpecial && bIsSpecial) return -1;
-                    return b.title.localeCompare(a.title, undefined, { numeric: true, sensitivity: 'base' });
-                });
+    // 1. Filter out any entry containing 'lab' in the title
+    let entries = subjectObj.notes.filter(note => 
+        !note.title || !note.title.toLowerCase().includes('lab')
+    );
+
+    // 2. Sort the remaining entries
+    entries.sort((a, b) => {
+        const specialKeywords = ['homework', 'study'];
+        const aLower = a.title.toLowerCase();
+        const bLower = b.title.toLowerCase();
+        const aIsSpecial = specialKeywords.some(kw => aLower.includes(kw));
+        const bIsSpecial = specialKeywords.some(kw => bLower.includes(kw));
+        if (aIsSpecial && !bIsSpecial) return 1;
+        if (!aIsSpecial && bIsSpecial) return -1;
+        return b.title.localeCompare(a.title, undefined, { numeric: true, sensitivity: 'base' });
+    });
 
                 entries.forEach((entry, index) => {
                     const item = document.createElement('button');
