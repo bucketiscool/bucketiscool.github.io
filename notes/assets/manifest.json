@@ -1,5 +1,34 @@
 [
   {
+    "subject": "Stats",
+    "notes": [
+      {
+        "title": "Homework",
+        "path": "assets/Stats/Homework.pdf"
+      },
+      {
+        "title": "Week 4",
+        "path": "assets/Stats/Week 4.pdf"
+      },
+      {
+        "title": "Week 3",
+        "path": "assets/Stats/Week 3.pdf"
+      },
+      {
+        "title": "Week 2",
+        "path": "assets/Stats/Week 2.pdf"
+      },
+      {
+        "title": "Week 1",
+        "path": "assets/Stats/Week 1.pdf"
+      },
+      {
+        "title": "Study",
+        "path": "assets/Stats/Study.pdf"
+      }
+    ]
+  },
+  {
     "subject": "Fundamentals Of Eng",
     "notes": [
       {
@@ -18,33 +47,12 @@
     ]
   },
   {
-    "subject": "Statistics",
-    "notes": [
-      {
-        "title": "Week 3",
-        "path": "assets/Statistics/Week 3.pdf"
-      },
-      {
-        "title": "Week 2",
-        "path": "assets/Statistics/Week 2.pdf"
-      },
-      {
-        "title": "Week 1",
-        "path": "assets/Statistics/Week 1.pdf"
-      },
-      {
-        "title": "Study",
-        "path": "assets/Statistics/Study.pdf"
-      },
-      {
-        "title": "Homework",
-        "path": "assets/Statistics/Homework.pdf"
-      }
-    ]
-  },
-  {
     "subject": "Algebra",
     "notes": [
+      {
+        "title": "lab",
+        "path": "assets/Algebra/lab.pdf"
+      },
       {
         "title": "Week 4",
         "path": "assets/Algebra/Week 4.pdf"
