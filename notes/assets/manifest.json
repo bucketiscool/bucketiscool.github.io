@@ -3,12 +3,12 @@
     "subject": "Stats",
     "notes": [
       {
-        "title": "Homework",
-        "path": "assets/Stats/Homework.pdf"
-      },
-      {
         "title": "Week 4",
         "path": "assets/Stats/Week 4.pdf"
+      },
+      {
+        "title": "Homework",
+        "path": "assets/Stats/Homework.pdf"
       },
       {
         "title": "Week 3",
