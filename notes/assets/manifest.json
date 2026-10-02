@@ -54,12 +54,12 @@
     "subject": "Algebra",
     "notes": [
       {
-        "title": "lab",
-        "path": "assets/Algebra/lab.pdf"
-      },
-      {
         "title": "Week 4",
         "path": "assets/Algebra/Week 4.pdf"
+      },
+      {
+        "title": "lab",
+        "path": "assets/Algebra/lab.pdf"
       },
       {
         "title": "Week 3",
