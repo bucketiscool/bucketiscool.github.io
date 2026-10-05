@@ -54,6 +54,10 @@
     "subject": "Algebra",
     "notes": [
       {
+        "title": "Homework",
+        "path": "assets/Algebra/Homework.pdf"
+      },
+      {
         "title": "Week 4",
         "path": "assets/Algebra/Week 4.pdf"
       },
@@ -68,10 +72,6 @@
       {
         "title": "Week 2",
         "path": "assets/Algebra/Week 2.pdf"
-      },
-      {
-        "title": "Homework",
-        "path": "assets/Algebra/Homework.pdf"
       },
       {
         "title": "Study",
