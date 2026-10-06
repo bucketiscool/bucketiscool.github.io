@@ -54,6 +54,10 @@
     "subject": "Algebra",
     "notes": [
       {
+        "title": "week 5",
+        "path": "assets/Algebra/week 5.pdf"
+      },
+      {
         "title": "Homework",
         "path": "assets/Algebra/Homework.pdf"
       },
@@ -86,6 +90,10 @@
   {
     "subject": "Calculus",
     "notes": [
+      {
+        "title": "Untitled Notebook",
+        "path": "assets/Calculus/Untitled Notebook.pdf"
+      },
       {
         "title": "Week 4",
         "path": "assets/Calculus/Week 4.pdf"
@@ -140,6 +148,10 @@
   {
     "subject": "Physics",
     "notes": [
+      {
+        "title": "Week 5",
+        "path": "assets/Physics/Week 5.pdf"
+      },
       {
         "title": "Week 4",
         "path": "assets/Physics/Week 4.pdf"
