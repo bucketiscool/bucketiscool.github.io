@@ -153,6 +153,10 @@
     "subject": "Physics",
     "notes": [
       {
+        "title": "Study",
+        "path": "assets/Physics/Study.pdf"
+      },
+      {
         "title": "Week 5",
         "path": "assets/Physics/Week 5.pdf"
       },
@@ -175,10 +179,6 @@
       {
         "title": "Week 1",
         "path": "assets/Physics/Week 1.pdf"
-      },
-      {
-        "title": "Study",
-        "path": "assets/Physics/Study.pdf"
       },
       {
         "title": "Homework",
