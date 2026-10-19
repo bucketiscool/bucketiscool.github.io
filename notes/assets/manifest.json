@@ -95,12 +95,12 @@
     "subject": "Calculus",
     "notes": [
       {
-        "title": "Week 5",
-        "path": "assets/Calculus/Week 5.pdf"
-      },
-      {
         "title": "Study",
         "path": "assets/Calculus/Study.pdf"
+      },
+      {
+        "title": "Week 5",
+        "path": "assets/Calculus/Week 5.pdf"
       },
       {
         "title": "Week 4",
