@@ -177,6 +177,10 @@
     "subject": "Physics",
     "notes": [
       {
+        "title": "Lab Sure Bud",
+        "path": "assets/Physics/Lab Sure Bud.pdf"
+      },
+      {
         "title": "Lab Week 6",
         "path": "assets/Physics/Lab Week 6.pdf"
       },
