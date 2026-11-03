@@ -66,6 +66,14 @@
     "subject": "Algebra",
     "notes": [
       {
+        "title": "NMM1411A_Practice_Test2",
+        "path": "assets/Algebra/NMM1411A_Practice_Test2.pdf"
+      },
+      {
+        "title": "Week 8",
+        "path": "assets/Algebra/Week 8.pdf"
+      },
+      {
         "title": "Week 7",
         "path": "assets/Algebra/Week 7.pdf"
       },
@@ -110,6 +118,10 @@
   {
     "subject": "Calculus",
     "notes": [
+      {
+        "title": "Week 8",
+        "path": "assets/Calculus/Week 8.pdf"
+      },
       {
         "title": "Week 7",
         "path": "assets/Calculus/Week 7.pdf"
