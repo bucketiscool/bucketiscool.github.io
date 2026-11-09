@@ -168,6 +168,10 @@
     "subject": "Business",
     "notes": [
       {
+        "title": "Gourmet Gusto Desision",
+        "path": "assets/Business/Gourmet Gusto Desision.pdf"
+      },
+      {
         "title": "Week 3",
         "path": "assets/Business/Week 3.pdf"
       },
@@ -192,6 +196,10 @@
   {
     "subject": "Physics",
     "notes": [
+      {
+        "title": "Week 9",
+        "path": "assets/Physics/Week 9.pdf"
+      },
       {
         "title": "Week 8",
         "path": "assets/Physics/Week 8.pdf"
